@@ -4,6 +4,7 @@ public class Member
 {
     private String email;
     private String pass;
+    private String username
 
     public Member(String email, String pass) {
         this.email = email;
