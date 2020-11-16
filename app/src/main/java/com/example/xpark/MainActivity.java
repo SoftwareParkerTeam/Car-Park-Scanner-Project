@@ -25,55 +25,33 @@ public class MainActivity extends AppCompatActivity {
     private DatabaseReference ref;
     private Button but;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main3);
-        but = (Button) findViewById(R.id.button);
-        ref = (DatabaseReference) FirebaseDatabase.getInstance().getReference();
+        but = findViewById(R.id.button);
+        ref = FirebaseDatabase.getInstance().getReference();
 
-        but.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                fb = FirebaseAuth.getInstance();
-                ref = (DatabaseReference) FirebaseDatabase.getInstance().getReference().child("Polat").push();
-                Member test = new Member("hknkgn@gmail.com", "sdasfsa");
+        but.setOnClickListener(v -> {
+            fb = FirebaseAuth.getInstance();
+            ref = FirebaseDatabase.getInstance().getReference().child("Users").push();
+            Member test = new Member("hknkgn@gmail.com", "11sdf33");
 
-                Gson gson = new Gson();
-                String json = gson.toJson(test);
-                ref.setValue(test);
+            ref.setValue(test);
 
-            }
         });
         // Sadece users icin dinleme threadi olustur
         ref.child("Users").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                System.out.println("TEST ADD VALUE EVENT LISTENER");
+               Log.i("listener","listener Calisti..");
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
-        });
-        ref.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String prevChildKey) {
-                System.out.println("TEST IN CHILD EVENT LISTENER");
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String prevChildKey) {}
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {}
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String prevChildKey) {}
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {}
         });
     }
 }
