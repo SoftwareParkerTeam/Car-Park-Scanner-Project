@@ -10,6 +10,7 @@ import android.widget.Button;
 
 import com.google.android.gms.common.internal.safeparcel.SafeParcelable;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -26,10 +27,14 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth fb;
     private DatabaseReference ref;
     private Button but;
+    FirebaseUserManager DBUserManager;
 
-    /* login olduktan sonra kullani bu ref de tutulacak.., getCurrentUser() ile *
+    /* login olduktan sonra kullanici bu ref de tutulacak.., getCurrentUser() ile *
+    * veya user tipinde
      */
     FirebaseUser me;
+
+    /* todo : Managerlari init eden method yazilacak */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,14 +43,14 @@ public class MainActivity extends AppCompatActivity {
         but = findViewById(R.id.button);
         ref = FirebaseDatabase.getInstance().getReference();
 
+        /* initialize FireBaseUserManager */
+        DBUserManager = new FirebaseUserManager(this);
+
+        /* yeni uyelik yarat */
         but.setOnClickListener(v -> {
-            fb = FirebaseAuth.getInstance();
-            ref = FirebaseDatabase.getInstance().getReference().child("Users").push();
-            Member test = new Member("hknkgn@gmail.com", "11sdf33");
-
-            ref.setValue(test);
-
+            DBUserManager.createNewUser(new Member("hkn@gm","123hakoo"));
         });
+
         // Sadece users icin dinleme threadi olustur
         ref.child("Users").addValueEventListener(new ValueEventListener() {
             @Override
