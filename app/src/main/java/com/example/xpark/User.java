@@ -1,8 +1,8 @@
+package com.example.xpark;
+
 /**
  * Author : Dilara Karakas.
  */
-
-package com.example.xpark;
 
 public class User {
     /** User's Name */
