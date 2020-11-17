@@ -1,69 +1,76 @@
 package com.example.xpark;
-
 import android.util.Log;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
-import java.util.concurrent.atomic.AtomicBoolean;
+/**
+ * Author : Goktug Akin.
+ */
 
 public class FirebaseUserManager {
 
     private static final String DB_USER_FIELD = "USERS";
-
-    private FirebaseAuth auth = FirebaseAuth.getInstance();
+    private final FirebaseAuth auth = FirebaseAuth.getInstance();
     private FirebaseAuthException ex = null;
-    private AppCompatActivity activity_ref;
+    private final AppCompatActivity activity_ref;
 
     public FirebaseUserManager(AppCompatActivity activity)
     {
         this.activity_ref = activity;
     }
 
-    /* todo : catch exception, return User
-    * Integrate User with FirebaseUser
+    /**
+     * Login olmayi dener. Basarili olursa intent yaratarak yeni bir intente gecer.
+     * @param email Kullanici maili.
+     * @param password Kullanici sifresi.
      */
-    public FirebaseUser signInUser(String email, String password)
+    public void signInUser(String email, String password)
     {
         auth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
-                if(!task.isSuccessful()){
-                    Log.i("USER LOGIN",((FirebaseAuthException)task.getException()).toString());
-                    /* todo : print error to activity using activity_ref */
-                }
-                else {
+                if(task.isSuccessful()){
                     Log.i("USER LOGIN", "LOGIN SUCCEED");
 
-                    /* create new intent, todo send user object into new intent */
+                    /* todo : implement start method */
+                    startNextActivity(auth.getCurrentUser());
+                }
+                else {
+                    Log.i("USER LOGIN",((FirebaseAuthException)task.getException()).toString());
+                    Toast.makeText(activity_ref.getApplicationContext(),ex.toString(),Toast.LENGTH_SHORT).show();
                 }
             }
         });
-
-        return auth.getCurrentUser();
     }
 
-    /* todo :  change pw section, change parameter to Firebase user after extending from it..
+    /**
+     * Yeni uyelik acar. Acilan yeni uyeligi DB de auth kismina ve Real Time DB kismina ekler.
+     * AUTH ve real time DB kismi senkronize edilmistir.
+     * @param user
      */
     public void createNewUser(User user)
     {
         auth.createUserWithEmailAndPassword(user.getEmail(), user.getPassword()).addOnCompleteListener((OnCompleteListener<AuthResult>) task -> {
             if(task.isSuccessful()) {
-                FirebaseDatabase.getInstance().getReference().child(DB_USER_FIELD).push().setValue(user);
+                FirebaseUser created_user = auth.getCurrentUser();
+                FirebaseDatabase.getInstance().getReference().child(DB_USER_FIELD).child(created_user.getUid()).setValue(user);
                 Log.i("USER CREATE", "USER CREATE SUCCEED");
             }
             else
             {
-                Log.i("USER CREATE",((FirebaseAuthException)task.getException()).toString());
+                Log.i("USER CREATE",(task.getException()).toString());
                 ex = (FirebaseAuthException)task.getException();
                 Toast.makeText(activity_ref.getApplicationContext(),ex.toString(),Toast.LENGTH_SHORT).show();
             }
@@ -71,8 +78,6 @@ public class FirebaseUserManager {
 
     }
 
-    /* todo : catch exception
-     */
     public void deleteUser(FirebaseUser user)
     {
 
@@ -81,5 +86,25 @@ public class FirebaseUserManager {
     public void updateUserProperties(FirebaseUser user, FirebaseUser newuser)
     {
 
+    }
+    private void startNextActivity(FirebaseUser fbuser)
+    {
+        /* get User by FirebaseUser with uid */
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(DB_USER_FIELD).child(fbuser.getUid());
+
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                User getted_user = snapshot.getValue(User.class);
+                System.out.println("USER READED FROM DB ::: " + getted_user);
+
+                /* create new intent and start new activity */
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 }

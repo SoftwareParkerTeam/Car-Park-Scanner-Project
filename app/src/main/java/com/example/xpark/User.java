@@ -1,3 +1,7 @@
+/**
+ * Author : Dilara Karakas.
+ */
+
 package com.example.xpark;
 
 public class User {
@@ -51,16 +55,15 @@ public class User {
 
     /**
      * Builds a user object with given information.
-     * @param nick_name_ User's nick name
-     * @param password_ User's password
+     * @param mail User's mail.
+     * @param password User's password.
      */
-    public User(String nick_name_, String password_){
+    public User(String mail, String password){
         this.name = null;
         this.surName = null;
-        this.nick_name = nick_name_;
-        this.password = password_;
+        this.password = password;
+        this.eMail = mail;
         this.phone = null;
-        this.eMail = null;
         this.credit_balance = 0.0;
     }
 
@@ -75,7 +78,7 @@ public class User {
      * Setter nick_name
      * @param nick_name given User's nick name
      */
-    public void setNick_name(String nick_name) {
+    public void setNickname(String nick_name) {
         this.nick_name = nick_name;
     }
     /**
@@ -89,7 +92,7 @@ public class User {
      * Setter surname
      * @param surName given User's surname
      */
-    public void setSurName(String surName) {
+    public void setSurname(String surName) {
         this.surName = surName;
     }
     /**
@@ -103,14 +106,14 @@ public class User {
      * Setter email
      * @param eMail given User's email
      */
-    public void seteMail(String eMail) {
+    public void setEmail(String eMail) {
         this.eMail = eMail;
     }
     /**
      * Setter credit balance
      * @param credit_balance given User's credit balance
      */
-    public void setCredit_balance(double credit_balance) {
+    public void setCreditbalance(double credit_balance) {
         this.credit_balance = credit_balance;
     }
     /**
@@ -124,7 +127,7 @@ public class User {
      * Getter nick_name
      * @return string is user's nick name
      */
-    public String getNick_name() {
+    public String getNickname() {
         return nick_name;
     }
     /**
@@ -138,7 +141,7 @@ public class User {
      * Getter surname
      * @return string is user's surname
      */
-    public String getSurName() {
+    public String getSurname() {
         return surName;
     }
     /**
@@ -159,7 +162,7 @@ public class User {
      * Getter credit_balance
      * @return double is user's credit balance
      */
-    public double getCredit_balance() {
+    public double getCreditbalance() {
         return credit_balance;
     }
 

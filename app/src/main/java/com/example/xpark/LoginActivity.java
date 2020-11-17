@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.google.android.gms.common.internal.safeparcel.SafeParcelable;
 import com.google.firebase.auth.FirebaseAuth;
@@ -27,12 +28,8 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth fb;
     private DatabaseReference ref;
     private Button but;
+    private Button but2;
     FirebaseUserManager DBUserManager;
-
-    /* login olduktan sonra kullanici bu ref de tutulacak.., getCurrentUser() ile *
-    * veya user tipinde
-     */
-    FirebaseUser me;
 
     /* todo : Managerlari init eden method yazilacak */
 
@@ -41,14 +38,26 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main3);
         but = findViewById(R.id.button);
+        but2 = findViewById(R.id.button2);
+
         ref = FirebaseDatabase.getInstance().getReference();
 
         /* initialize FireBaseUserManager */
         DBUserManager = new FirebaseUserManager(this);
 
+
+        /************** test cases ************/
+        User test_user = new User("hknABC@gmail.com","123hakoo");
+        test_user.setPhone("05009008754");
+
         /* yeni uyelik yarat */
         but.setOnClickListener(v -> {
-            DBUserManager.createNewUser(new User("hkn@gm","123hakoo"));
+            DBUserManager.createNewUser(test_user);
+        });
+
+        /* sign in test */
+        but2.setOnClickListener(v -> {
+            DBUserManager.signInUser(test_user.getEmail(),test_user.getPassword());
         });
 
         // Sadece users icin dinleme threadi olustur
@@ -63,5 +72,6 @@ public class LoginActivity extends AppCompatActivity {
 
             }
         });
+        /************** test cases ************/
     }
 }
