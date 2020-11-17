@@ -54,11 +54,8 @@ public class LoginActivity extends AppCompatActivity {
 
         /* yeni uyelik yarat */
         but.setOnClickListener(v -> {
-            //DBUserManager.createNewUser(test_user);
-            DatabaseReference ref2 = FirebaseDatabase.getInstance().getReference().child("USERS").child("GYbLxPHFVfaeCyYLWsU8jZmiYlC3");
-            test_user.setCreditbalance(test);
-            test += 1000;
-            ref2.setValue(test_user);
+            DBUserManager.createNewUser(test_user);
+
         });
 
         /* sign in test */
