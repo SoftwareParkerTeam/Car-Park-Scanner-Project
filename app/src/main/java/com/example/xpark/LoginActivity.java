@@ -34,6 +34,13 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+    }
+
     /**
      * Initialize ui components.
      */
