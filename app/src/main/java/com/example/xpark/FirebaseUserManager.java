@@ -45,12 +45,12 @@ public class FirebaseUserManager {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful()){
                     Log.i("USER LOGIN", "LOGIN SUCCEED");
-
                     /* todo : implement start method */
                     startNextActivityAfterLogin(auth.getCurrentUser());
                 }
                 else {
-                    Log.i("USER LOGIN",((FirebaseAuthException)task.getException()).toString());
+                    ex = (FirebaseAuthException)task.getException();
+                    Log.i("USER LOGIN ",ex.toString());
                     Toast.makeText(activity_ref.getApplicationContext(),ex.toString(),Toast.LENGTH_SHORT).show();
                 }
             }
