@@ -1,4 +1,5 @@
 package com.example.xpark;
+import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
@@ -32,9 +33,10 @@ public class FirebaseUserManager {
     }
 
     /**
-     * Login olmayi dener. Basarili olursa intent yaratarak yeni bir intente gecer.
+     * Login olmayi dener. Basarili olursa intent yaratarak yeni bir activitye gecer.
      * @param email Kullanici maili.
      * @param password Kullanici sifresi.
+     * @note Login ekraninda, (LoginActivity) de cagirilmali.
      */
     public void signInUser(String email, String password)
     {
@@ -45,7 +47,7 @@ public class FirebaseUserManager {
                     Log.i("USER LOGIN", "LOGIN SUCCEED");
 
                     /* todo : implement start method */
-                    startNextActivity(auth.getCurrentUser());
+                    startNextActivityAfterLogin(auth.getCurrentUser());
                 }
                 else {
                     Log.i("USER LOGIN",((FirebaseAuthException)task.getException()).toString());
@@ -58,13 +60,15 @@ public class FirebaseUserManager {
     /**
      * Yeni uyelik acar. Acilan yeni uyeligi DB de auth kismina ve Real Time DB kismina ekler.
      * AUTH ve real time DB kismi senkronize edilmistir.
-     * @param user
+     * @param user DB ye yeni eklenecek user referansi.
+     * @note Bu metod calistiktan sonra user referansi uid degerini elde etmis olur.
      */
     public void createNewUser(User user)
     {
         auth.createUserWithEmailAndPassword(user.getEmail(), user.getPassword()).addOnCompleteListener((OnCompleteListener<AuthResult>) task -> {
             if(task.isSuccessful()) {
                 FirebaseUser created_user = auth.getCurrentUser();
+                user.setUid(created_user.getUid());
                 FirebaseDatabase.getInstance().getReference().child(DB_USER_FIELD).child(created_user.getUid()).setValue(user);
                 Log.i("USER CREATE", "USER CREATE SUCCEED");
             }
@@ -77,17 +81,20 @@ public class FirebaseUserManager {
         });
 
     }
-
-    public void deleteUser(FirebaseUser user)
+    /**
+     * Kullanici verilerini gunceller.
+     * @param user kullanici referansi.
+     * @param newuser override edilecek yeni kullanici.
+     * @note Bu method calistiktan sonra, newuser referansi uid degeri kazanacaktir.
+     */
+    public void updateUserProperties(User user, User newuser)
     {
-
+        /* find user by uid */
+        newuser.setUid(user.getUid());
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(DB_USER_FIELD).child(user.getUid());
+        ref.setValue(newuser);
     }
-
-    public void updateUserProperties(FirebaseUser user, FirebaseUser newuser)
-    {
-
-    }
-    private void startNextActivity(FirebaseUser fbuser)
+    private void startNextActivityAfterLogin(FirebaseUser fbuser)
     {
         /* get User by FirebaseUser with uid */
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(DB_USER_FIELD).child(fbuser.getUid());
@@ -100,6 +107,10 @@ public class FirebaseUserManager {
                 System.out.println("USER READED FROM DB ::: " + getted_user);
 
                 /* create new intent and start new activity */
+
+                Intent intent = new Intent(activity_ref,MainActivity.class);
+                intent.putExtra("CURRENT_USER",getted_user);
+                activity_ref.startActivity(intent);
             }
 
             @Override

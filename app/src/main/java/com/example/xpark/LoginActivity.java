@@ -17,52 +17,52 @@ import com.google.firebase.database.ValueEventListener;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private FirebaseAuth fb;
     private DatabaseReference ref;
     private Button sign_in_button;
     private FirebaseUserManager DBUserManager;
-    private int test = 3000;
     private TextView email_input;
     private TextView password_input;
 
-    /* todo : Managerlari init eden method yazilacak */
-
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
+
+        /* initialize UI components */
+        UI_init();
+        DB_init();
+
+    }
+
+    /**
+     * Initialize ui components.
+     */
+    private void UI_init()
+    {
         setContentView(R.layout.activity_main);
         sign_in_button = findViewById(R.id.sign_in_button);
-
         email_input = findViewById(R.id.userName);
         password_input = findViewById(R.id.Password);
 
+        /* oturum ac listener baslat */
+        sign_in_button.setOnClickListener(v -> {
+            DBUserManager.signInUser(email_input.getText().toString(),password_input.getText().toString());
+        });
+    }
+
+    /**
+     * Initialize DB managers & handle connection issues.
+     */
+    private void DB_init()
+    {
+        /* get database reference */
         ref = FirebaseDatabase.getInstance().getReference();
 
         /* initialize FireBaseUserManager */
         DBUserManager = new FirebaseUserManager(this);
 
-
-        /************** test cases ************/
-        //User test_user = new User("hknABCasd@gmail.com","123hakoasdo");
-        //test_user.setPhone("05009008754");
-
-
-        /* oturum aç */
-        sign_in_button.setOnClickListener(v -> {
-
-            User test_user = new User(
-                    email_input.getText().toString(),
-                    password_input.getText().toString());
-
-            DBUserManager.createNewUser(test_user);
-        });
-
-        /* sign in test
-        but2.setOnClickListener(v -> {
-            DBUserManager.signInUser(test_user.getEmail(),test_user.getPassword());
-        });*/
-
-        // Sadece users icin dinleme threadi olustur
+        /*
+         // Sadece users icin dinleme threadi olustur
         ref.child("Users").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -74,6 +74,6 @@ public class LoginActivity extends AppCompatActivity {
 
             }
         });
-        /************** test cases ************/
+         */
     }
 }

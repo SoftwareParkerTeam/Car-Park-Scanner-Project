@@ -4,7 +4,11 @@ package com.example.xpark;
  * Author : Dilara Karakas.
  */
 
-public class User {
+import com.google.gson.Gson;
+
+import java.io.Serializable;
+
+public class User implements Serializable {
     /** User's Name */
     private String name;
     /** User's Surname */
@@ -19,6 +23,16 @@ public class User {
     private String eMail;
     /** User's Credit Balance */
     private double credit_balance;
+    /* uid for auth */
+    private String uid;
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
 
     /**
      * Builds a user object
