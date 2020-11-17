@@ -30,6 +30,7 @@ public class LoginActivity extends AppCompatActivity {
     private Button but;
     private Button but2;
     FirebaseUserManager DBUserManager;
+    private int test = 3000;
 
     /* todo : Managerlari init eden method yazilacak */
 
@@ -50,9 +51,14 @@ public class LoginActivity extends AppCompatActivity {
         User test_user = new User("hknABC@gmail.com","123hakoo");
         test_user.setPhone("05009008754");
 
+
         /* yeni uyelik yarat */
         but.setOnClickListener(v -> {
-            DBUserManager.createNewUser(test_user);
+            //DBUserManager.createNewUser(test_user);
+            DatabaseReference ref2 = FirebaseDatabase.getInstance().getReference().child("USERS").child("GYbLxPHFVfaeCyYLWsU8jZmiYlC3");
+            test_user.setCreditbalance(test);
+            test += 1000;
+            ref2.setValue(test_user);
         });
 
         /* sign in test */

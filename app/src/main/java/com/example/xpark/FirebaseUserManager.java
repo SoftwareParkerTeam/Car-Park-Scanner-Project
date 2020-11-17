@@ -92,7 +92,8 @@ public class FirebaseUserManager {
         /* get User by FirebaseUser with uid */
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(DB_USER_FIELD).child(fbuser.getUid());
 
-        ref.addValueEventListener(new ValueEventListener() {
+        /* get logged in user for ONCE */
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 User getted_user = snapshot.getValue(User.class);
