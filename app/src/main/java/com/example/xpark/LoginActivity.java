@@ -22,7 +22,7 @@ import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity {
 
     private FirebaseAuth fb;
     private DatabaseReference ref;
@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
         /* yeni uyelik yarat */
         but.setOnClickListener(v -> {
-            DBUserManager.createNewUser(new Member("hkn@gm","123hakoo"));
+            DBUserManager.createNewUser(new User("hkn@gm","123hakoo"));
         });
 
         // Sadece users icin dinleme threadi olustur

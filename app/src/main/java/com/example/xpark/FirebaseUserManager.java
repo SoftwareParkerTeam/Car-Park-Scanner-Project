@@ -54,9 +54,9 @@ public class FirebaseUserManager {
 
     /* todo :  change pw section, change parameter to Firebase user after extending from it..
      */
-    public void createNewUser(Member user)
+    public void createNewUser(User user)
     {
-        auth.createUserWithEmailAndPassword(user.getEmail(), user.getPass()).addOnCompleteListener((OnCompleteListener<AuthResult>) task -> {
+        auth.createUserWithEmailAndPassword(user.getEmail(), user.getPassword()).addOnCompleteListener((OnCompleteListener<AuthResult>) task -> {
             if(task.isSuccessful()) {
                 FirebaseDatabase.getInstance().getReference().child(DB_USER_FIELD).push().setValue(user);
                 Log.i("USER CREATE", "USER CREATE SUCCEED");
