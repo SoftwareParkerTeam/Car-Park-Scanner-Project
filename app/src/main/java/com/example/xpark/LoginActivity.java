@@ -46,14 +46,10 @@ public class LoginActivity extends AppCompatActivity {
      */
     private void UI_init()
     {
-        /* setup ui components */
         setContentView(R.layout.activity_main);
         sign_in_button = findViewById(R.id.sign_in_button);
         email_input = findViewById(R.id.userName);
         password_input = findViewById(R.id.Password);
-
-
-        /* setup the listeners */
 
         /* oturum ac listener baslat */
         sign_in_button.setOnClickListener(v -> {
