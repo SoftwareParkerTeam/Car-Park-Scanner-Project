@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
@@ -24,7 +25,6 @@ public class FirebaseUserManager {
 
     private static final String DB_USER_FIELD = "USERS";
     private final FirebaseAuth auth = FirebaseAuth.getInstance();
-    private FirebaseAuthException ex = null;
     private final AppCompatActivity activity_ref;
 
     public FirebaseUserManager(AppCompatActivity activity)
@@ -40,19 +40,14 @@ public class FirebaseUserManager {
      */
     public void signInUser(String email, String password)
     {
-        auth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if(task.isSuccessful()){
-                    Log.i("USER LOGIN", "LOGIN SUCCEED");
-                    /* todo : implement start method */
-                    startNextActivityAfterLogin(auth.getCurrentUser());
-                }
-                else {
-                    ex = (FirebaseAuthException)task.getException();
-                    Log.i("USER LOGIN ",ex.toString());
-                    Toast.makeText(activity_ref.getApplicationContext(),ex.toString(),Toast.LENGTH_SHORT).show();
-                }
+        auth.signInWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
+            if(task.isSuccessful()){
+                Log.i("USER LOGIN", "LOGIN SUCCEED");
+                startNextActivityAfterLogin(auth.getCurrentUser());
+            }
+            else {
+                Log.i("USER LOGIN ",task.getException().toString());
+                Toast.makeText(activity_ref.getApplicationContext(),task.getException().toString(),Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -75,8 +70,7 @@ public class FirebaseUserManager {
             else
             {
                 Log.i("USER CREATE",(task.getException()).toString());
-                ex = (FirebaseAuthException)task.getException();
-                Toast.makeText(activity_ref.getApplicationContext(),ex.toString(),Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity_ref.getApplicationContext(),task.getException().toString(),Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -107,10 +101,10 @@ public class FirebaseUserManager {
                 System.out.println("USER READED FROM DB ::: " + getted_user);
 
                 /* create new intent and start new activity */
-
                 Intent intent = new Intent(activity_ref,MainActivity.class);
                 intent.putExtra("CURRENT_USER",getted_user);
                 activity_ref.startActivity(intent);
+                activity_ref.finish();
             }
 
             @Override
