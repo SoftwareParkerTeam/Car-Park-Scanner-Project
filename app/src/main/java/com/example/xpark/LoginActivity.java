@@ -12,6 +12,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private DatabaseReference ref;
     private Button sign_in_button;
+    private Button sign_up_button;
     private FirebaseUserManager DBUserManager;
     private TextView email_input;
     private TextView password_input;
@@ -21,6 +22,7 @@ public class LoginActivity extends AppCompatActivity {
     {
         super.onCreate(savedInstanceState);
 
+        // kritik
         if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
             // Activity was brought to front and not created,
             // Thus finishing this will get us to the last viewed activity
@@ -48,12 +50,19 @@ public class LoginActivity extends AppCompatActivity {
     {
         setContentView(R.layout.activity_main);
         sign_in_button = findViewById(R.id.sign_in_button);
+        sign_up_button = findViewById(R.id.sign_up_button);
         email_input = findViewById(R.id.userName);
         password_input = findViewById(R.id.Password);
 
         /* oturum ac listener baslat */
         sign_in_button.setOnClickListener(v -> {
             DBUserManager.signInUser(email_input.getText().toString(),password_input.getText().toString());
+        });
+
+        sign_up_button.setOnClickListener(v -> {
+            Intent intent = new Intent(this,SignUpActivity.class);
+            this.startActivity(intent);
+            this.finish();
         });
     }
 
@@ -86,5 +95,10 @@ public class LoginActivity extends AppCompatActivity {
     protected void onResume()
     {
         super.onResume();
+    }
+    @Override
+    public void onBackPressed()
+    {
+        /* ignore it */
     }
 }

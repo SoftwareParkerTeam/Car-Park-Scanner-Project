@@ -23,6 +23,7 @@ public class SignUpActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        //kritik
         if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
             // Activity was brought to front and not created,
             // Thus finishing this will get us to the last viewed activity
@@ -50,8 +51,12 @@ public class SignUpActivity extends AppCompatActivity {
                         50
                 );
                 DBUserManager.createNewUser(test_user);
-                finish();
             }
         });
+    }
+    @Override
+    public void onBackPressed()
+    {
+        /* ignore it */
     }
 }
