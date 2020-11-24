@@ -2,12 +2,13 @@ package com.example.xpark;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
-
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -18,7 +19,6 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -26,22 +26,27 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
-
+import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 
 public class MainActivity extends FragmentActivity implements OnMapReadyCallback {
 
-    private GoogleMap map;
-    private FirebaseCarparkManager DBparkManager;
+    /* UI Components */
     private Button search_button;
+    private GoogleMap map;
+
+    /* Managers, Wrappers and etc */
+    private FirebaseCarparkManager DBparkManager;
     private LocationManager locationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        // kritik
+
         if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
+            // crucial, dont remove.
             // Activity was brought to front and not created,
             // Thus finishing this will get us to the last viewed activity
             finish();
@@ -53,39 +58,32 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
         /* initialize ui components */
         UI_init();
-
     }
 
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-    }
-    protected void onRestoreInstanceState(Bundle savedInstanceState) { super.onRestoreInstanceState(savedInstanceState); }
-    @Override
-    protected void onPause(){super.onPause();}
-    protected void onResume()
-    {
-        super.onResume();
-    }
-
-    @Override
-    protected void onStop()
-    {
-        super.onStop();
-    }
-
-    @Override
-    public void onBackPressed()
-    {
-        /* ignore it */
-    }
-
+    /**
+     * Initialize map when ready to load.
+     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
         try {
             map.setMyLocationEnabled(true);
-            DBparkManager = new FirebaseCarparkManager(map);
+            DBparkManager = new FirebaseCarparkManager(map,getApplicationContext());
             Location location = getLastKnownLocation();
+
+            /***** JUST FOR TEST *****/
+            Geocoder gcd = new Geocoder(getApplicationContext(), Locale.getDefault());
+            try {
+                List<Address> addresses = gcd.getFromLocation(40.8852811173366, 29.224981737939217, 1);
+                if (addresses!= null && addresses.size() > 0) {
+                    System.out.println("ILCE2 :: " + DBparkManager.parseAddressToDistrict(addresses.get(0).getAddressLine(0)));
+                }
+            }catch (IOException ex)
+            {
+                /* TODO : Handle error */
+            }
+            /***** JUST FOR TEST *****/
+
             map.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(),location.getLongitude())));
             CameraPosition cameraPosition = new CameraPosition.Builder()
                     .target(new LatLng(location.getLatitude(), location.getLongitude()))      // Sets the center of the map to location user
@@ -97,9 +95,41 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         }catch (SecurityException ex)
         {
             System.out.println("Ex occured : " + ex.getMessage());
+            /* TODO : Handle error */
         }
 
         /* markera tiklayinca gelecek pencereyi ayarla.. */
+        UI_init_mapMarkerType();
+
+    }
+
+    /**
+     * Initialize UI components.
+     */
+    private void UI_init()
+    {
+        setContentView(R.layout.activity_main);
+        search_button = findViewById(R.id.button_search);
+
+        /* search icin listener ekle */
+        search_button.setOnClickListener(v -> {
+            if(map != null) {
+                /* yakin bolgede otopark ara */
+                DBparkManager.showNearestCarParks(getLastKnownLocation());
+            }
+        });
+
+        SupportMapFragment mapFragment = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);
+        ViewGroup.LayoutParams params = mapFragment.getView().getLayoutParams();
+        mapFragment.getMapAsync(this);
+    }
+
+    /**
+     * Setups, design stuff of the UI of the markers on the Google Map.
+     * Call this in UI_init() method in order to design the marker type.
+     */
+    private void UI_init_mapMarkerType()
+    {
         map.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
 
             @Override
@@ -129,25 +159,13 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 return info;
             }
         });
-
     }
 
-    private void UI_init()
-    {
-        setContentView(R.layout.activity_main);
-        search_button = findViewById(R.id.button_search);
-
-        /* search icin listener ekle */
-        search_button.setOnClickListener(v -> {
-            if(map != null)
-                DBparkManager.showNearestCarParks("PENDIK"); // PENDIK icindeki otoparklari ara, simdlik..
-        });
-
-        SupportMapFragment mapFragment = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);
-        ViewGroup.LayoutParams params = mapFragment.getView().getLayoutParams();
-        mapFragment.getMapAsync(this);
-    }
-
+    /**
+     * Gets the current location of user.
+     * @return Current location of user as Location type which provides getter of latitude and longitude.
+     * @throws SecurityException If user don't agree with sharing his / her location.
+     */
     private Location getLastKnownLocation() throws SecurityException{
         locationManager = (LocationManager)getApplicationContext().getSystemService(LOCATION_SERVICE);
         List<String> providers = locationManager.getProviders(true);
@@ -166,6 +184,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         return bestLocation;
     }
 
+    /**
+     * Checks the necessary permissions on RUNTIME. If there are missing permission,
+     * creates requests for getting permission from user.
+     */
     private void checkPermission()
     {
         if (!(ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) ==
@@ -180,4 +202,17 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     10);
         }
     }
+
+    /* Below is Android stuff.. */
+    @Override
+    protected void onSaveInstanceState(Bundle outState) { super.onSaveInstanceState(outState); }
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) { super.onRestoreInstanceState(savedInstanceState); }
+    @Override
+    protected void onPause(){super.onPause();}
+    protected void onResume() { super.onResume(); }
+    @Override
+    protected void onStop() { super.onStop(); }
+    @Override
+    public void onBackPressed() {/* Crucial, ignore it */}
 }

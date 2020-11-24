@@ -56,7 +56,10 @@ public class LoginActivity extends AppCompatActivity {
 
         /* oturum ac listener baslat */
         sign_in_button.setOnClickListener(v -> {
-            DBUserManager.signInUser(email_input.getText().toString(),password_input.getText().toString());
+            //DBUserManager.signInUser(email_input.getText().toString(),password_input.getText().toString());
+
+            /* just for test */
+            DBUserManager.signInUser("seko@gmail.com","123456");
         });
 
         /* yeni uyelik ac listener baslat */
