@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        setContentView(R.layout.activity_main2);
+        setContentView(R.layout.activity_main);
     }
 
     protected void onSaveInstanceState(Bundle outState) {

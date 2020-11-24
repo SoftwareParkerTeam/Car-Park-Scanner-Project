@@ -48,7 +48,7 @@ public class LoginActivity extends AppCompatActivity {
      */
     private void UI_init()
     {
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_login);
         sign_in_button = findViewById(R.id.sign_in_button);
         sign_up_button = findViewById(R.id.sign_up_button);
         email_input = findViewById(R.id.userName);
