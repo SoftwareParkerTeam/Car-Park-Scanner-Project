@@ -59,6 +59,7 @@ public class LoginActivity extends AppCompatActivity {
             DBUserManager.signInUser(email_input.getText().toString(),password_input.getText().toString());
         });
 
+        /* yeni uyelik ac listener baslat */
         sign_up_button.setOnClickListener(v -> {
             Intent intent = new Intent(this,SignUpActivity.class);
             this.startActivity(intent);
@@ -77,6 +78,7 @@ public class LoginActivity extends AppCompatActivity {
         /* initialize FireBaseUserManager */
         DBUserManager = new FirebaseUserManager(this);
 
+        // deneme, mainactivityde sonra kullanilacak..
         /*
          // Sadece users icin dinleme threadi olustur
         ref.child("Users").addValueEventListener(new ValueEventListener() {
