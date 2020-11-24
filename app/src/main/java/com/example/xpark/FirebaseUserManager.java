@@ -20,7 +20,7 @@ import com.google.firebase.database.ValueEventListener;
 
 public class FirebaseUserManager {
 
-    private static final String DB_USER_FIELD = "USERS";
+    private static final String DB_USER_FIELD = FirebaseDBConstants.DB_USER_FIELD;
     private final FirebaseAuth auth = FirebaseAuth.getInstance();
     private final AppCompatActivity activity_ref;
 
@@ -40,6 +40,7 @@ public class FirebaseUserManager {
         auth.signInWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
             if(task.isSuccessful()){
                 Log.i("USER LOGIN", "LOGIN SUCCEED");
+                Toast.makeText(activity_ref.getApplicationContext(),"Uyelik basariyla yaratildi.",Toast.LENGTH_SHORT);
                 startNextActivityAfterLogin(auth.getCurrentUser());
             }
             else {
@@ -98,7 +99,7 @@ public class FirebaseUserManager {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 User getted_user = snapshot.getValue(User.class);
-                System.out.println("USER READED FROM DB ::: " + getted_user);
+                System.out.println(">>>>>>> USER READED FROM DB ::: " + getted_user);
 
                 /* create new intent and start new activity */
                 Intent intent = new Intent(activity_ref,MainActivity.class);
