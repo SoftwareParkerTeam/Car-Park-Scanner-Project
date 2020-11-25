@@ -77,7 +77,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             /***** JUST FOR TEST *****/
             Geocoder gcd = new Geocoder(getApplicationContext(), Locale.getDefault());
             try {
-                List<Address> addresses = gcd.getFromLocation(40.8852811173366, 29.224981737939217, 1);
+                List<Address> addresses = gcd.getFromLocation(40.87137360618015, 29.256863354935692, 1);
                 if (addresses!= null && addresses.size() > 0) {
                     System.out.println("ILCE2 :: " + DBparkManager.parseAddressToDistrict(addresses.get(0).getAddressLine(0)));
                 }
