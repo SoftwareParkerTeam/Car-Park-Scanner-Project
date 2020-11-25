@@ -241,6 +241,7 @@ public class FirebaseCarparkManager {
      */
     public String parseAddressToDistrict(String inputAdress)
     {
+        System.out.println("ADRESINIZ : " + inputAdress);
         String[] tokens = inputAdress.split(", ");
         String res = tokens[2].replaceAll("/","_");
         return res.replaceAll(" ","_");

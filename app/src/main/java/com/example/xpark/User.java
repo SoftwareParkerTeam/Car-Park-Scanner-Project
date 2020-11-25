@@ -4,8 +4,6 @@ package com.example.xpark;
  * Author : Dilara Karakas.
  */
 
-import com.google.gson.Gson;
-
 import java.io.Serializable;
 
 public class User implements Serializable {
