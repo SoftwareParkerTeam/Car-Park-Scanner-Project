@@ -26,6 +26,9 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
@@ -46,7 +49,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
 
         if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
-            // crucial, dont remove.
+            // crucial, don't remove.
             // Activity was brought to front and not created,
             // Thus finishing this will get us to the last viewed activity
             finish();
@@ -118,6 +121,16 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 DBparkManager.showNearestCarParks(getLastKnownLocation());
             }
         });
+
+        /**** just for test ****/
+        Button res_button = findViewById(R.id.button_res);
+        res_button.setOnClickListener(v -> {
+            CarPark park = new CarPark();
+            park.setId("1000000");
+            park.setCoordinates(new LatLng(40.87763699311756,29.231608160645568));
+            DBparkManager.registerUserToCarpark(park,new User());
+        });
+        /**** just for test ****/
 
         SupportMapFragment mapFragment = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);
         ViewGroup.LayoutParams params = mapFragment.getView().getLayoutParams();

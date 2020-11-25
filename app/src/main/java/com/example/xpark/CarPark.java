@@ -1,18 +1,24 @@
 package com.example.xpark;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.DataSnapshot;
 
-public class CarPark {
+import java.util.HashMap;
 
+public class CarPark {
     private String id;
+    private String generalid;
     private String name;
     private String phone;
-    private double latitude;
-    private double longitude;
-    private int capactiy;
+    private LatLng coordinates;
+    private int capacity;
     private int used;
+
+    public CarPark(){
+    }
 
     /**
      * Initialize carPark object with given data snap shot - comes from database -
@@ -20,13 +26,33 @@ public class CarPark {
      */
     public CarPark(DataSnapshot shot)
     {
-        this.longitude = (double)shot.child(FirebaseDBConstants.DB_CARPARK_INFO).child(FirebaseDBConstants.DB_CARPARK_CHILD_LONGITUDE).getValue();
-        this.latitude = (double)shot.child(FirebaseDBConstants.DB_CARPARK_INFO).child(FirebaseDBConstants.DB_CARPARK_CHILD_LATITUDE).getValue();
-        this.id = (String)shot.child(FirebaseDBConstants.DB_CARPARK_INFO).child(FirebaseDBConstants.DB_CARPARK_CHILD_ID).getValue();
-        this.capactiy = ((Long)(shot.child(FirebaseDBConstants.DB_CARPARK_INFO).child(FirebaseDBConstants.DB_CARPARK_CHILD_CAPACITY).getValue())).intValue();
-        this.used = ((Long)(shot.child(FirebaseDBConstants.DB_CARPARK_INFO).child(FirebaseDBConstants.DB_CARPARK_CHILD_USED).getValue())).intValue();
-        this.name = (String)shot.child(FirebaseDBConstants.DB_CARPARK_INFO).child(FirebaseDBConstants.DB_CARPARK_CHILD_NAME).getValue();
-        this.phone = (String)shot.child(FirebaseDBConstants.DB_CARPARK_INFO).child(FirebaseDBConstants.DB_CARPARK_CHILD_PHONE).getValue();
+        double longitude = (double)shot.child(FirebaseDBConstants.DB_CARPARK_CHILD_COORDINATES).child(FirebaseDBConstants.DB_CARPARK_CHILD_LONGITUDE).getValue();
+        double latitude = (double)shot.child(FirebaseDBConstants.DB_CARPARK_CHILD_COORDINATES).child(FirebaseDBConstants.DB_CARPARK_CHILD_LATITUDE).getValue();
+        this.coordinates = new LatLng(latitude,longitude);
+        this.id = (String)shot.child(FirebaseDBConstants.DB_CARPARK_CHILD_ID).getValue();
+        this.capacity = ((Long)(shot.child(FirebaseDBConstants.DB_CARPARK_CHILD_CAPACITY).getValue())).intValue();
+        this.used = ((Long)(shot.child(FirebaseDBConstants.DB_CARPARK_CHILD_USED).getValue())).intValue();
+        this.name = (String)shot.child(FirebaseDBConstants.DB_CARPARK_CHILD_NAME).getValue();
+        this.phone = (String)shot.child(FirebaseDBConstants.DB_CARPARK_CHILD_PHONE).getValue();
+        this.generalid = (String)shot.child(FirebaseDBConstants.DB_CARPARK_CHILD_GENERALID).getValue();
+    }
+
+    /**
+     * Initialize carPark object with given hash map - comes from database -
+     * @param map Map to be parsed into car park object.
+     */
+    public CarPark(HashMap map)
+    {
+        HashMap coord_map = (HashMap) map.get("coordinates");
+        double longitude = (double)coord_map.get("longitude");
+        double latitude = (double)coord_map.get("latitude");
+        this.coordinates = new LatLng(latitude,longitude);
+        this.capacity = ((Long)map.get("capacity")).intValue();
+        this.used = ((Long)map.get("used")).intValue();
+        this.id = (String)map.get("id");
+        this.phone = (String)map.get("phone");
+        this.name =  (String)map.get("name");
+        this.generalid = (String)map.get("generalId");
     }
 
     /**
@@ -35,22 +61,6 @@ public class CarPark {
      */
     public String getId() {
         return id;
-    }
-
-    /**
-     * Gets the latitude of the car park on the map.
-     * @return Latitude of the car park on the map.
-     */
-    public double getLatitude() {
-        return latitude;
-    }
-
-    /**
-     * Gets the longitude of the car park on the map.
-     * @return Longitude of the car park on the map.
-     */
-    public double getLongitude() {
-        return longitude;
     }
 
     /**
@@ -83,7 +93,7 @@ public class CarPark {
      */
     public LatLng getCoordinates()
     {
-        return new LatLng(this.latitude,this.longitude);
+        return coordinates;
     }
 
     /**
@@ -92,13 +102,56 @@ public class CarPark {
      */
     public int getFreeArea()
     {
-        return capactiy - used;
+        return getCapacity() - getUsed();
+    }
+
+    public String getGeneralid() {
+        return generalid;
+    }
+
+    public void setGeneralid(String general_id) {
+        this.generalid = general_id;
+    }
+
+    public int getCapacity() {
+        return capacity;
+    }
+
+    public int getUsed() {
+        return used;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void incrementUsed(){
+        this.setUsed(this.getUsed() + 1);
+    }
+
+
+    public void setCoordinates(LatLng coordinates) {
+        this.coordinates = coordinates;
     }
 
     @NonNull
     @Override
     /* TODO : change this in a better way */
-    public String toString() {
-        return "# CARPARK : " + " (" + longitude + "," + latitude + ") ";
+    public String toString()
+    {
+        return "Tel : " + this.getPhone() + "\n" + "Boş Yer : " + this.getFreeArea();
+    }
+
+    @Override
+    public int hashCode()
+    {
+        String s = " " + coordinates.latitude + coordinates.longitude;
+        return s.hashCode();
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        CarPark test = (CarPark)obj;
+        return test.hashCode() == this.hashCode();
     }
 }
