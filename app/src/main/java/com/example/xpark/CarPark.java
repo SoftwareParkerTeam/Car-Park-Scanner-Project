@@ -43,16 +43,16 @@ public class CarPark {
      */
     public CarPark(HashMap map)
     {
-        HashMap coord_map = (HashMap) map.get("coordinates");
-        double longitude = (double)coord_map.get("longitude");
-        double latitude = (double)coord_map.get("latitude");
+        HashMap coord_map = (HashMap) map.get(FirebaseDBConstants.DB_CARPARK_CHILD_COORDINATES);
+        double longitude = (double)coord_map.get(FirebaseDBConstants.DB_CARPARK_CHILD_LONGITUDE);
+        double latitude = (double)coord_map.get(FirebaseDBConstants.DB_CARPARK_CHILD_LATITUDE);
         this.coordinates = new LatLng(latitude,longitude);
-        this.capacity = ((Long)map.get("capacity")).intValue();
-        this.used = ((Long)map.get("used")).intValue();
-        this.id = (String)map.get("id");
-        this.phone = (String)map.get("phone");
-        this.name =  (String)map.get("name");
-        this.generalid = (String)map.get("generalId");
+        this.capacity = ((Long)map.get(FirebaseDBConstants.DB_CARPARK_CHILD_CAPACITY)).intValue();
+        this.used = ((Long)map.get(FirebaseDBConstants.DB_CARPARK_CHILD_USED)).intValue();
+        this.id = (String)map.get(FirebaseDBConstants.DB_CARPARK_CHILD_ID);
+        this.phone = (String)map.get(FirebaseDBConstants.DB_CARPARK_CHILD_PHONE);
+        this.name =  (String)map.get(FirebaseDBConstants.DB_CARPARK_CHILD_NAME);
+        this.generalid = (String)map.get(FirebaseDBConstants.DB_CARPARK_CHILD_GENERALID);
     }
 
     /**
