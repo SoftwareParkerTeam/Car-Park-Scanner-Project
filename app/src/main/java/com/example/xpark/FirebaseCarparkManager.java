@@ -4,12 +4,14 @@ import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationManager;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.database.ChildEventListener;
@@ -25,15 +27,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+
+import static android.content.Context.LOCATION_SERVICE;
 
 public class FirebaseCarparkManager {
 
     private static final String DB_CARPARK_FIELD = FirebaseDBConstants.DB_CARPARK_FIELD;
     private GoogleMap map;
     private Context cont;
+    private String oldDistrcit;
 
-    // store the related listeners about database fields.
-    private ArrayList<ChildEventListener> listeners;
+    // store the related listener about database fields.
+    private ChildEventListener currentListener;
 
     // mapping between car park and marker on the screen
     private HashMap<CarPark,Marker> markersOnScreen;
@@ -42,12 +48,20 @@ public class FirebaseCarparkManager {
     {
         this.map = map;
         this.cont = cont;
-        listeners = new ArrayList<>();
         markersOnScreen = new HashMap<>();
     }
 
     private void showNearestCarParks(String districtName)
     {
+        /* if location has changed, remove the older listeners*/
+        if(oldDistrcit != null) {
+            if (!oldDistrcit.equals(districtName)) {
+                DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(DB_CARPARK_FIELD).child(oldDistrcit);
+                ref.removeEventListener(currentListener);
+                oldDistrcit = districtName;
+            }
+        }
+
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(DB_CARPARK_FIELD).child(districtName);
 
         /* adds event listener for given district, start observe */
@@ -59,20 +73,13 @@ public class FirebaseCarparkManager {
 
                 for(DataSnapshot shot : snapshot.getChildren())
                 {
-                    // to find the center point of the car parks in the map
-                    int markCount = 0;
-                    double total_latitude = 0;
-                    double total_longitude = 0;
-
+                    /* add new car park to the map */
                     CarPark newCarPark = new CarPark(shot);
-                    total_latitude += newCarPark.getCoordinates().latitude;
-                    total_longitude += newCarPark.getCoordinates().longitude;
                     addCarparkToMap(newCarPark,newCarPark.getName(),newCarPark.toString());
-                    ++markCount;
 
                     /* focus on the center of the car parks (marks) */
-                    if(markCount > 0)
-                        map.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(total_latitude / markCount, total_longitude / markCount)));
+                    if(markersOnScreen.size() > 0)
+                        focusMapToMarkers();
                     else
                     {
                         /* TODO : otopark bulunamadi, ekrana guzel bilgi ver... */
@@ -89,12 +96,14 @@ public class FirebaseCarparkManager {
     }
 
     /**
-     * Shows the closest car parks in the given location.
-     * UI, user space, call this method by giving the current location of the user.
-     * @param currentLocation Location will be searched.
+     * Shows the closest car parks in the current location.
+     * UI, user space, call this method.
      */
-    public void showNearestCarParks(Location currentLocation)
+    public void showNearestCarParks()
     {
+        /* get current location */
+        Location currentLocation = getLastKnownLocation();
+
         /* try to find district name from current location */
         String parsedAddr = tryToParseAddress(currentLocation.getLatitude(),currentLocation.getLongitude());
         if(parsedAddr != null)
@@ -113,11 +122,24 @@ public class FirebaseCarparkManager {
      * @param park_info String in the marker, explanation about related car park.
      * @return Newly added marker to google map.
      */
-    private Marker addCarparkToMap(CarPark newCarPark,String title, String park_info)
+    private void addCarparkToMap(CarPark newCarPark,String title, String park_info)
     {
         Marker m = map.addMarker(new MarkerOptions().position(newCarPark.getCoordinates()).title(newCarPark.getName()).snippet(park_info));
         markersOnScreen.put(newCarPark,m);
-        return m;
+    }
+
+    private void focusMapToMarkers()
+    {
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+        for (Map.Entry<CarPark,Marker> val: markersOnScreen.entrySet())
+            builder.include(val.getValue().getPosition());
+
+        int padding = 10; // default
+        LatLngBounds bounds = builder.build();
+        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+
+        // focus the camera
+        map.animateCamera(cu);
     }
 
     /**
@@ -168,7 +190,8 @@ public class FirebaseCarparkManager {
 
             }
         };
-        this.listeners.add(listener);
+
+        currentListener = listener;
         ref.addChildEventListener(listener);
     }
 
@@ -299,5 +322,28 @@ public class FirebaseCarparkManager {
         }
 
         return parsedAddr;
+    }
+
+    /**
+     * Gets the current location of user.
+     * @return Current location of user as Location type which provides getter of latitude and longitude.
+     * @throws SecurityException If user don't agree with sharing his / her location.
+     */
+    public Location getLastKnownLocation() throws SecurityException{
+        LocationManager locationManager = (LocationManager)cont.getSystemService(LOCATION_SERVICE);
+        List<String> providers = locationManager.getProviders(true);
+        Location bestLocation = null;
+        for (String provider : providers) {
+            Location l = locationManager.getLastKnownLocation(provider);
+            if (l == null) {
+                continue;
+            }
+            if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy()) {
+                // Found best last known location: %s", l);
+                bestLocation = l;
+            }
+        }
+
+        return bestLocation;
     }
 }

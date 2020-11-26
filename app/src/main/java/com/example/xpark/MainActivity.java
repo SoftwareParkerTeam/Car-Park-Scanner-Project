@@ -41,10 +41,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     /* Managers, Wrappers and etc */
     private FirebaseCarparkManager DBparkManager;
-    private LocationManager locationManager;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
 
         super.onCreate(savedInstanceState);
 
@@ -64,7 +64,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     /**
-     * Initialize map when ready to load.
+     * Initialize map and necessary map related tools when ready to load.
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -72,7 +72,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         try {
             map.setMyLocationEnabled(true);
             DBparkManager = new FirebaseCarparkManager(map,getApplicationContext());
-            Location location = getLastKnownLocation();
+
 
             /***** JUST FOR TEST *****/
             Geocoder gcd = new Geocoder(getApplicationContext(), Locale.getDefault());
@@ -87,15 +87,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             }
             /***** JUST FOR TEST *****/
 
-            map.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(),location.getLongitude())));
-            CameraPosition cameraPosition = new CameraPosition.Builder()
-                    .target(new LatLng(location.getLatitude(), location.getLongitude()))      // Sets the center of the map to location user
-                    .zoom(17)                   // Sets the zoom
-                    .bearing(90)                // Sets the orientation of the camera to east
-                    .tilt(40)                   // Sets the tilt of the camera to 30 degrees
-                    .build();
-            map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-        }catch (SecurityException ex)
+            /* update the camera to current location */
+            animateCameraToCurrentLocation();
+        }
+        catch (SecurityException ex)
         {
             System.out.println("Ex occured : " + ex.getMessage());
             /* TODO : Handle error */
@@ -118,7 +113,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         search_button.setOnClickListener(v -> {
             if(map != null) {
                 /* yakin bolgede otopark ara */
-                DBparkManager.showNearestCarParks(getLastKnownLocation());
+                DBparkManager.showNearestCarParks();
             }
         });
 
@@ -174,28 +169,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
-    /**
-     * Gets the current location of user.
-     * @return Current location of user as Location type which provides getter of latitude and longitude.
-     * @throws SecurityException If user don't agree with sharing his / her location.
-     */
-    private Location getLastKnownLocation() throws SecurityException{
-        locationManager = (LocationManager)getApplicationContext().getSystemService(LOCATION_SERVICE);
-        List<String> providers = locationManager.getProviders(true);
-        Location bestLocation = null;
-        for (String provider : providers) {
-            Location l = locationManager.getLastKnownLocation(provider);
-            if (l == null) {
-                continue;
-            }
-            if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy()) {
-                // Found best last known location: %s", l);
-                bestLocation = l;
-            }
-        }
 
-        return bestLocation;
-    }
 
     /**
      * Checks the necessary permissions on RUNTIME. If there are missing permission,
@@ -216,6 +190,19 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    private void animateCameraToCurrentLocation()
+    {
+        Location location = DBparkManager.getLastKnownLocation();
+        map.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(),location.getLongitude())));
+        CameraPosition cameraPosition = new CameraPosition.Builder()
+                .target(new LatLng(location.getLatitude(), location.getLongitude()))      // Sets the center of the map to location user
+                .zoom(15)                   // Sets the zoom
+                .bearing(90)                // Sets the orientation of the camera to east
+                .tilt(40)                   // Sets the tilt of the camera to 30 degrees
+                .build();
+        map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+    }
+
     /* Below is Android stuff.. */
     @Override
     protected void onSaveInstanceState(Bundle outState) { super.onSaveInstanceState(outState); }
@@ -227,5 +214,5 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onStop() { super.onStop(); }
     @Override
-    public void onBackPressed() {/* Crucial, ignore it */}
+    public void onBackPressed() {/* Crucial, ignore the back button */}
 }
