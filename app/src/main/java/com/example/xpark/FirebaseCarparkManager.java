@@ -23,7 +23,6 @@ import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -32,11 +31,9 @@ import java.util.Map;
 import static android.content.Context.LOCATION_SERVICE;
 
 public class FirebaseCarparkManager {
-
-    private static final String DB_CARPARK_FIELD = FirebaseDBConstants.DB_CARPARK_FIELD;
     private GoogleMap map;
     private Context cont;
-    private String oldDistrcit;
+    private String oldDistrcit=null;
 
     // store the related listener about database fields.
     private ChildEventListener currentListener;
@@ -49,50 +46,6 @@ public class FirebaseCarparkManager {
         this.map = map;
         this.cont = cont;
         markersOnScreen = new HashMap<>();
-    }
-
-    private void showNearestCarParks(String districtName)
-    {
-        /* if location has changed, remove the older listeners*/
-        if(oldDistrcit != null) {
-            if (!oldDistrcit.equals(districtName)) {
-                DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(DB_CARPARK_FIELD).child(oldDistrcit);
-                ref.removeEventListener(currentListener);
-                oldDistrcit = districtName;
-            }
-        }
-
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(DB_CARPARK_FIELD).child(districtName);
-
-        /* adds event listener for given district, start observe */
-        this.addListenerForDistrict(districtName);
-
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                for(DataSnapshot shot : snapshot.getChildren())
-                {
-                    /* add new car park to the map */
-                    CarPark newCarPark = new CarPark(shot);
-                    addCarparkToMap(newCarPark,newCarPark.getName(),newCarPark.toString());
-
-                    /* focus on the center of the car parks (marks) */
-                    if(markersOnScreen.size() > 0)
-                        focusMapToMarkers();
-                    else
-                    {
-                        /* TODO : otopark bulunamadi, ekrana guzel bilgi ver... */
-                        Toast.makeText(cont,"Bolgede Otopark Bulunamadi..",Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
     }
 
     /**
@@ -113,6 +66,35 @@ public class FirebaseCarparkManager {
             /* TODO : print error to the toast, carpark not found */
             Toast.makeText(cont,"Bolgede Otopark Bulunamadi..",Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public void startParking(CarPark carpark, User user)
+    {
+        // after checking the credit balance and etc..
+        // call registerUserToCarpark here..
+    }
+
+    /**
+     * Gets the current location of user.
+     * @return Current location of user as Location type which provides getter of latitude and longitude.
+     * @throws SecurityException If user don't agree with sharing his / her location.
+     */
+    public Location getLastKnownLocation() throws SecurityException{
+        LocationManager locationManager = (LocationManager)cont.getSystemService(LOCATION_SERVICE);
+        List<String> providers = locationManager.getProviders(true);
+        Location bestLocation = null;
+        for (String provider : providers) {
+            Location l = locationManager.getLastKnownLocation(provider);
+            if (l == null) {
+                continue;
+            }
+            if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy()) {
+                // Found best last known location: %s", l);
+                bestLocation = l;
+            }
+        }
+
+        return bestLocation;
     }
 
     /**
@@ -195,20 +177,14 @@ public class FirebaseCarparkManager {
         ref.addChildEventListener(listener);
     }
 
-    public void startParking(CarPark carpark, User user)
-    {
-        // after checking the balance and etc..
-        // call registerUserToCarpark here..
-    }
-
     /**
      * This methods register given user to given car park.
      * Field of the car park in the database does not store the users.
      * Users store the id of the car park which he / she parked.
      *
      * This method registers user to car park "directly", not checks the balance or anything..
-     * After implementing the startParking method, this method will be private since this
-     * method should not be accessible from user space (UI).
+     * Todo : After implementing the startParking method, this method will be private since this
+     * Todo : method should not be accessible from user space (UI).
      *
      * @param carpark Target car park.
      * @param user User to be registered.
@@ -259,6 +235,7 @@ public class FirebaseCarparkManager {
 
     /**
      * Get District (ilce) from given address.
+     * Todo : this method will be private later.
      * @param inputAdress address to be parsed.
      * @return District of given address, if parsed successfully.
      */
@@ -324,26 +301,47 @@ public class FirebaseCarparkManager {
         return parsedAddr;
     }
 
-    /**
-     * Gets the current location of user.
-     * @return Current location of user as Location type which provides getter of latitude and longitude.
-     * @throws SecurityException If user don't agree with sharing his / her location.
-     */
-    public Location getLastKnownLocation() throws SecurityException{
-        LocationManager locationManager = (LocationManager)cont.getSystemService(LOCATION_SERVICE);
-        List<String> providers = locationManager.getProviders(true);
-        Location bestLocation = null;
-        for (String provider : providers) {
-            Location l = locationManager.getLastKnownLocation(provider);
-            if (l == null) {
-                continue;
-            }
-            if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy()) {
-                // Found best last known location: %s", l);
-                bestLocation = l;
+    private void showNearestCarParks(String districtName)
+    {
+        /* if location has changed, remove the older listeners*/
+        if(oldDistrcit != null) {
+            if (!oldDistrcit.equals(districtName)) {
+                DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(FirebaseDBConstants.DB_CARPARK_FIELD).child(oldDistrcit);
+                ref.removeEventListener(currentListener);
+                oldDistrcit = districtName;
             }
         }
 
-        return bestLocation;
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(FirebaseDBConstants.DB_CARPARK_FIELD).child(districtName);
+
+        /* adds event listener for given district, start observe */
+        this.addListenerForDistrict(districtName);
+
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                for(DataSnapshot shot : snapshot.getChildren())
+                {
+                    /* add new car park to the map */
+                    CarPark newCarPark = new CarPark(shot);
+                    addCarparkToMap(newCarPark,newCarPark.getName(),newCarPark.toString());
+
+                    /* focus on the center of the car parks (marks) */
+                    if(markersOnScreen.size() > 0)
+                        focusMapToMarkers();
+                    else
+                    {
+                        /* TODO : otopark bulunamadi, ekrana guzel bilgi ver... */
+                        Toast.makeText(cont,"Bolgede Otopark Bulunamadi..",Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 }

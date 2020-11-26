@@ -10,7 +10,6 @@ import android.graphics.Typeface;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
@@ -26,8 +25,6 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.IOException;
 import java.util.List;
@@ -41,6 +38,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     /* Managers, Wrappers and etc */
     private FirebaseCarparkManager DBparkManager;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -69,36 +67,37 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
-        try {
-            map.setMyLocationEnabled(true);
-            DBparkManager = new FirebaseCarparkManager(map,getApplicationContext());
-
-
-            /***** JUST FOR TEST *****/
-            Geocoder gcd = new Geocoder(getApplicationContext(), Locale.getDefault());
+        if(map != null)
+        {
             try {
-                List<Address> addresses = gcd.getFromLocation(40.87137360618015, 29.256863354935692, 1);
-                if (addresses!= null && addresses.size() > 0) {
-                    System.out.println("ILCE2 :: " + DBparkManager.parseAddressToDistrict(addresses.get(0).getAddressLine(0)));
+                map.setMyLocationEnabled(true);
+                DBparkManager = new FirebaseCarparkManager(map, getApplicationContext());
+
+                /***** JUST FOR TEST *****/
+                Geocoder gcd = new Geocoder(getApplicationContext(), Locale.getDefault());
+                try {
+                    List<Address> addresses = gcd.getFromLocation(40.87137360618015, 29.256863354935692, 1);
+                    if (addresses != null && addresses.size() > 0) {
+                        System.out.println("ILCE2 :: " + DBparkManager.parseAddressToDistrict(addresses.get(0).getAddressLine(0)));
+                    }
+                } catch (IOException ex) {
+                    /* TODO : Handle error */
                 }
-            }catch (IOException ex)
-            {
+                /***** JUST FOR TEST *****/
+
+                /* update the camera to current location */
+                animateCameraToCurrentLocation();
+            } catch (SecurityException ex) {
+                System.out.println("Ex occured : " + ex.getMessage());
                 /* TODO : Handle error */
             }
-            /***** JUST FOR TEST *****/
-
-            /* update the camera to current location */
-            animateCameraToCurrentLocation();
+            /* markera tiklayinca gelecek pencereyi ayarla.. */
+            UI_init_mapMarkerType();
         }
-        catch (SecurityException ex)
+        else
         {
-            System.out.println("Ex occured : " + ex.getMessage());
-            /* TODO : Handle error */
+            /* Todo : map cannot be loaded, handle. */
         }
-
-        /* markera tiklayinca gelecek pencereyi ayarla.. */
-        UI_init_mapMarkerType();
-
     }
 
     /**
@@ -138,6 +137,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
      */
     private void UI_init_mapMarkerType()
     {
+        if(map == null)
+            return;
+
         map.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
 
             @Override
@@ -192,6 +194,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void animateCameraToCurrentLocation()
     {
+        if(map == null)
+            return;
+
         Location location = DBparkManager.getLastKnownLocation();
         map.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(),location.getLongitude())));
         CameraPosition cameraPosition = new CameraPosition.Builder()
