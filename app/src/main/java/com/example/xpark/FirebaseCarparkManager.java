@@ -27,40 +27,67 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
 import static android.content.Context.LOCATION_SERVICE;
+
+/**
+ * FirebaseCarparkManager Singleton
+ */
 
 public class FirebaseCarparkManager {
     private GoogleMap map;
-    private Context cont;
-    private String oldDistrcit=null;
+    private String oldDistrict=null;
+
+    // store instance for singleton
+    private volatile static FirebaseCarparkManager instance;
 
     // store the related listener about database fields.
     private ChildEventListener currentListener;
 
     // mapping between car park and marker on the screen
-    private HashMap<CarPark,Marker> markersOnScreen;
+    private final HashMap<CarPark,Marker> markersOnScreen;
 
-    public FirebaseCarparkManager(GoogleMap map, Context cont)
+    /**
+     * Singleton constructor.
+     */
+    private FirebaseCarparkManager()
     {
-        this.map = map;
-        this.cont = cont;
         markersOnScreen = new HashMap<>();
+    }
+
+    /**
+     * Singleton getter method.
+     * @return new created or current instance of manager class.
+     */
+    public static FirebaseCarparkManager getInstance()
+    {
+        // Double check for multi-threading later.
+        if(instance == null)
+        {
+            synchronized (FirebaseCarparkManager.class){
+                if (instance == null)
+                    instance = new FirebaseCarparkManager();
+            }
+        }
+        return instance;
+    }
+
+    public void setMap(GoogleMap map){
+        this.map = map;
     }
 
     /**
      * Shows the closest car parks in the current location.
      * UI, user space, call this method.
      */
-    public void showNearestCarParks()
+    public void showNearestCarParks(Context cont)
     {
         /* get current location */
-        Location currentLocation = getLastKnownLocation();
+        Location currentLocation = getLastKnownLocation(cont);
 
         /* try to find district name from current location */
-        String parsedAddr = tryToParseAddress(currentLocation.getLatitude(),currentLocation.getLongitude());
+        String parsedAddr = tryToParseAddress(cont,currentLocation.getLatitude(),currentLocation.getLongitude());
         if(parsedAddr != null)
-            this.showNearestCarParks(parsedAddr);
+            this.showNearestCarParks(cont,parsedAddr);
         else
         {
             /* TODO : print error to the toast, carpark not found */
@@ -79,7 +106,7 @@ public class FirebaseCarparkManager {
      * @return Current location of user as Location type which provides getter of latitude and longitude.
      * @throws SecurityException If user don't agree with sharing his / her location.
      */
-    public Location getLastKnownLocation() throws SecurityException{
+    public Location getLastKnownLocation(Context cont) throws SecurityException{
         LocationManager locationManager = (LocationManager)cont.getSystemService(LOCATION_SERVICE);
         List<String> providers = locationManager.getProviders(true);
         Location bestLocation = null;
@@ -189,10 +216,10 @@ public class FirebaseCarparkManager {
      * @param carpark Target car park.
      * @param user User to be registered.
      */
-    public void registerUserToCarpark(CarPark carpark, User user)
+    public void registerUserToCarpark(Context cont,CarPark carpark, User user)
     {
         /* first find the reference of the given car park */
-        String parsedAddr = tryToParseAddress(carpark.getCoordinates().latitude,carpark.getCoordinates().longitude);
+        String parsedAddr = tryToParseAddress(cont,carpark.getCoordinates().latitude,carpark.getCoordinates().longitude);
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(FirebaseDBConstants.DB_CARPARK_FIELD).child(parsedAddr).child(carpark.getId());
 
         ref.runTransaction(new Transaction.Handler() {
@@ -272,7 +299,7 @@ public class FirebaseCarparkManager {
      * @param longitude Longitude of the given address.
      * @return parsed address if successful, null on error.
      */
-    private String tryToParseAddress(double latitude, double longitude)
+    private String tryToParseAddress(Context cont,double latitude, double longitude)
     {
         Geocoder gcd = new Geocoder(cont, Locale.getDefault());
         final double INCREMENT_AMOUNT = 0.001;
@@ -301,14 +328,14 @@ public class FirebaseCarparkManager {
         return parsedAddr;
     }
 
-    private void showNearestCarParks(String districtName)
+    private void showNearestCarParks(Context cont,String districtName)
     {
         /* if location has changed, remove the older listeners*/
-        if(oldDistrcit != null) {
-            if (!oldDistrcit.equals(districtName)) {
-                DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(FirebaseDBConstants.DB_CARPARK_FIELD).child(oldDistrcit);
+        if(oldDistrict != null) {
+            if (!oldDistrict.equals(districtName)) {
+                DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(FirebaseDBConstants.DB_CARPARK_FIELD).child(oldDistrict);
                 ref.removeEventListener(currentListener);
-                oldDistrcit = districtName;
+                oldDistrict = districtName;
             }
         }
 

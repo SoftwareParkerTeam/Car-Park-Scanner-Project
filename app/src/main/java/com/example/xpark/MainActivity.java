@@ -71,7 +71,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         {
             try {
                 map.setMyLocationEnabled(true);
-                DBparkManager = new FirebaseCarparkManager(map, getApplicationContext());
+                DBparkManager = FirebaseCarparkManager.getInstance();
+                DBparkManager.setMap(map);
 
                 /***** JUST FOR TEST *****/
                 Geocoder gcd = new Geocoder(getApplicationContext(), Locale.getDefault());
@@ -112,7 +113,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         search_button.setOnClickListener(v -> {
             if(map != null) {
                 /* yakin bolgede otopark ara */
-                DBparkManager.showNearestCarParks();
+                DBparkManager.showNearestCarParks(getApplicationContext());
             }
         });
 
@@ -122,7 +123,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             CarPark park = new CarPark();
             park.setId("1000000");
             park.setCoordinates(new LatLng(40.87763699311756,29.231608160645568));
-            DBparkManager.registerUserToCarpark(park,new User());
+            DBparkManager.registerUserToCarpark(getApplicationContext(),park,new User());
         });
         /**** just for test ****/
 
@@ -197,7 +198,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         if(map == null)
             return;
 
-        Location location = DBparkManager.getLastKnownLocation();
+        Location location = DBparkManager.getLastKnownLocation(getApplicationContext());
         map.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(),location.getLongitude())));
         CameraPosition cameraPosition = new CameraPosition.Builder()
                 .target(new LatLng(location.getLatitude(), location.getLongitude()))      // Sets the center of the map to location user
