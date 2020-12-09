@@ -24,9 +24,28 @@ public class FirebaseUserManager {
     private final FirebaseAuth auth = FirebaseAuth.getInstance();
     private final AppCompatActivity activity_ref;
 
-    public FirebaseUserManager(AppCompatActivity activity)
+    private volatile static FirebaseUserManager instance;
+
+    private FirebaseUserManager(AppCompatActivity activity)
     {
         this.activity_ref = activity;
+    }
+
+    /**
+     * Singleton getter method.
+     * @return new created or current instance of manager class.
+     */
+    public static FirebaseUserManager getInstance(AppCompatActivity activity)
+    {
+        // Double check for multi-threading later.
+        if(instance == null)
+        {
+            synchronized (FirebaseUserManager.class){
+                if (instance == null)
+                    instance = new FirebaseUserManager(activity);
+            }
+        }
+        return instance;
     }
 
     /**
