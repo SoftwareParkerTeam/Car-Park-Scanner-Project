@@ -1,4 +1,4 @@
-package com.example.xpark;
+package com.example.xpark.DataBaseProvider;
 
 import android.content.Context;
 import android.location.Address;
@@ -8,6 +8,9 @@ import android.location.LocationManager;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import com.example.xpark.Module.CarPark;
+import com.example.xpark.Module.User;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;

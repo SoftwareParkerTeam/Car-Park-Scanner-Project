@@ -1,4 +1,4 @@
-package com.example.xpark;
+package com.example.xpark.Module;
 
 /**
  * Author : Dilara Karakas.

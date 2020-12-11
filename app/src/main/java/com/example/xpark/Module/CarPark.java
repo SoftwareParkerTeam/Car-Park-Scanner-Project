@@ -1,8 +1,9 @@
-package com.example.xpark;
+package com.example.xpark.Module;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.example.xpark.DataBaseProvider.FirebaseDBConstants;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.DataSnapshot;
 

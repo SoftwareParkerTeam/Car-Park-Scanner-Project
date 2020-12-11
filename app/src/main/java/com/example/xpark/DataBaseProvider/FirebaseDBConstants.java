@@ -1,4 +1,4 @@
-package com.example.xpark;
+package com.example.xpark.DataBaseProvider;
 
 public final class FirebaseDBConstants {
     public static final String DB_USER_FIELD = "USERS";

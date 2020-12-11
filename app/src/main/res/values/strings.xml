@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">XPark</string>
+    <string name="map_enter">MAP</string>
+    <string name="login_enter">Login</string>
+    <string name="sign_up_enter">Sign Up</string>
+    <string name="search_inMapAct">Search</string>
+    <string name="res_inMapAct">RES</string>
 </resources>
