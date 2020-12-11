@@ -1,5 +1,6 @@
 package com.example.xpark.DataBaseProvider;
 
+import android.app.Activity;
 import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
@@ -82,20 +83,26 @@ public class FirebaseCarparkManager {
      * Shows the closest car parks in the current location.
      * UI, user space, call this method.
      */
-    public void showNearestCarParks(Context cont)
+    public void showNearestCarParks(Activity cont)
     {
         /* get current location */
         Location currentLocation = getLastKnownLocation(cont);
 
         /* try to find district name from current location */
         String parsedAddr = tryToParseAddress(cont,currentLocation.getLatitude(),currentLocation.getLongitude());
-        if(parsedAddr != null)
-            this.showNearestCarParks(cont,parsedAddr);
-        else
-        {
-            /* TODO : print error to the toast, carpark not found */
-            Toast.makeText(cont,"Bolgede Otopark Bulunamadi..",Toast.LENGTH_SHORT).show();
-        }
+
+        cont.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if(parsedAddr != null)
+                    showNearestCarParks(cont,parsedAddr);
+                else
+                {
+                    /* TODO : print error to the toast, carpark not found */
+                    Toast.makeText(cont.getApplicationContext(),"Bolgede Otopark Bulunamadi..",Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     public void startParking(CarPark carpark, User user)
@@ -326,6 +333,7 @@ public class FirebaseCarparkManager {
         catch (IOException ex)
         {
             /* TODO : Handle error */
+            System.out.println(ex.getMessage());
         }
 
         return parsedAddr;
