@@ -18,7 +18,6 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.example.xpark.Module.CarPark;
 import com.example.xpark.DataBaseProvider.FirebaseCarparkManager;
 import com.example.xpark.R;
@@ -120,7 +119,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 /* yakin bolgede otopark ara */
 
                 try {
-                    DBparkManager.showNearestCarParks(getApplicationContext());
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            DBparkManager.showNearestCarParks(MapsActivity.this);
+                        }
+                    }).start();
                 } catch ( Exception e) { ;
                     System.out.println("Error in show nearest car parks please debug it...");
                 }
@@ -214,14 +218,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             return;
 
         Location location = DBparkManager.getLastKnownLocation(getApplicationContext());
-        map.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(),location.getLongitude())));
-        CameraPosition cameraPosition = new CameraPosition.Builder()
-                .target(new LatLng(location.getLatitude(), location.getLongitude()))      // Sets the center of the map to location user
-                .zoom(15)                   // Sets the zoom
-                .bearing(90)                // Sets the orientation of the camera to east
-                .tilt(40)                   // Sets the tilt of the camera to 30 degrees
-                .build();
-        map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        if(location == null){
+            System.out.println("loc bulunamadi");
+        }
+        else {
+            map.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
+            CameraPosition cameraPosition = new CameraPosition.Builder()
+                    .target(new LatLng(location.getLatitude(), location.getLongitude()))      // Sets the center of the map to location user
+                    .zoom(15)                   // Sets the zoom
+                    .bearing(90)                // Sets the orientation of the camera to east
+                    .tilt(40)                   // Sets the tilt of the camera to 30 degrees
+                    .build();
+            map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        }
     }
 
     /* Below is Android stuff.. */
