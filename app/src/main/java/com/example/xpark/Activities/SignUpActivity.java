@@ -29,7 +29,7 @@ public class SignUpActivity extends AppCompatActivity {
         signUp_button = findViewById(R.id.button_signup);
 
         ref = FirebaseDatabase.getInstance().getReference();
-        DBUserManager = FirebaseUserManager.getInstance(this);
+        DBUserManager = new FirebaseUserManager(this);
 
         signUp_button.setOnClickListener(new View.OnClickListener() {
             @Override
