@@ -4,6 +4,8 @@ package com.example.xpark.Module;
  * Author : Dilara Karakas.
  */
 
+import com.google.firebase.database.DataSnapshot;
+
 import java.io.Serializable;
 
 public class User implements Serializable {
@@ -35,6 +37,15 @@ public class User implements Serializable {
         this.phone = null;
         this.eMail = null;
         this.credit_balance = 0.0;
+    }
+
+    public User(DataSnapshot shot)
+    {
+        this.eMail = (String)shot.child("email").getValue();
+        this.password = (String)shot.child("password").getValue();
+        this.phone = (String)shot.child("phone").getValue();
+        this.uid = (String)shot.child("uid").getValue();
+        this.credit_balance = ((Long)(shot.child("creditbalance").getValue())).doubleValue();
     }
 
     /**
@@ -123,11 +134,11 @@ public class User implements Serializable {
      */
     @Override
     public String toString() {
-        return "User{" +
-                "password='" + password + '\'' +
-                ", phone='" + phone + '\'' +
-                ", eMail='" + eMail + '\'' +
-                ", credit_balance=" + credit_balance +
-                '}';
+        return "User{password="+this.password
+                +",email="+this.eMail
+                +",phone="+this.phone
+                +",uid="+this.uid
+                +",credit="+this.credit_balance+
+                "}";
     }
 }

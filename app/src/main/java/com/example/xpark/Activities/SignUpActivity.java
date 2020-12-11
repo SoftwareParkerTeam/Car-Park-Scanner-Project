@@ -41,6 +41,7 @@ public class SignUpActivity extends AppCompatActivity {
                         ((TextView) findViewById(R.id.Email)).getText().toString(),
                         50
                 );
+                System.out.println("USER CREATING : " + test_user);
                 DBUserManager.createNewUser(test_user);
                 finish();
             }

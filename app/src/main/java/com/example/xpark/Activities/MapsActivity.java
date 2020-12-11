@@ -18,6 +18,8 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.xpark.DataBaseProvider.FirebaseUserManager;
 import com.example.xpark.Module.CarPark;
 import com.example.xpark.DataBaseProvider.FirebaseCarparkManager;
 import com.example.xpark.R;
@@ -29,6 +31,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.io.IOException;
 import java.util.List;
@@ -38,10 +41,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     /* UI Components */
     private Button search_button;
+    private Button res_button;
     private GoogleMap map;
 
     /* Managers, Wrappers and etc */
     private FirebaseCarparkManager DBparkManager;
+    private FirebaseUserManager FBUserManager;
 
     private User currentUser;
     
@@ -53,6 +58,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         Intent intent = getIntent();
         currentUser = (User) intent.getSerializableExtra("CURRENT_USER");
+        System.out.println("USER GETTED : " + currentUser);
         
         if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
             // crucial, don't remove.
@@ -67,6 +73,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         /* initialize ui components */
         UI_init();
+
+        /* initialize fb user */
+        FBUserManager = new FirebaseUserManager(this);
     }
 
     /**
@@ -136,7 +145,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
 
         /**** just for test ****/
-        Button res_button = findViewById(R.id.button_res);
+        res_button = findViewById(R.id.button_res);
         res_button.setOnClickListener(v -> {
 
             try {

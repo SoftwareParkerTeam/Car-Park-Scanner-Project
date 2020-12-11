@@ -1,4 +1,5 @@
 package com.example.xpark.DataBaseProvider;
+import android.app.Activity;
 import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
@@ -26,9 +27,9 @@ public class FirebaseUserManager {
 
     private static final String DB_USER_FIELD = FirebaseDBConstants.DB_USER_FIELD;
     private final FirebaseAuth auth = FirebaseAuth.getInstance();
-    private final AppCompatActivity activity_ref;
+    private final Activity activity_ref;
 
-    public FirebaseUserManager(AppCompatActivity activity)
+    public FirebaseUserManager(Activity activity)
     {
         this.activity_ref = activity;
     }
@@ -106,8 +107,8 @@ public class FirebaseUserManager {
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                User getted_user = snapshot.getValue(User.class);
-                System.out.println(">>>>>>> USER READED FROM DB ::: " + getted_user);
+                User getted_user = new User(snapshot);
+                System.out.println("1) user getted : " + getted_user);
 
                 /* create new intent and start new activity */
                 Intent intent = new Intent(activity_ref, MapsActivity.class);
