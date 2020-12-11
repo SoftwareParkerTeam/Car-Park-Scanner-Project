@@ -6,7 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.xpark.Activities.LoginActivity;
-import com.example.xpark.Activities.MapActivity;
+import com.example.xpark.Activities.MapsActivity;
 import com.example.xpark.Module.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.firebase.auth.AuthResult;
@@ -125,7 +125,7 @@ public class FirebaseUserManager {
                 System.out.println(">>>>>>> USER READED FROM DB ::: " + getted_user);
 
                 /* create new intent and start new activity */
-                Intent intent = new Intent(activity_ref, MapActivity.class);
+                Intent intent = new Intent(activity_ref, MapsActivity.class);
                 intent.putExtra("CURRENT_USER",getted_user);
                 activity_ref.startActivity(intent);
                 activity_ref.finish();

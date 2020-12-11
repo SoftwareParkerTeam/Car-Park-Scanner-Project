@@ -34,7 +34,7 @@ public class EntranceActivity extends AppCompatActivity {
         });
 
         map.setOnClickListener(view ->  {
-            Intent intent = new Intent(this, MapActivity.class);
+            Intent intent = new Intent(this, MapsActivity.class);
             this.startActivity(intent);
         });
     }
