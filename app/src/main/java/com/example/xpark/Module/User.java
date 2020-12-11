@@ -41,11 +41,11 @@ public class User implements Serializable {
 
     public User(DataSnapshot shot)
     {
-        this.eMail = (String)shot.child("email").getValue();
-        this.password = (String)shot.child("password").getValue();
-        this.phone = (String)shot.child("phone").getValue();
-        this.uid = (String)shot.child("uid").getValue();
-        this.credit_balance = ((Long)(shot.child("creditbalance").getValue())).doubleValue();
+        this.eMail = (String)shot.child(FirebaseDBConstants.DB_USER_CHILD_EMAIL).getValue();
+        this.password = (String)shot.child(FirebaseDBConstants.DB_USER_CHILD_PASSWORD).getValue();
+        this.phone = (String)shot.child(FirebaseDBConstants.DB_USER_CHILD_PHONE).getValue();
+        this.uid = (String)shot.child(FirebaseDBConstants.DB_USER_CHILD_UID).getValue();
+        this.credit_balance = ((Long)(shot.child(FirebaseDBConstants.DB_USER_CHILD_CREDITBALANCE).getValue())).doubleValue();
     }
 
     /**
