@@ -28,28 +28,9 @@ public class FirebaseUserManager {
     private final FirebaseAuth auth = FirebaseAuth.getInstance();
     private final AppCompatActivity activity_ref;
 
-    private volatile static FirebaseUserManager instance;
-
-    private FirebaseUserManager(AppCompatActivity activity)
+    public FirebaseUserManager(AppCompatActivity activity)
     {
         this.activity_ref = activity;
-    }
-
-    /**
-     * Singleton getter method.
-     * @return new created or current instance of manager class.
-     */
-    public static FirebaseUserManager getInstance(AppCompatActivity activity)
-    {
-        // Double check for multi-threading later.
-        if(instance == null)
-        {
-            synchronized (FirebaseUserManager.class){
-                if (instance == null)
-                    instance = new FirebaseUserManager(activity);
-            }
-        }
-        return instance;
     }
 
     /**
@@ -107,11 +88,15 @@ public class FirebaseUserManager {
      */
     public void updateUserProperties(User user, User newuser)
     {
+        user.setPassword(newuser.getPassword());
+        user.setCreditbalance(newuser.getCreditbalance());
+        user.setPhone(newuser.getPhone());
+
         /* find user by uid */
-        newuser.setUid(user.getUid());
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(DB_USER_FIELD).child(user.getUid());
-        ref.setValue(newuser);
+        ref.setValue(user);
     }
+
     private void startNextActivityAfterLogin(FirebaseUser fbuser)
     {
         /* get User by FirebaseUser with uid */
