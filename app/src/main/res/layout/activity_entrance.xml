@@ -28,4 +28,11 @@
         android:layout_weight="1"
         android:text="@string/map_enter" />
 
+    <Button
+        android:id="@+id/qrCode_enter"
+        android:layout_width="match_parent"
+        android:layout_height="104dp"
+        android:layout_weight="1"
+        android:text="@string/qr_activity_entrence" />
+
 </LinearLayout>
