@@ -43,13 +43,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     /* Managers, Wrappers and etc */
     private FirebaseCarparkManager DBparkManager;
 
-
+    private User currentUser;
+    
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
 
         super.onCreate(savedInstanceState);
 
+        Intent intent = getIntent();
+        currentUser = (User) intent.getSerializableExtra("CURRENT_USER");
+        
         if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
             // crucial, don't remove.
             // Activity was brought to front and not created,
