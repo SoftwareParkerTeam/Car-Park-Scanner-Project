@@ -13,6 +13,7 @@ public class EntranceActivity extends AppCompatActivity {
     private Button signin;
     private Button signup;
     private Button map;
+    private Button qr;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,6 +23,7 @@ public class EntranceActivity extends AppCompatActivity {
         signin = findViewById(R.id.sign_in_enter);
         signup = findViewById(R.id.sign_up_enter);
         map = findViewById(R.id.map_enter);
+        qr = findViewById(R.id.qrCode_enter);
 
         signin.setOnClickListener( view -> {
             Intent intent = new Intent(this, LoginActivity.class);
@@ -35,6 +37,11 @@ public class EntranceActivity extends AppCompatActivity {
 
         map.setOnClickListener(view ->  {
             Intent intent = new Intent(this, MapsActivity.class);
+            this.startActivity(intent);
+        });
+
+        qr.setOnClickListener(view -> {
+            Intent intent = new Intent(this, QRActivity.class);
             this.startActivity(intent);
         });
     }
