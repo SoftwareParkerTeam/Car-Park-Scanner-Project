@@ -36,9 +36,6 @@ public class SignUpActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 User test_user = new User(
-                        ((TextView) findViewById(R.id.name)).getText().toString(),
-                        ((TextView) findViewById(R.id.surname)).getText().toString(),
-                        ((TextView) findViewById(R.id.username)).getText().toString(),
                         ((TextView) findViewById(R.id.password)).getText().toString(),
                         ((TextView) findViewById(R.id.phone)).getText().toString(),
                         ((TextView) findViewById(R.id.Email)).getText().toString(),
