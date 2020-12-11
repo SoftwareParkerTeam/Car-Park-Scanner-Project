@@ -82,7 +82,7 @@ public class LoginActivity extends AppCompatActivity {
         ref = FirebaseDatabase.getInstance().getReference();
 
         /* initialize FireBaseUserManager */
-        DBUserManager = FirebaseUserManager.getInstance(this);
+        DBUserManager = new FirebaseUserManager(this);
 
         // deneme, mainactivityde sonra kullanilacak..
         /*
