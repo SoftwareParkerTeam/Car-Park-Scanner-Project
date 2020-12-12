@@ -91,19 +91,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 DBparkManager = FirebaseCarparkManager.getInstance();
                 DBparkManager.setMap(map);
 
-                /***** JUST FOR TEST *****/
-                Geocoder gcd = new Geocoder(getApplicationContext(), Locale.getDefault());
-                try {
-                    List<Address> addresses = gcd.getFromLocation(40.87144676511161 , 29.255932191301984, 1);
-                    if (addresses != null && addresses.size() > 0) {
-                        System.out.println("ILCE2 :: " + DBparkManager.tryToParseAddress(this,40.87144676511161,29.255932191301984));
-                    }
-                } catch (IOException ex) {
-                    /* TODO : Handle error */
-                    System.out.println("GCD EX" + ex.getMessage());
-                }
-                /***** JUST FOR TEST *****/
-
                 /* update the camera to current location */
                 animateCameraToCurrentLocation();
             } catch (SecurityException ex) {
