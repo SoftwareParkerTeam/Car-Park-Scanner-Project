@@ -51,5 +51,6 @@ dependencies {
 
     implementation 'com.google.firebase:firebase-database:19.2.0'
 
-    implementation 'com.journeyapps:zxing-android-embedded:3.4.0'
+    implementation 'com.google.android.gms:play-services-auth:16.0.0'
+    implementation 'me.dm7.barcodescanner:zxing:1.9'
 }
