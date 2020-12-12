@@ -4,6 +4,7 @@ package com.example.xpark.Module;
  * Author : Dilara Karakas.
  */
 
+import com.example.xpark.DataBaseProvider.FirebaseDBConstants;
 import com.google.firebase.database.DataSnapshot;
 
 import java.io.Serializable;

@@ -6,4 +6,5 @@
     <string name="search_inMapAct">Search</string>
     <string name="res_inMapAct">RES</string>
     <string name="qr_activity_entrence">QR Activity</string>
+    <string name="scan_test">Scan</string>
 </resources>
