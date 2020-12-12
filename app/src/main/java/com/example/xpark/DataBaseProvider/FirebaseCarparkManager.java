@@ -244,6 +244,7 @@ public class FirebaseCarparkManager {
 
                 /* get park object from data base */
                 CarPark park = new CarPark((HashMap) currentData.getValue());
+
                 /* check available space */
                 if(park.getFreeArea() > 0)
                 {
@@ -292,7 +293,7 @@ public class FirebaseCarparkManager {
         }
 
         if(-1 == index)
-            throw new UnsupportedOperationException();
+            return null;
 
         String res = tokens[index].replaceAll("/","_");
         return res.replaceAll(" ","_");
@@ -348,7 +349,7 @@ public class FirebaseCarparkManager {
         catch (IOException ex)
         {
             /* TODO : Handle error */
-            System.out.println("PEX : "+ex.getMessage());
+            System.out.println("PEX : " + ex.getMessage());
         }
 
         return parsedAddr;
