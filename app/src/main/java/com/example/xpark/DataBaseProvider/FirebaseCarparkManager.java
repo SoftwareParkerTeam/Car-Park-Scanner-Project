@@ -280,7 +280,21 @@ public class FirebaseCarparkManager {
     {
         System.out.println("ADRESINIZ : " + inputAdress);
         String[] tokens = inputAdress.split(", ");
-        String res = tokens[2].replaceAll("/","_");
+
+        /* find address token str index */
+        int index=-1;
+        for (int i = 0; i < tokens.length; i++)
+        {
+            if(tokens[i].indexOf("/") > 0){
+                index = i;
+                break;
+            }
+        }
+
+        if(-1 == index)
+            throw new UnsupportedOperationException();
+
+        String res = tokens[index].replaceAll("/","_");
         return res.replaceAll(" ","_");
     }
 
@@ -309,7 +323,7 @@ public class FirebaseCarparkManager {
      * @param longitude Longitude of the given address.
      * @return parsed address if successful, null on error.
      */
-    private String tryToParseAddress(Context cont,double latitude, double longitude)
+    public String tryToParseAddress(Context cont,double latitude, double longitude)
     {
         Geocoder gcd = new Geocoder(cont, Locale.getDefault());
         final double INCREMENT_AMOUNT = 0.001;
@@ -328,12 +342,13 @@ public class FirebaseCarparkManager {
                     longitude += INCREMENT_AMOUNT;
                 else
                     latitude += INCREMENT_AMOUNT;
+
             }
         }
         catch (IOException ex)
         {
             /* TODO : Handle error */
-            System.out.println(ex.getMessage());
+            System.out.println("PEX : "+ex.getMessage());
         }
 
         return parsedAddr;

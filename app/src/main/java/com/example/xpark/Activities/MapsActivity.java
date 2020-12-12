@@ -94,12 +94,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 /***** JUST FOR TEST *****/
                 Geocoder gcd = new Geocoder(getApplicationContext(), Locale.getDefault());
                 try {
-                    List<Address> addresses = gcd.getFromLocation(40.87137360618015, 29.256863354935692, 1);
+                    List<Address> addresses = gcd.getFromLocation(40.87144676511161 , 29.255932191301984, 1);
                     if (addresses != null && addresses.size() > 0) {
-                        System.out.println("ILCE2 :: " + DBparkManager.parseAddressToDistrict(addresses.get(0).getAddressLine(0)));
+                        System.out.println("ILCE2 :: " + DBparkManager.tryToParseAddress(this,40.87144676511161,29.255932191301984));
                     }
                 } catch (IOException ex) {
                     /* TODO : Handle error */
+                    System.out.println("GCD EX" + ex.getMessage());
                 }
                 /***** JUST FOR TEST *****/
 
