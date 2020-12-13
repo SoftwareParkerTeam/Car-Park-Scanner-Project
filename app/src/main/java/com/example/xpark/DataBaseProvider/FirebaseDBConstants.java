@@ -1,6 +1,7 @@
 package com.example.xpark.DataBaseProvider;
 
 public final class FirebaseDBConstants {
+    private FirebaseDBConstants(){}
     public static final String DB_USER_FIELD = "USERS";
     public static final String DB_USER_CHILD_EMAIL = "email";
     public static final String DB_USER_CHILD_PASSWORD = "password";

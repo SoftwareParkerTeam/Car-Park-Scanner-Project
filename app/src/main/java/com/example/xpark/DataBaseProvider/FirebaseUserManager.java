@@ -1,23 +1,28 @@
 package com.example.xpark.DataBaseProvider;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import com.example.xpark.Activities.LoginActivity;
 import com.example.xpark.Activities.MapsActivity;
+import com.example.xpark.Module.ToastMessageConstants;
 import com.example.xpark.Module.User;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.firebase.FirebaseNetworkException;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthInvalidUserException;
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import es.dmoral.toasty.Toasty;
 
 /**
  * Author : Goktug Akin.
@@ -26,7 +31,6 @@ import com.google.firebase.database.ValueEventListener;
 public class FirebaseUserManager {
 
     private static final String DB_USER_FIELD = FirebaseDBConstants.DB_USER_FIELD;
-    private final FirebaseAuth auth = FirebaseAuth.getInstance();
     private final Activity activity_ref;
 
     public FirebaseUserManager(Activity activity)
@@ -42,15 +46,17 @@ public class FirebaseUserManager {
      */
     public void signInUser(String email, String password)
     {
+        FirebaseAuth auth = FirebaseAuth.getInstance();
         auth.signInWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
             if(task.isSuccessful()){
                 Log.i("USER LOGIN", "LOGIN SUCCEED");
-                Toast.makeText(activity_ref.getApplicationContext(),"Uyelik basariyla yaratildi.",Toast.LENGTH_SHORT);
+                Toasty.success(activity_ref.getApplicationContext(), ToastMessageConstants.TOAST_MSG_INFO_USER_LOGIN_SUCCESS,Toast.LENGTH_SHORT).show();
                 startNextActivityAfterLogin(auth.getCurrentUser());
             }
             else {
-                Log.i("USER LOGIN ",task.getException().toString());
-                Toast.makeText(activity_ref.getApplicationContext(),task.getException().toString(),Toast.LENGTH_SHORT).show();
+                Log.i("USER LOGIN 1)",task.getException().toString());
+                Log.i("USER LOGIN 2)",task.getException().getLocalizedMessage());
+                Toasty.error(activity_ref.getApplicationContext(),getErrorMessage(task.getException()),Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -63,11 +69,21 @@ public class FirebaseUserManager {
      */
     public void createNewUser(User user)
     {
+        FirebaseAuth auth = FirebaseAuth.getInstance();
         auth.createUserWithEmailAndPassword(user.getEmail(), user.getPassword()).addOnCompleteListener((OnCompleteListener<AuthResult>) task -> {
             if(task.isSuccessful()) {
+
+                /* get logged in user */
                 FirebaseUser created_user = auth.getCurrentUser();
                 user.setUid(created_user.getUid());
+
+                /* add to the database */
                 FirebaseDatabase.getInstance().getReference().child(DB_USER_FIELD).child(created_user.getUid()).setValue(user);
+
+                /* give info msg */
+                Toasty.success(activity_ref,ToastMessageConstants.TOAST_MSG_INFO_USER_CREATE_SUCCESS,Toast.LENGTH_SHORT).show();
+
+                /* switch next (login) activity */
                 Log.i("USER CREATE", "USER CREATE SUCCEED");
                 Intent intent = new Intent(activity_ref, LoginActivity.class);
                 activity_ref.startActivity(intent);
@@ -75,8 +91,9 @@ public class FirebaseUserManager {
             }
             else
             {
-                Log.i("USER CREATE",(task.getException()).toString());
-                Toast.makeText(activity_ref.getApplicationContext(),task.getException().toString(),Toast.LENGTH_SHORT).show();
+                Log.i("USER CREATE ERR 1)",(task.getException()).toString());
+                Log.i("USER CREATE ERR 2)",(task.getException()).getLocalizedMessage());
+                Toasty.error(activity_ref.getApplicationContext(),getErrorMessage(task.getException()),Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -95,6 +112,8 @@ public class FirebaseUserManager {
 
         /* find user by uid */
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(DB_USER_FIELD).child(user.getUid());
+
+        /* update in the db */
         ref.setValue(user);
     }
 
@@ -122,5 +141,20 @@ public class FirebaseUserManager {
 
             }
         });
+    }
+
+    private String getErrorMessage(Exception ex)
+    {
+        if (ex instanceof FirebaseAuthInvalidCredentialsException || ex instanceof FirebaseAuthInvalidUserException)
+            return ToastMessageConstants.TOAST_MSG_ERROR_INVALID_CREDTS;
+        else if(ex instanceof FirebaseNetworkException)
+            return ToastMessageConstants.TOAST_MSG_ERROR_NO_CONNECTION;
+        else if(ex instanceof FirebaseAuthWeakPasswordException)
+            return ToastMessageConstants.TOAST_MSG_ERROR_WEAK_PASSWORD;
+        else if(ex.getLocalizedMessage().equals("An internal error has occurred. [ Unable to resolve host \"www.googleapis.com\":No address associated with hostname ]"))
+            return ToastMessageConstants.TOAST_MSG_ERROR_NO_CONNECTION;
+        else
+            return ToastMessageConstants.TOAST_MSG_ERROR_FATAL;
+
     }
 }

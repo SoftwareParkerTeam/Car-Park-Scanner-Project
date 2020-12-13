@@ -7,8 +7,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -18,7 +16,6 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.example.xpark.DataBaseProvider.FirebaseUserManager;
 import com.example.xpark.Module.CarPark;
 import com.example.xpark.DataBaseProvider.FirebaseCarparkManager;
@@ -31,11 +28,6 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
-import com.google.firebase.auth.FirebaseUser;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Locale;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -48,6 +40,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private FirebaseCarparkManager DBparkManager;
     private FirebaseUserManager FBUserManager;
 
+    /* logged in user */
     private User currentUser;
     
     @Override
@@ -56,9 +49,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         super.onCreate(savedInstanceState);
 
-        Intent intent = getIntent();
-        currentUser = (User) intent.getSerializableExtra("CURRENT_USER");
-        System.out.println("USER GETTED : " + currentUser);
+        /* get logged user */
+        init_logged_user();
         
         if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
             // crucial, don't remove.
@@ -74,8 +66,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         /* initialize ui components */
         UI_init();
 
-        /* initialize fb user */
-        FBUserManager = new FirebaseUserManager(this);
+        /* initialize DB managers */
+        DB_init();
     }
 
     /**
@@ -88,7 +80,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         {
             try {
                 map.setMyLocationEnabled(true);
-                DBparkManager = FirebaseCarparkManager.getInstance();
                 DBparkManager.setMap(map);
 
                 /* update the camera to current location */
@@ -117,18 +108,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         /* search icin listener ekle */
         search_button.setOnClickListener(v -> {
             if(map != null) {
-                /* yakin bolgede otopark ara */
-
-                try {
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            DBparkManager.showNearestCarParks(MapsActivity.this);
-                        }
-                    }).start();
-                } catch ( Exception e) { ;
-                    System.out.println("Error in show nearest car parks please debug it...");
-                }
+                /* search car park, in new thread. */
+                DBparkManager.showNearestCarParks();
             }
         });
 
@@ -140,7 +121,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 CarPark park = new CarPark();
                 park.setId("1000000");
                 park.setCoordinates(new LatLng(40.87763699311756,29.231608160645568));
-                DBparkManager.registerUserToCarpark(getApplicationContext(),park,new User());
+                DBparkManager.registerUserToCarpark(park,new User());
             } catch (Exception e) {
                 System.out.println("Error in registerUserToCarpark please debut it...");
             }
@@ -192,7 +173,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
+    private void DB_init()
+    {
+        this.FBUserManager = new FirebaseUserManager(this);
+        this.DBparkManager = new FirebaseCarparkManager(this);
+    }
 
+    private void init_logged_user()
+    {
+        Intent intent = getIntent();
+        currentUser = (User) intent.getSerializableExtra("CURRENT_USER");
+        System.out.println("USER GETTED : " + currentUser);
+    }
 
     /**
      * Checks the necessary permissions on RUNTIME. If there are missing permission,
@@ -218,7 +210,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if(map == null)
             return;
 
-        Location location = DBparkManager.getLastKnownLocation(getApplicationContext());
+        Location location = DBparkManager.getLastKnownLocation();
         if(location == null){
             System.out.println("loc bulunamadi");
         }

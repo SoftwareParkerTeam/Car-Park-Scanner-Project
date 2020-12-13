@@ -1,7 +1,6 @@
 package com.example.xpark.DataBaseProvider;
 
 import android.app.Activity;
-import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -9,8 +8,8 @@ import android.location.LocationManager;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import com.example.xpark.Module.CarPark;
+import com.example.xpark.Module.ToastMessageConstants;
 import com.example.xpark.Module.User;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -31,18 +30,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import es.dmoral.toasty.Toasty;
+
 import static android.content.Context.LOCATION_SERVICE;
 
-/**
- * FirebaseCarparkManager Singleton
- */
 
 public class FirebaseCarparkManager {
     private GoogleMap map;
     private String oldDistrict=null;
-
-    // store instance for singleton
-    private volatile static FirebaseCarparkManager instance;
+    private final Activity activity;
 
     // store the related listener about database fields.
     private ChildEventListener currentListener;
@@ -53,26 +49,10 @@ public class FirebaseCarparkManager {
     /**
      * Singleton constructor.
      */
-    private FirebaseCarparkManager()
+    public FirebaseCarparkManager(Activity activity)
     {
         markersOnScreen = new HashMap<>();
-    }
-
-    /**
-     * Singleton getter method.
-     * @return new created or current instance of manager class.
-     */
-    public static FirebaseCarparkManager getInstance()
-    {
-        // Double check for multi-threading later.
-        if(instance == null)
-        {
-            synchronized (FirebaseCarparkManager.class){
-                if (instance == null)
-                    instance = new FirebaseCarparkManager();
-            }
-        }
-        return instance;
+        this.activity = activity;
     }
 
     public void setMap(GoogleMap map){
@@ -80,29 +60,32 @@ public class FirebaseCarparkManager {
     }
 
     /**
-     * Shows the closest car parks in the current location.
+     * Shows the closest car parks in the current location in a different thread.
      * UI, user space, call this method.
      */
-    public void showNearestCarParks(Activity cont)
+    public void showNearestCarParks()
     {
-        /* get current location */
-        Location currentLocation = getLastKnownLocation(cont);
+        new Thread(() -> {
 
-        /* try to find district name from current location */
-        String parsedAddr = tryToParseAddress(cont,currentLocation.getLatitude(),currentLocation.getLongitude());
+            /* Give info msg */
+            activity.runOnUiThread(() -> Toasty.info(activity.getApplicationContext(), ToastMessageConstants.TOAST_MSG_INFO_CARPARK_SEARCH,Toast.LENGTH_SHORT).show());
 
-        cont.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
+            /* get current location */
+            Location currentLocation = getLastKnownLocation();
+
+            /* try to find district name from current location */
+            String parsedAddr = tryToParseAddress(currentLocation.getLatitude(),currentLocation.getLongitude());
+
+            activity.runOnUiThread(() -> {
                 if(parsedAddr != null)
-                    showNearestCarParks(cont,parsedAddr);
+                    showNearestCarParks(parsedAddr);
                 else
-                {
-                    /* TODO : print error to the toast, carpark not found */
-                    Toast.makeText(cont.getApplicationContext(),"Bolgede Otopark Bulunamadi..",Toast.LENGTH_SHORT).show();
+                {   /* give err msg to screen */
+                    activity.runOnUiThread(() -> Toasty.warning(activity.getApplicationContext(),ToastMessageConstants.TOAST_MSG_ERROR_CARPARK_NOT_FOUND,Toast.LENGTH_SHORT).show());
                 }
-            }
-        });
+            });
+
+        }).start();
     }
 
     public void startParking(CarPark carpark, User user)
@@ -116,8 +99,8 @@ public class FirebaseCarparkManager {
      * @return Current location of user as Location type which provides getter of latitude and longitude.
      * @throws SecurityException If user don't agree with sharing his / her location.
      */
-    public Location getLastKnownLocation(Context cont) throws SecurityException{
-        LocationManager locationManager = (LocationManager)cont.getSystemService(LOCATION_SERVICE);
+    public Location getLastKnownLocation() throws SecurityException{
+        LocationManager locationManager = (LocationManager)activity.getSystemService(LOCATION_SERVICE);
         List<String> providers = locationManager.getProviders(true);
         Location bestLocation = null;
         for (String provider : providers) {
@@ -180,8 +163,9 @@ public class FirebaseCarparkManager {
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                System.out.println(">> BOLGEDE DEGISIKLIK OLDU <<");
-                System.out.println(snapshot);
+
+                /* give info msg */
+                activity.runOnUiThread(() -> Toasty.warning(activity.getApplicationContext(),ToastMessageConstants.TOAST_MSG_INFO_MAP_UPDATED,Toast.LENGTH_SHORT).show());
 
                 CarPark newPark = new CarPark(snapshot);
                 /* get related marker on the map */
@@ -226,10 +210,10 @@ public class FirebaseCarparkManager {
      * @param carpark Target car park.
      * @param user User to be registered.
      */
-    public void registerUserToCarpark(Context cont,CarPark carpark, User user)
+    public void registerUserToCarpark(CarPark carpark, User user)
     {
         /* first find the reference of the given car park */
-        String parsedAddr = tryToParseAddress(cont,carpark.getCoordinates().latitude,carpark.getCoordinates().longitude);
+        String parsedAddr = tryToParseAddress(carpark.getCoordinates().latitude,carpark.getCoordinates().longitude);
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(FirebaseDBConstants.DB_CARPARK_FIELD).child(parsedAddr).child(carpark.getId());
 
         ref.runTransaction(new Transaction.Handler() {
@@ -250,9 +234,9 @@ public class FirebaseCarparkManager {
                 {
                     /* increment used counter */
                     park.incrementUsed();
+
                     /* update the database */
                     currentData.setValue(park);
-
                     return Transaction.success(currentData);
 
                     /* todo : register the car park id to user */
@@ -264,12 +248,10 @@ public class FirebaseCarparkManager {
             @Override
             public void onComplete(@Nullable DatabaseError error, boolean committed, @Nullable DataSnapshot currentData) {
                 System.out.println("Commit check : " + committed + " " + currentData.getValue());
-                /* Todo some concurrency error occurred, say user to try again */
+                activity.runOnUiThread(() -> Toasty.warning(activity.getApplicationContext(),ToastMessageConstants.TOAST_MSG_INFO_MAP_UPDATED,Toast.LENGTH_SHORT).show());
             }
         });
     }
-
-
 
     /**
      * Get District (ilce) from given address.
@@ -283,7 +265,7 @@ public class FirebaseCarparkManager {
         String[] tokens = inputAdress.split(", ");
 
         /* find address token str index */
-        int index=-1;
+        int index = -1;
         for (int i = 0; i < tokens.length; i++)
         {
             if(tokens[i].indexOf("/") > 0){
@@ -311,7 +293,7 @@ public class FirebaseCarparkManager {
             return false;
 
         int counter = 0;
-        for (int i = 0; i < adress.length(); i++) {
+        for (int i = 0; i < adress.length() && counter <= 2; i++) {
             if(adress.charAt(i) == '_')
                 ++counter;
         }
@@ -324,9 +306,9 @@ public class FirebaseCarparkManager {
      * @param longitude Longitude of the given address.
      * @return parsed address if successful, null on error.
      */
-    public String tryToParseAddress(Context cont,double latitude, double longitude)
+    public String tryToParseAddress(double latitude, double longitude)
     {
-        Geocoder gcd = new Geocoder(cont, Locale.getDefault());
+        Geocoder gcd = new Geocoder(activity.getApplicationContext(), Locale.getDefault());
         final double INCREMENT_AMOUNT = 0.001;
         final int MAX_TRY = 100;
         int i = 0;
@@ -350,12 +332,13 @@ public class FirebaseCarparkManager {
         {
             /* TODO : Handle error */
             System.out.println("PEX : " + ex.getMessage());
+            activity.runOnUiThread(() -> Toasty.warning(activity.getApplicationContext(),ToastMessageConstants.TOAST_MSG_ERROR_GRPC,Toast.LENGTH_SHORT).show());
         }
 
         return parsedAddr;
     }
 
-    private void showNearestCarParks(Context cont,String districtName)
+    private void showNearestCarParks(String districtName)
     {
         /* if location has changed, remove the older listeners*/
         if(oldDistrict != null) {
@@ -387,7 +370,7 @@ public class FirebaseCarparkManager {
                     else
                     {
                         /* TODO : otopark bulunamadi, ekrana guzel bilgi ver... */
-                        Toast.makeText(cont,"Bolgede Otopark Bulunamadi..",Toast.LENGTH_SHORT).show();
+                        activity.runOnUiThread(() -> Toasty.warning(activity.getApplicationContext(),ToastMessageConstants.TOAST_MSG_ERROR_CARPARK_NOT_FOUND,Toast.LENGTH_SHORT).show());
                     }
                 }
             }
