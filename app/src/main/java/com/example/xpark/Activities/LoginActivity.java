@@ -7,6 +7,7 @@ import android.widget.TextView;
 
 import com.example.xpark.DataBaseProvider.FirebaseUserManager;
 import com.example.xpark.R;
+import com.example.xpark.Utils.EncodeAdapter;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -59,7 +60,7 @@ public class LoginActivity extends AppCompatActivity {
 
         /* oturum ac listener baslat */
         sign_in_button.setOnClickListener(v -> {
-            DBUserManager.signInUser(email_input.getText().toString(),password_input.getText().toString());
+            DBUserManager.signInUser(email_input.getText().toString(), EncodeAdapter.encode(password_input.getText().toString()));
 
             /* just for test */
             //DBUserManager.signInUser("seko@gmail.com","123456");

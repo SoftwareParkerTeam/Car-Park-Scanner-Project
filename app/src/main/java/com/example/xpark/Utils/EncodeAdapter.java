@@ -1,46 +1,31 @@
 package com.example.xpark.Utils;
 
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
-
 import java.security.MessageDigest;
-import java.util.Base64;
 
 public class EncodeAdapter
 {
-    private final MessageDigest chiper;
+    public static String encode(final String message) {
 
-    public EncodeAdapter() throws  SecurityException {
         try {
-            chiper = MessageDigest.getInstance("MD5", "SUN");
-        } catch (Exception e) {
-            throw new SecurityException("In EncodeAdapter constructor: " + e);
-        }
-    }
+             MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public String encode(String param) throws Exception {
-        if (param == null) {
-            return null;
-        } else {
-            try {
-                byte[] raw = null;
-                byte[] stringBytes = param.getBytes();
+             digest.update(message.getBytes());
+             byte[] messageDigest = digest.digest();
 
-                synchronized (chiper) {
-                    raw = chiper.digest(stringBytes);
-                }
+             StringBuilder sb = new StringBuilder();
+             for (byte messageBYTE : messageDigest) {
+                 String temp = Integer.toHexString(0xFF & messageBYTE);
 
-                return new String(Base64.getEncoder().encode(raw));
+                 while (temp.length() < 2)
+                     temp = "0" + temp;
 
-            } catch (Exception e) {
-                throw new Exception("Exception while encrypting: " + e);
-            }
-        }
-    }
+                 sb.append(temp);
+             }
+             return sb.toString();
 
-    public String decode(String param) {
-        throw new RuntimeException("NOT SUPPORTED");
+         } catch (Exception e) {
+             e.printStackTrace();
+         }
+         return message;
     }
 }
