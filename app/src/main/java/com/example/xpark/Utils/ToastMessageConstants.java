@@ -1,4 +1,4 @@
-package com.example.xpark.Module;
+package com.example.xpark.Utils;
 
 public final class ToastMessageConstants {
 
@@ -14,5 +14,4 @@ public final class ToastMessageConstants {
     public static final String TOAST_MSG_ERROR_WEAK_PASSWORD = "Lütfen daha güçlü bir şifre seçin.";
     public static final String TOAST_MSG_ERROR_FATAL = "Beklenmeyen hata.";
     public static final String TOAST_MSG_ERROR_GRPC = "Bağlantı sorunu. Tekrar deneyin.";
-
 }

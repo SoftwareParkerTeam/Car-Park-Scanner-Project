@@ -7,7 +7,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import com.example.xpark.Activities.LoginActivity;
 import com.example.xpark.Activities.MapsActivity;
-import com.example.xpark.Module.ToastMessageConstants;
+import com.example.xpark.Utils.ToastMessageConstants;
 import com.example.xpark.Module.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.firebase.FirebaseNetworkException;

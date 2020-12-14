@@ -7,9 +7,6 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
 
-    <uses-feature android:name="android.hardware.camera" />
-    <uses-feature android:name="android.hardware.camera.autofocus" />
-
     <application
         android:allowBackup="true"
         android:fullBackupContent="@xml/backup_descriptor"
@@ -18,7 +15,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.XPark">
-        <activity android:name=".Activities.ScanCodeActivity"></activity>
 
         <uses-library
             android:name="org.apache.http.legacy"
@@ -39,6 +35,7 @@
         <activity android:name=".Activities.MapsActivity" />
         <activity android:name=".Activities.LoginActivity" />
         <activity android:name=".Activities.QRActivity" />
+        <activity android:name=".Activities.ScanCodeActivity"/>
     </application>
 
 </manifest>
