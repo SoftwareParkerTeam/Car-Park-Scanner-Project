@@ -146,7 +146,7 @@ public class CarPark {
     @Override
     public int hashCode()
     {
-        String s = " " + coordinates.latitude + coordinates.longitude;
+        String s = " " + coordinates.latitude + coordinates.longitude + generalid;
         return s.hashCode();
     }
 

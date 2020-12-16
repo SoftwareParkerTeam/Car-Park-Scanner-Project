@@ -6,10 +6,8 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import com.example.xpark.Module.CarPark;
 import com.example.xpark.Module.User;
 import com.example.xpark.Utils.ToastMessageConstants;
@@ -27,13 +25,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
 import es.dmoral.toasty.Toasty;
 
 import static android.content.Context.LOCATION_SERVICE;
@@ -48,15 +44,19 @@ public class FirebaseCarparkManager {
     private ChildEventListener currentListener;
 
     // mapping between car park and marker on the screen
-    private final HashMap<CarPark,Marker> markersOnScreen;
+    private final HashMap<Marker,CarPark> markersOnScreen;
+
+    // mutex for markes on screen
+    private Object markers_on_screen_lock;
 
     /**
      * Singleton constructor.
      */
-    public FirebaseCarparkManager(Activity activity)
+    public FirebaseCarparkManager(Activity activity,HashMap<Marker,CarPark> markersOnScreen, Object lock)
     {
-        markersOnScreen = new HashMap<>();
+        this.markersOnScreen = markersOnScreen;
         this.activity = activity;
+        this.markers_on_screen_lock = lock;
     }
 
     public void setMap(GoogleMap map){
@@ -94,8 +94,13 @@ public class FirebaseCarparkManager {
 
     public void startParking(CarPark carpark, User user)
     {
-        // after checking the credit balance and etc..
-        // call registerUserToCarpark here..
+        // Todo : check balance
+       this.registerUserToCarpark(carpark,user);
+    }
+
+    public void finishPark(User user)
+    {
+
     }
 
     /**
@@ -131,14 +136,18 @@ public class FirebaseCarparkManager {
     private void addCarparkToMap(CarPark newCarPark,String title, String park_info)
     {
         Marker m = map.addMarker(new MarkerOptions().position(newCarPark.getCoordinates()).title(newCarPark.getName()).snippet(park_info));
-        markersOnScreen.put(newCarPark,m);
+        synchronized (markers_on_screen_lock) {
+            markersOnScreen.put(m, newCarPark);
+        }
     }
 
     private void focusMapToMarkers()
     {
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
-        for (Map.Entry<CarPark,Marker> val: markersOnScreen.entrySet())
-            builder.include(val.getValue().getPosition());
+        synchronized (markers_on_screen_lock) {
+            for (Map.Entry<Marker, CarPark> val : markersOnScreen.entrySet())
+                builder.include(val.getKey().getPosition());
+        }
 
         int padding = 10; // default
         LatLngBounds bounds = builder.build();
@@ -172,11 +181,20 @@ public class FirebaseCarparkManager {
                 activity.runOnUiThread(() -> Toasty.warning(activity.getApplicationContext(),ToastMessageConstants.TOAST_MSG_INFO_MAP_UPDATED,Toast.LENGTH_SHORT).show());
 
                 CarPark newPark = new CarPark(snapshot);
-                /* get related marker on the map */
-                Marker marker = markersOnScreen.get(newPark);
+
+                Marker marker = null;
+                synchronized (markers_on_screen_lock) {
+                    for (Map.Entry<Marker, CarPark> val : markersOnScreen.entrySet()) {
+                        if (val.getValue().equals(newPark)) {
+                            marker = val.getKey();
+                            break;
+                        }
+                    }
+                }
 
                 /* remove it */
-                marker.remove();
+                if(marker != null)
+                    marker.remove();
 
                 /* add new marker to the map */
                 addCarparkToMap(newPark,newPark.getName(),newPark.toString());
@@ -208,13 +226,11 @@ public class FirebaseCarparkManager {
      * Users store the id of the car park which he / she parked.
      *
      * This method registers user to car park "directly", not checks the balance or anything..
-     * Todo : After implementing the startParking method, this method will be private since this
-     * Todo : method should not be accessible from user space (UI).
      *
      * @param carpark Target car park.
      * @param user User to be registered.
      */
-    public void registerUserToCarpark(CarPark carpark, User user)
+    private void registerUserToCarpark(CarPark carpark, User user)
     {
         /* first find the reference of the given car park */
         String parsedAddr = tryToParseAddress(carpark.getCoordinates().latitude,carpark.getCoordinates().longitude);
@@ -241,9 +257,14 @@ public class FirebaseCarparkManager {
 
                     /* update the database */
                     currentData.setValue(park);
-                    return Transaction.success(currentData);
 
-                    /* todo : register the car park id to user */
+                    /* find user field in DB */
+                    DatabaseReference uref = FirebaseDatabase.getInstance().getReference().child(FirebaseDBConstants.DB_USER_FIELD).child(user.getUid());
+                    user.setCarparkid(park.getGeneralid());
+
+                    /* update user in the DB */
+                    uref.setValue(user);
+                    return Transaction.success(currentData);
                 }
                 else
                     return Transaction.abort();
@@ -263,7 +284,7 @@ public class FirebaseCarparkManager {
      * @param inputAdress address to be parsed.
      * @return District of given address, if parsed successfully.
      */
-    public String parseAddressToDistrict(String inputAdress)
+    private String parseAddressToDistrict(String inputAdress)
     {
         System.out.println("ADRESINIZ : " + inputAdress);
         String[] tokens = inputAdress.split(", ");
@@ -310,7 +331,7 @@ public class FirebaseCarparkManager {
      * @param longitude Longitude of the given address.
      * @return parsed address if successful, null on error.
      */
-    public String tryToParseAddress(double latitude, double longitude)
+    private String tryToParseAddress(double latitude, double longitude)
     {
         Geocoder gcd = new Geocoder(activity.getApplicationContext(), Locale.getDefault());
         final double INCREMENT_AMOUNT = 0.001;

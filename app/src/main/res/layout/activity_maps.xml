@@ -39,4 +39,12 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/map" />
 
+    <Button
+        android:id="@+id/button_finish_park"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="PARKI BİTİR"
+        tools:layout_editor_absoluteX="148dp"
+        tools:layout_editor_absoluteY="664dp" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

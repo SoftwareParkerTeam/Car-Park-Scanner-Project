@@ -21,6 +21,7 @@ import com.example.xpark.Module.CarPark;
 import com.example.xpark.DataBaseProvider.FirebaseCarparkManager;
 import com.example.xpark.R;
 import com.example.xpark.Module.User;
+import com.example.xpark.Utils.ToastMessageConstants;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -28,12 +29,15 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import java.util.HashMap;
+import es.dmoral.toasty.Toasty;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     /* UI Components */
     private Button search_button;
     private Button res_button;
+    private Button finishPark_button;
     private GoogleMap map;
 
     /* Managers, Wrappers and etc */
@@ -42,6 +46,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     /* logged in user */
     private User currentUser;
+
+    // mapping between car park and marker on the screen
+    private HashMap<Marker,CarPark> markersOnScreen;
+
+    /* selected carpark on the map */
+    private CarPark selectedCarpark;
+
+    /* Lock for selected car park */
+    private final Object markers_on_screen_lock = new Object();
     
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -90,6 +103,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
             /* markera tiklayinca gelecek pencereyi ayarla.. */
             UI_init_mapMarkerType();
+
+            /* marker secilince listener ekle */
+            map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                @Override
+                public boolean onMarkerClick(Marker marker) {
+                    synchronized (markers_on_screen_lock) {
+                        selectedCarpark = markersOnScreen.get(marker);
+                        System.out.println("CARPARK SELECT = " + selectedCarpark);
+                        return false;
+                    }
+                }
+            });
+
+            map.setOnInfoWindowCloseListener(new GoogleMap.OnInfoWindowCloseListener() {
+                @Override
+                public void onInfoWindowClose(Marker marker) {
+                    synchronized (markers_on_screen_lock) {
+                        selectedCarpark = null;
+                        System.out.println("CARPARK SELECT = marker kapatildi.");
+                    }
+                }
+            });
         }
         else
         {
@@ -104,6 +139,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     {
         setContentView(R.layout.activity_maps);
         search_button = findViewById(R.id.button_search);
+        res_button = findViewById(R.id.button_res);
+        finishPark_button = findViewById(R.id.button_finish_park);
+
+        // markes on screen as hashmap
+        markersOnScreen = new HashMap<>();
 
         /* search icin listener ekle */
         search_button.setOnClickListener(v -> {
@@ -113,21 +153,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
-        /**** just for test ****/
-        res_button = findViewById(R.id.button_res);
+        /* rezerve butonu icin listener ekle */
         res_button.setOnClickListener(v -> {
-
-            try {
-                CarPark park = new CarPark();
-                park.setId("1000000");
-                park.setCoordinates(new LatLng(40.87763699311756,29.231608160645568));
-                DBparkManager.registerUserToCarpark(park,new User());
-            } catch (Exception e) {
-                System.out.println("Error in registerUserToCarpark please debut it...");
+            synchronized (markers_on_screen_lock) {
+                if (selectedCarpark != null)
+                    DBparkManager.startParking(selectedCarpark, currentUser);
+                else
+                    Toasty.warning(this.getApplicationContext(), ToastMessageConstants.TOAST_MSG_ERROR_INVALID_CPARK_SELECT, Toast.LENGTH_SHORT).show();
             }
         });
-        /**** just for test ****/
 
+        /* parkı bitir butonu */
+        finishPark_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        /* Todo : handle below */
         SupportMapFragment mapFragment = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);
         ViewGroup.LayoutParams params = mapFragment.getView().getLayoutParams();
         mapFragment.getMapAsync(this);
@@ -176,7 +220,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void DB_init()
     {
         this.FBUserManager = new FirebaseUserManager(this);
-        this.DBparkManager = new FirebaseCarparkManager(this);
+        this.DBparkManager = new FirebaseCarparkManager(this,markersOnScreen,markers_on_screen_lock);
     }
 
     private void init_logged_user()

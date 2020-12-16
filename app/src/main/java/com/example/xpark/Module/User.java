@@ -11,6 +11,8 @@ import java.io.Serializable;
 
 public class User implements Serializable {
 
+    public static final String NOT_PARKED = "NOT_PARKED";
+
     /** User's Email */
     private final String eMail;
     /** User's Password */
@@ -21,14 +23,10 @@ public class User implements Serializable {
     private double credit_balance;
     /* uid for auth */
     private String uid;
+    /* parked carpark id */
+    private String carParkId;
 
-    public String getUid() {
-        return uid;
-    }
 
-    public void setUid(String uid) {
-        this.uid = uid;
-    }
 
     /**
      * Builds a user object
@@ -38,6 +36,7 @@ public class User implements Serializable {
         this.phone = null;
         this.eMail = null;
         this.credit_balance = 0.0;
+        this.carParkId = NOT_PARKED;
     }
 
     public User(DataSnapshot shot)
@@ -47,6 +46,7 @@ public class User implements Serializable {
         this.phone = (String)shot.child(FirebaseDBConstants.DB_USER_CHILD_PHONE).getValue();
         this.uid = (String)shot.child(FirebaseDBConstants.DB_USER_CHILD_UID).getValue();
         this.credit_balance = ((Long)(shot.child(FirebaseDBConstants.DB_USER_CHILD_CREDITBALANCE).getValue())).doubleValue();
+        this.carParkId = (String)shot.child(FirebaseDBConstants.DB_USER_CHILD_CARPARKID).getValue();
     }
 
     /**
@@ -100,6 +100,37 @@ public class User implements Serializable {
     }
 
     /**
+     * Sets the UID for user.
+     * @param uid UID to be setted.
+     */
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
+    /**
+     * Sets the parked carpark id for user.
+     * @param id id to be setted.
+     */
+    public void setCarparkid(String id){
+        this.carParkId = id;
+    }
+
+    /**
+     * Clears the value of parked carpark id.
+     */
+    public void removeCarparkid()
+    {
+        this.carParkId = NOT_PARKED;
+    }
+
+    /**
+     * Gets the UID of user.
+     * @return UID of user.
+     */
+    public String getUid() {
+        return uid;
+    }
+    /**
      * Getter password
      * @return string is user's password
      */
@@ -128,6 +159,12 @@ public class User implements Serializable {
     public double getCreditbalance() {
         return credit_balance;
     }
+
+    /**
+     * Gets the parked carpark id.
+     * @return carpark id.
+     */
+    public String getCarparkid() {return carParkId;}
 
     /**
      * Overridden toString method to show user's data information
