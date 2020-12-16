@@ -26,6 +26,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -53,9 +54,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     /* selected carpark on the map */
     private CarPark selectedCarpark;
 
+    /* selected marker object in the map */
+    private Marker selectedMarker;
+
     /* Lock for selected car park */
     private final Object markers_on_screen_lock = new Object();
-    
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -64,7 +68,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         /* get logged user */
         init_logged_user();
-        
+
         if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
             // crucial, don't remove.
             // Activity was brought to front and not created,
@@ -109,7 +113,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 @Override
                 public boolean onMarkerClick(Marker marker) {
                     synchronized (markers_on_screen_lock) {
+                        marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
                         selectedCarpark = markersOnScreen.get(marker);
+                        selectedMarker = marker;
                         System.out.println("CARPARK SELECT = " + selectedCarpark);
                         return false;
                     }
@@ -120,7 +126,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 @Override
                 public void onInfoWindowClose(Marker marker) {
                     synchronized (markers_on_screen_lock) {
+                        marker.setIcon(BitmapDescriptorFactory.defaultMarker());
                         selectedCarpark = null;
+                        selectedMarker = null;
                         System.out.println("CARPARK SELECT = marker kapatildi.");
                     }
                 }
@@ -167,7 +175,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         finishPark_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                DBparkManager.finishPark(currentUser);
             }
         });
 
@@ -204,10 +212,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 title.setGravity(Gravity.CENTER);
                 title.setTypeface(null, Typeface.BOLD);
                 title.setText(marker.getTitle());
-
                 TextView snippet = new TextView(getApplicationContext());
                 snippet.setTextColor(Color.GRAY);
                 snippet.setText(marker.getSnippet());
+
+                /* If it is selected marker, paint bg with GREEN */
+                if(marker.equals(selectedMarker)) {
+                    title.setBackgroundColor(Color.GREEN);
+                    snippet.setBackgroundColor(Color.GREEN);
+                }
 
                 info.addView(title);
                 info.addView(snippet);

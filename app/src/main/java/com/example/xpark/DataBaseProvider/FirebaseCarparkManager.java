@@ -95,11 +95,17 @@ public class FirebaseCarparkManager {
     public void startParking(CarPark carpark, User user)
     {
         // Todo : check balance
-       this.registerUserToCarpark(carpark,user);
+        this.registerUserToCarpark(carpark,user);
     }
 
     public void finishPark(User user)
     {
+        // if not parked yet, return
+        if(user.getCarparkid().equals(User.NOT_PARKED))
+            return;
+
+        // Todo : handle balance and etc..
+        this.removeUserFromCarpark(user);
 
     }
 
@@ -184,20 +190,21 @@ public class FirebaseCarparkManager {
 
                 Marker marker = null;
                 synchronized (markers_on_screen_lock) {
+
                     for (Map.Entry<Marker, CarPark> val : markersOnScreen.entrySet()) {
                         if (val.getValue().equals(newPark)) {
                             marker = val.getKey();
                             break;
                         }
                     }
+                    System.out.println("MARKER FOUND = " + markersOnScreen.get(marker));
+                    System.out.println("markers size " + markersOnScreen.size());
                 }
 
-                /* remove it */
-                if(marker != null)
-                    marker.remove();
-
-                /* add new marker to the map */
-                addCarparkToMap(newPark,newPark.getName(),newPark.toString());
+                marker.setSnippet(newPark.toString());
+                marker.setVisible(false);
+                marker.setVisible(true);
+                marker.showInfoWindow();
             }
 
             @Override
@@ -268,6 +275,56 @@ public class FirebaseCarparkManager {
                 }
                 else
                     return Transaction.abort();
+            }
+
+            @Override
+            public void onComplete(@Nullable DatabaseError error, boolean committed, @Nullable DataSnapshot currentData) {
+                System.out.println("Commit check : " + committed + " " + currentData.getValue());
+                activity.runOnUiThread(() -> Toasty.warning(activity.getApplicationContext(),ToastMessageConstants.TOAST_MSG_INFO_MAP_UPDATED,Toast.LENGTH_SHORT).show());
+            }
+        });
+    }
+
+    private void removeUserFromCarpark(User user)
+    {
+
+        /* parse user */
+        String carParkGnrlId = user.getCarparkid();
+
+        /* get district */
+        String[] tokens = carParkGnrlId.split("-");
+        String db_district_field = tokens[0];
+        String db_carpark_id = tokens[1];
+        System.out.println("DB DISTRICT = " + db_district_field);
+        System.out.println("DB ID = " + db_carpark_id);
+
+        /* find database reference from user */
+        DatabaseReference pref = FirebaseDatabase.getInstance().getReference().child(FirebaseDBConstants.DB_CARPARK_FIELD).child(db_district_field).child(db_carpark_id);
+        pref.runTransaction(new Transaction.Handler() {
+            @NonNull
+            @Override
+            public Transaction.Result doTransaction(@NonNull MutableData currentData) {
+                /* get car park object from database */
+                HashMap map = (HashMap)currentData.getValue();
+                if(map == null)
+                    return Transaction.success(currentData);
+
+                /* get park object from data base */
+                CarPark park = new CarPark((HashMap) currentData.getValue());
+
+                /* increment free are in car park */
+                park.decrementUsed();
+
+                /* update the database */
+                currentData.setValue(park);
+
+                /* find user field in DB */
+                DatabaseReference uref = FirebaseDatabase.getInstance().getReference().child(FirebaseDBConstants.DB_USER_FIELD).child(user.getUid());
+                user.removeCarparkid();
+
+                /* update the user in DB */
+                uref.setValue(user);
+                return Transaction.success(currentData);
             }
 
             @Override

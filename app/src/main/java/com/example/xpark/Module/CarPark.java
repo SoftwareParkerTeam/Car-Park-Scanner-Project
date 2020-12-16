@@ -130,6 +130,10 @@ public class CarPark {
         this.setUsed(this.getUsed() + 1);
     }
 
+    public void decrementUsed(){
+        this.setUsed(this.getUsed() - 1);
+    }
+
 
     public void setCoordinates(LatLng coordinates) {
         this.coordinates = coordinates;
