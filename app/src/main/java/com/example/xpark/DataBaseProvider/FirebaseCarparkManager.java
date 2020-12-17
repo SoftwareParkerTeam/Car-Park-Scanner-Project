@@ -25,6 +25,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
+import com.google.zxing.common.StringUtils;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -108,7 +110,6 @@ public class FirebaseCarparkManager {
         this.removeUserFromCarpark(user);
 
     }
-
     /**
      * Gets the current location of user.
      * @return Current location of user as Location type which provides getter of latitude and longitude.
@@ -343,14 +344,14 @@ public class FirebaseCarparkManager {
      */
     private String parseAddressToDistrict(String inputAdress)
     {
-        System.out.println("ADRESINIZ : " + inputAdress);
+        System.out.println(">ADRESINIZ : " + inputAdress);
         String[] tokens = inputAdress.split(", ");
 
         /* find address token str index */
         int index = -1;
         for (int i = 0; i < tokens.length; i++)
         {
-            if(tokens[i].indexOf("/") > 0){
+            if(tokens[i].indexOf("/") > 0 && getCharCount(tokens[i],' ') == 1){
                 index = i;
                 break;
             }
@@ -400,8 +401,10 @@ public class FirebaseCarparkManager {
             while(!isAdressParsed(parsedAddr) && i < MAX_TRY)
             {
                 List<Address> addresses = gcd.getFromLocation(latitude, longitude, 1);
-                if (addresses != null && addresses.size() > 0)
+                if (addresses != null && addresses.size() > 0) {
                     parsedAddr = parseAddressToDistrict(addresses.get(0).getAddressLine(0));
+                    System.out.println(">address parse try : " + parsedAddr);
+                }
 
                 if(i++ % 2 == 0)
                     longitude += INCREMENT_AMOUNT;
@@ -418,6 +421,16 @@ public class FirebaseCarparkManager {
         }
 
         return parsedAddr;
+    }
+
+    private int getCharCount(String s,char c)
+    {
+        int count = 0;
+        for (int i = 0; i < s.length() ; i++) {
+            if(s.charAt(i) == c)
+                ++count;
+        }
+        return count;
     }
 
     private void showNearestCarParks(String districtName)
