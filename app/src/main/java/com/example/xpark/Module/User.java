@@ -24,7 +24,7 @@ public class User implements Serializable {
     /* uid for auth */
     private String uid;
     /* parked carpark id */
-    private String carParkId;
+    private String carparkid;
 
 
 
@@ -36,7 +36,7 @@ public class User implements Serializable {
         this.phone = null;
         this.eMail = null;
         this.credit_balance = 0.0;
-        this.carParkId = NOT_PARKED;
+        this.carparkid = NOT_PARKED;
     }
 
     public User(DataSnapshot shot)
@@ -46,7 +46,7 @@ public class User implements Serializable {
         this.phone = (String)shot.child(FirebaseDBConstants.DB_USER_CHILD_PHONE).getValue();
         this.uid = (String)shot.child(FirebaseDBConstants.DB_USER_CHILD_UID).getValue();
         this.credit_balance = ((Long)(shot.child(FirebaseDBConstants.DB_USER_CHILD_CREDITBALANCE).getValue())).doubleValue();
-        this.carParkId = (String)shot.child(FirebaseDBConstants.DB_USER_CHILD_CARPARKID).getValue();
+        this.carparkid = (String)shot.child(FirebaseDBConstants.DB_USER_CHILD_CARPARKID).getValue();
     }
 
     /**
@@ -61,6 +61,7 @@ public class User implements Serializable {
         this.phone = phone_;
         this.eMail = eMail_;
         this.credit_balance = credit_balance_;
+        this.carparkid = NOT_PARKED;
     }
 
     /**
@@ -73,6 +74,7 @@ public class User implements Serializable {
         this.eMail = mail;
         this.phone = null;
         this.credit_balance = 0.0;
+        this.carparkid = NOT_PARKED;
     }
 
     /**
@@ -112,7 +114,7 @@ public class User implements Serializable {
      * @param id id to be setted.
      */
     public void setCarparkid(String id){
-        this.carParkId = id;
+        this.carparkid = id;
     }
 
     /**
@@ -120,7 +122,7 @@ public class User implements Serializable {
      */
     public void removeCarparkid()
     {
-        this.carParkId = NOT_PARKED;
+        this.carparkid = NOT_PARKED;
     }
 
     /**
@@ -164,7 +166,7 @@ public class User implements Serializable {
      * Gets the parked carpark id.
      * @return carpark id.
      */
-    public String getCarparkid() {return carParkId;}
+    public String getCarparkid() {return carparkid;}
 
     /**
      * Overridden toString method to show user's data information
