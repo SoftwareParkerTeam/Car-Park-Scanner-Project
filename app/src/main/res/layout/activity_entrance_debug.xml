@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Activities.EntranceDebugActivity"
+    android:orientation="vertical">
+
+    <Button
+        android:id="@+id/sign_up_enter"
+        android:layout_width="match_parent"
+        android:layout_height="104dp"
+        android:layout_weight="1"
+        android:text="@string/sign_up_enter" />
+
+    <Button
+        android:id="@+id/sign_in_enter"
+        android:layout_width="match_parent"
+        android:layout_height="104dp"
+        android:layout_weight="1"
+        android:text="@string/login_enter" />
+
+    <Button
+        android:id="@+id/map_enter"
+        android:layout_width="match_parent"
+        android:layout_height="104dp"
+        android:layout_weight="1"
+        android:text="@string/map_enter" />
+
+    <Button
+        android:id="@+id/qrCode_enter"
+        android:layout_width="match_parent"
+        android:layout_height="104dp"
+        android:layout_weight="1"
+        android:text="@string/qr_activity_entrence" />
+
+</LinearLayout>

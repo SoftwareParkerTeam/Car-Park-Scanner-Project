@@ -1,7 +1,10 @@
 package com.example.xpark.DataBaseProvider;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
@@ -51,7 +54,7 @@ public class FirebaseUserManager {
             if(task.isSuccessful()){
                 Log.i("USER LOGIN", "LOGIN SUCCEED");
                 Toasty.success(activity_ref.getApplicationContext(), ToastMessageConstants.TOAST_MSG_INFO_USER_LOGIN_SUCCESS,Toast.LENGTH_SHORT).show();
-                startNextActivityAfterLogin(auth.getCurrentUser());
+                startNextActivityAfterLogin(auth.getCurrentUser().getUid());
             }
             else {
                 Log.i("USER LOGIN 1)",task.getException().toString());
@@ -117,10 +120,20 @@ public class FirebaseUserManager {
         ref.setValue(user);
     }
 
-    private void startNextActivityAfterLogin(FirebaseUser fbuser)
+    public void startNextActivityAfterLogin(String fbuser_uid)
     {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(activity_ref);
+
+        if(!sp.getBoolean("logged",false)) {
+            SharedPreferences.Editor editor = sp.edit();
+            editor.putBoolean("logged", true);
+            editor.commit();
+
+            editor.putString("user_uid",fbuser_uid);
+            editor.commit();
+        }
         /* get User by FirebaseUser with uid */
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(DB_USER_FIELD).child(fbuser.getUid());
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(DB_USER_FIELD).child(fbuser_uid);
 
         /* get logged in user for ONCE */
         ref.addListenerForSingleValueEvent(new ValueEventListener() {

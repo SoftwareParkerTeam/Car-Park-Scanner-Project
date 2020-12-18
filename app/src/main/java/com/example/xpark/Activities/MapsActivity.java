@@ -4,11 +4,13 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.location.Location;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +41,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Button search_button;
     private Button res_button;
     private Button finishPark_button;
+    private Button exit_button;
     private GoogleMap map;
 
     /* Managers, Wrappers and etc */
@@ -149,6 +152,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         search_button = findViewById(R.id.button_search);
         res_button = findViewById(R.id.button_res);
         finishPark_button = findViewById(R.id.button_finish_park);
+        exit_button = findViewById(R.id.button_exit);
 
         // markes on screen as hashmap
         markersOnScreen = new HashMap<>();
@@ -177,6 +181,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View v) {
                 DBparkManager.finishPark(currentUser);
             }
+        });
+
+        exit_button.setOnClickListener(v -> {
+            SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+            settings.edit().clear().commit();
+
+            Intent intent = new Intent(this, EntranceDebugActivity.class);
+            this.startActivity(intent);
         });
 
         /* Todo : handle below */
