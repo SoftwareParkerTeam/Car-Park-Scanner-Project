@@ -27,6 +27,7 @@ public class EntranceDebugActivity extends AppCompatActivity {
         signin.setOnClickListener( view -> {
             Intent intent = new Intent(this, EntranceActivity.class);
             this.startActivity(intent);
+            this.finish();
         });
 
         signup.setOnClickListener(view -> {

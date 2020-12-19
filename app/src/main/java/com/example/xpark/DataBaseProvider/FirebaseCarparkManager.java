@@ -1,6 +1,7 @@
 package com.example.xpark.DataBaseProvider;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -8,6 +9,7 @@ import android.location.LocationManager;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import com.example.xpark.Activities.ParkingInformationActivity;
 import com.example.xpark.Module.CarPark;
 import com.example.xpark.Module.User;
 import com.example.xpark.Utils.ToastMessageConstants;
@@ -100,16 +102,6 @@ public class FirebaseCarparkManager {
         this.registerUserToCarpark(carpark,user);
     }
 
-    public void finishPark(User user)
-    {
-        // if not parked yet, return
-        if(user.getCarparkid().equals(User.NOT_PARKED))
-            return;
-
-        // Todo : handle balance and etc..
-        this.removeUserFromCarpark(user);
-
-    }
     /**
      * Gets the current location of user.
      * @return Current location of user as Location type which provides getter of latitude and longitude.
@@ -281,56 +273,12 @@ public class FirebaseCarparkManager {
             @Override
             public void onComplete(@Nullable DatabaseError error, boolean committed, @Nullable DataSnapshot currentData) {
                 System.out.println("Commit check : " + committed + " " + currentData.getValue());
-                activity.runOnUiThread(() -> Toasty.warning(activity.getApplicationContext(),ToastMessageConstants.TOAST_MSG_INFO_MAP_UPDATED,Toast.LENGTH_SHORT).show());
-            }
-        });
-    }
-
-    private void removeUserFromCarpark(User user)
-    {
-
-        /* parse user */
-        String carParkGnrlId = user.getCarparkid();
-
-        /* get district */
-        String[] tokens = carParkGnrlId.split("-");
-        String db_district_field = tokens[0];
-        String db_carpark_id = tokens[1];
-        System.out.println("DB DISTRICT = " + db_district_field);
-        System.out.println("DB ID = " + db_carpark_id);
-
-        /* find database reference from user */
-        DatabaseReference pref = FirebaseDatabase.getInstance().getReference().child(FirebaseDBConstants.DB_CARPARK_FIELD).child(db_district_field).child(db_carpark_id);
-        pref.runTransaction(new Transaction.Handler() {
-            @NonNull
-            @Override
-            public Transaction.Result doTransaction(@NonNull MutableData currentData) {
-                /* get car park object from database */
-                HashMap map = (HashMap)currentData.getValue();
-                if(map == null)
-                    return Transaction.success(currentData);
-
-                /* get park object from data base */
-                CarPark park = new CarPark((HashMap) currentData.getValue());
-
-                /* increment free are in car park */
-                park.decrementUsed();
-
-                /* update the database */
-                currentData.setValue(park);
-
-                /* find user field in DB */
-                DatabaseReference uref = FirebaseDatabase.getInstance().getReference().child(FirebaseDBConstants.DB_USER_FIELD).child(user.getUid());
-                user.removeCarparkid();
-
-                /* update the user in DB */
-                uref.setValue(user);
-                return Transaction.success(currentData);
-            }
-
-            @Override
-            public void onComplete(@Nullable DatabaseError error, boolean committed, @Nullable DataSnapshot currentData) {
-                System.out.println("Commit check : " + committed + " " + currentData.getValue());
+                if(committed == true){
+                    Intent intent = new Intent(activity, ParkingInformationActivity.class);
+                    intent.putExtra("CURRENT_USER",user);
+                    activity.startActivity(intent);
+                    activity.finish();
+                }
                 activity.runOnUiThread(() -> Toasty.warning(activity.getApplicationContext(),ToastMessageConstants.TOAST_MSG_INFO_MAP_UPDATED,Toast.LENGTH_SHORT).show());
             }
         });

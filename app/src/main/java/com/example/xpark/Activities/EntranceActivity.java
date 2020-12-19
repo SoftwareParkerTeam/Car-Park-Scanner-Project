@@ -30,6 +30,7 @@ public class EntranceActivity extends AppCompatActivity {
         else{
             Intent intent = new Intent(this, LoginActivity.class);
             this.startActivity(intent);
+            this.finish();
         }
     }
 }

@@ -15,7 +15,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.XPark">
-        <activity android:name=".Activities.EntranceActivity"></activity>
+        <activity android:name=".Activities.ParkingInformationActivity"></activity>
+        <activity android:name=".Activities.EntranceActivity" />
 
         <uses-library
             android:name="org.apache.http.legacy"

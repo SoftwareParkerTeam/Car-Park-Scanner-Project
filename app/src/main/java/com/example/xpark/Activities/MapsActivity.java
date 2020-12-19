@@ -40,7 +40,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     /* UI Components */
     private Button search_button;
     private Button res_button;
-    private Button finishPark_button;
     private Button exit_button;
     private GoogleMap map;
 
@@ -71,6 +70,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         /* get logged user */
         init_logged_user();
+
+        /* kullanıcının park edip etmediğini kontrol et */
+        checkParkingStatus();
 
         if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
             // crucial, don't remove.
@@ -151,7 +153,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_maps);
         search_button = findViewById(R.id.button_search);
         res_button = findViewById(R.id.button_res);
-        finishPark_button = findViewById(R.id.button_finish_park);
         exit_button = findViewById(R.id.button_exit);
 
         // markes on screen as hashmap
@@ -172,14 +173,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     DBparkManager.startParking(selectedCarpark, currentUser);
                 else
                     Toasty.warning(this.getApplicationContext(), ToastMessageConstants.TOAST_MSG_ERROR_INVALID_CPARK_SELECT, Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        /* parkı bitir butonu */
-        finishPark_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DBparkManager.finishPark(currentUser);
             }
         });
 
@@ -253,6 +246,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Intent intent = getIntent();
         currentUser = (User) intent.getSerializableExtra("CURRENT_USER");
         System.out.println("USER GETTED : " + currentUser);
+    }
+
+    private void checkParkingStatus() {
+        if(!currentUser.getCarparkid().equals(User.NOT_PARKED)){
+            startNextActivity();
+        }
+    }
+
+    /*starts information activity*/
+    private void startNextActivity(){
+        Intent intent = new Intent(this, ParkingInformationActivity.class);
+        intent.putExtra("CURRENT_USER",currentUser);
+        this.startActivity(intent);
+        finish();
     }
 
     /**

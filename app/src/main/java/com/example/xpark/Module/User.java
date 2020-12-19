@@ -178,6 +178,7 @@ public class User implements Serializable {
                 +",email="+this.eMail
                 +",phone="+this.phone
                 +",uid="+this.uid
+                +",carparkid="+this.carparkid
                 +",credit="+this.credit_balance+
                 "}";
     }
