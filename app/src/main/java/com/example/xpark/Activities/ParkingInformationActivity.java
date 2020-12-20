@@ -109,7 +109,7 @@ public class ParkingInformationActivity extends AppCompatActivity {
             @Override
             public void onComplete(@Nullable DatabaseError error, boolean committed, @Nullable DataSnapshot currentData) {
                 System.out.println("Commit check : " + committed + " " + currentData.getValue());
-                if(committed == true){
+                if(committed){
                     Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
                     intent.putExtra("CURRENT_USER",currentUser);
                     startActivity(intent);

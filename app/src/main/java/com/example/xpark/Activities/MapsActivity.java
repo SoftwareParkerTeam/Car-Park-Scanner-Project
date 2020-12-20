@@ -249,9 +249,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void checkParkingStatus() {
-        if(!currentUser.getCarparkid().equals(User.NOT_PARKED)){
-            startNextActivity();
-        }
+        if(currentUser != null)
+            if(!currentUser.getCarparkid().equals(User.NOT_PARKED)){
+                startNextActivity();
+            }
     }
 
     /*starts information activity*/

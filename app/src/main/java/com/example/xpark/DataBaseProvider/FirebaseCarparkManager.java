@@ -47,6 +47,8 @@ public class FirebaseCarparkManager {
     // store the related listener about database fields.
     private ChildEventListener currentListener;
 
+    private DatabaseReference currentListeningDBfield;
+
     // mapping between car park and marker on the screen
     private final HashMap<Marker,CarPark> markersOnScreen;
 
@@ -112,6 +114,7 @@ public class FirebaseCarparkManager {
         List<String> providers = locationManager.getProviders(true);
         Location bestLocation = null;
         for (String provider : providers) {
+            System.out.println("PROVIDE : " + provider);
             Location l = locationManager.getLastKnownLocation(provider);
             if (l == null) {
                 continue;
@@ -119,6 +122,8 @@ public class FirebaseCarparkManager {
             if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy()) {
                 // Found best last known location: %s", l);
                 bestLocation = l;
+                System.out.println(">LOCATION ACCURACY = " + bestLocation.getAccuracy());
+                System.out.println(">PARSE ADDRESS = " + tryToParseAddress(bestLocation.getLatitude(),bestLocation.getLongitude()));
             }
         }
 
@@ -167,6 +172,7 @@ public class FirebaseCarparkManager {
     {
         /* get database reference */
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference(FirebaseDBConstants.DB_CARPARK_FIELD).child(districtName);
+        currentListeningDBfield = ref;
         ChildEventListener listener = new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
@@ -252,6 +258,12 @@ public class FirebaseCarparkManager {
                 /* check available space */
                 if(park.getFreeArea() > 0)
                 {
+                    /* stop listener */
+                    currentListeningDBfield.removeEventListener(currentListener);
+
+                    /* give info msg about reserving */
+                    activity.runOnUiThread(() -> Toasty.info(activity.getApplicationContext(),ToastMessageConstants.TOAST_MSG_INFO_RESERVING,Toast.LENGTH_SHORT).show());
+
                     /* increment used counter */
                     park.incrementUsed();
 
@@ -273,13 +285,24 @@ public class FirebaseCarparkManager {
             @Override
             public void onComplete(@Nullable DatabaseError error, boolean committed, @Nullable DataSnapshot currentData) {
                 System.out.println("Commit check : " + committed + " " + currentData.getValue());
-                if(committed == true){
-                    Intent intent = new Intent(activity, ParkingInformationActivity.class);
-                    intent.putExtra("CURRENT_USER",user);
-                    activity.startActivity(intent);
-                    activity.finish();
+                if(committed)
+                {
+                    /* switch next activity */
+                    new Thread(() -> {
+                        try {
+                            Thread.sleep(2000);
+                            Intent intent = new Intent(activity, ParkingInformationActivity.class);
+                            intent.putExtra("CURRENT_USER",user);
+                            activity.startActivity(intent);
+                            activity.finish();
+                        }catch (InterruptedException ex)
+                        {
+
+                        }
+                    }).start();
                 }
-                activity.runOnUiThread(() -> Toasty.warning(activity.getApplicationContext(),ToastMessageConstants.TOAST_MSG_INFO_MAP_UPDATED,Toast.LENGTH_SHORT).show());
+                else
+                    activity.runOnUiThread(() -> Toasty.warning(activity.getApplicationContext(),ToastMessageConstants.TOAST_MSG_INFO_MAP_UPDATED,Toast.LENGTH_SHORT).show());
             }
         });
     }
