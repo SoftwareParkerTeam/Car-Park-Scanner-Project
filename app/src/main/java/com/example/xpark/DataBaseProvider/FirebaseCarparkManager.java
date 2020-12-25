@@ -98,10 +98,10 @@ public class FirebaseCarparkManager {
         }).start();
     }
 
-    public void startParking(CarPark carpark, User user)
+    public void startParking(CarPark carpark, User user, String time)
     {
         // Todo : check balance
-        this.registerUserToCarpark(carpark,user);
+        this.registerUserToCarpark(carpark,user,time);
     }
 
     /**
@@ -236,7 +236,7 @@ public class FirebaseCarparkManager {
      * @param carpark Target car park.
      * @param user User to be registered.
      */
-    private void registerUserToCarpark(CarPark carpark, User user)
+    private void registerUserToCarpark(CarPark carpark, User user, String time)
     {
         /* first find the reference of the given car park */
         String parsedAddr = tryToParseAddress(carpark.getCoordinates().latitude,carpark.getCoordinates().longitude);
@@ -273,6 +273,7 @@ public class FirebaseCarparkManager {
                     /* find user field in DB */
                     DatabaseReference uref = FirebaseDatabase.getInstance().getReference().child(FirebaseDBConstants.DB_USER_FIELD).child(user.getUid());
                     user.setCarparkid(park.getGeneralid());
+                    user.setParkingTime(time);
 
                     /* update user in the DB */
                     uref.setValue(user);

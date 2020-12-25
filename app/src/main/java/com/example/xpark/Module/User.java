@@ -8,7 +8,6 @@ import com.example.xpark.DataBaseProvider.FirebaseDBConstants;
 import com.google.firebase.database.DataSnapshot;
 
 import java.io.Serializable;
-
 public class User implements Serializable {
 
     public static final String NOT_PARKED = "NOT_PARKED";
@@ -25,7 +24,8 @@ public class User implements Serializable {
     private String uid;
     /* parked carpark id */
     private String carparkid;
-
+    /* parking time*/
+    private String parkingtime;
 
 
     /**
@@ -37,6 +37,7 @@ public class User implements Serializable {
         this.eMail = null;
         this.credit_balance = 0.0;
         this.carparkid = NOT_PARKED;
+        this.parkingtime = NOT_PARKED;
     }
 
     public User(DataSnapshot shot)
@@ -47,6 +48,7 @@ public class User implements Serializable {
         this.uid = (String)shot.child(FirebaseDBConstants.DB_USER_CHILD_UID).getValue();
         this.credit_balance = ((Long)(shot.child(FirebaseDBConstants.DB_USER_CHILD_CREDITBALANCE).getValue())).doubleValue();
         this.carparkid = (String)shot.child(FirebaseDBConstants.DB_USER_CHILD_CARPARKID).getValue();
+        this.parkingtime = (String) shot.child(FirebaseDBConstants.DB_USER_CHILD_PARKINGTIME).getValue();
     }
 
     /**
@@ -62,6 +64,7 @@ public class User implements Serializable {
         this.eMail = eMail_;
         this.credit_balance = credit_balance_;
         this.carparkid = NOT_PARKED;
+        this.parkingtime = NOT_PARKED;
     }
 
     /**
@@ -75,6 +78,7 @@ public class User implements Serializable {
         this.phone = null;
         this.credit_balance = 0.0;
         this.carparkid = NOT_PARKED;
+        this.parkingtime = NOT_PARKED;
     }
 
     /**
@@ -118,12 +122,23 @@ public class User implements Serializable {
     }
 
     /**
+     * Sets the parking time id for user.
+     * @param time time to be setted.
+     */
+    public void setParkingTime(String time) { this.parkingtime = time; }
+
+    /**
      * Clears the value of parked carpark id.
      */
     public void removeCarparkid()
     {
         this.carparkid = NOT_PARKED;
     }
+
+    /**
+     * Clears the value of parking time.
+     */
+    public void removeParkingTime() { this.parkingtime = NOT_PARKED; }
 
     /**
      * Gets the UID of user.
@@ -169,6 +184,12 @@ public class User implements Serializable {
     public String getCarparkid() {return carparkid;}
 
     /**
+     * Gets the parking time.
+     * @return parking time.
+     */
+    public String getParkingTime() {return parkingtime;}
+
+    /**
      * Overridden toString method to show user's data information
      * @return string user's data information
      */
@@ -179,6 +200,7 @@ public class User implements Serializable {
                 +",phone="+this.phone
                 +",uid="+this.uid
                 +",carparkid="+this.carparkid
+                +",parkingtime="+this.parkingtime
                 +",credit="+this.credit_balance+
                 "}";
     }

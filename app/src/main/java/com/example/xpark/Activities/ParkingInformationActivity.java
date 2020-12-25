@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.example.xpark.DataBaseProvider.FirebaseDBConstants;
 import com.example.xpark.Module.CarPark;
@@ -20,12 +21,16 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import es.dmoral.toasty.Toasty;
 
 public class ParkingInformationActivity extends AppCompatActivity {
 
     private Button finishPark_button;
+    private TextView textTime;
     private User currentUser;
 
     @Override
@@ -40,6 +45,9 @@ public class ParkingInformationActivity extends AppCompatActivity {
 
     private void UI_init() {
         finishPark_button = findViewById(R.id.button_finish);
+        textTime = findViewById(R.id.text_time);
+
+        textTime.setText(currentUser.getParkingTime());
 
         /* parkı bitir butonu */
         finishPark_button.setOnClickListener(v -> {
@@ -53,15 +61,26 @@ public class ParkingInformationActivity extends AppCompatActivity {
         System.out.println("USER GETTED : " + currentUser);
     }
 
-    private void finishPark()
-    {
+    private void finishPark() {
         // if not parked yet, return
         if(currentUser.getCarparkid().equals(User.NOT_PARKED))
             return;
 
+        LocalDateTime finishtime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        LocalDateTime parkingtime = LocalDateTime.parse(currentUser.getParkingTime(), formatter);
+
+        calculateTime(finishtime, parkingtime);
+
         // Todo : handle balance and etc..
         this.removeUserFromCarpark();
 
+    }
+
+    private void calculateTime(LocalDateTime d1, LocalDateTime d2){
+        long diff = ChronoUnit.MINUTES.between(d2, d1);
+
+        System.out.println("CALCULATED TIME(minute): " + diff);
     }
 
     private void removeUserFromCarpark()
@@ -100,6 +119,7 @@ public class ParkingInformationActivity extends AppCompatActivity {
                 /* find user field in DB */
                 DatabaseReference uref = FirebaseDatabase.getInstance().getReference().child(FirebaseDBConstants.DB_USER_FIELD).child(currentUser.getUid());
                 currentUser.removeCarparkid();
+                currentUser.removeParkingTime();
 
                 /* update the user in DB */
                 uref.setValue(currentUser);

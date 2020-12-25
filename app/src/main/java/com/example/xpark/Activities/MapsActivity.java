@@ -32,6 +32,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import es.dmoral.toasty.Toasty;
 
@@ -169,8 +171,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         /* rezerve butonu icin listener ekle */
         res_button.setOnClickListener(v -> {
             synchronized (markers_on_screen_lock) {
-                if (selectedCarpark != null)
-                    DBparkManager.startParking(selectedCarpark, currentUser);
+                if (selectedCarpark != null) {
+                    LocalDateTime date = LocalDateTime.now();
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+                    String time = formatter.format(date);
+                    DBparkManager.startParking(selectedCarpark, currentUser, time);
+                }
                 else
                     Toasty.warning(this.getApplicationContext(), ToastMessageConstants.TOAST_MSG_ERROR_INVALID_CPARK_SELECT, Toast.LENGTH_SHORT).show();
             }
