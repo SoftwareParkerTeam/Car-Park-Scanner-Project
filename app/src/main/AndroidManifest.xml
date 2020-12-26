@@ -15,8 +15,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.XPark">
-        <activity android:name=".Activities.ParkingInformationActivity"></activity>
-        <activity android:name=".Activities.EntranceActivity" />
 
         <uses-library
             android:name="org.apache.http.legacy"
@@ -26,24 +24,27 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/map_key" />
 
-        <activity android:name=".Activities.EntranceDebugActivity">
+        <activity android:name=".Activities.EntranceActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".Activities.SignUpActivity"
+
+
+        <activity android:name=".Activities.SignUpActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.GradientActivities" />
+            android:theme="@style/Theme.GradientActivities"/>
+
+        <activity android:name=".Activities.LoginActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.GradientActivities"/>
+
         <activity android:name=".Activities.MapsActivity" />
-        <activity
-            android:name=".Activities.LoginActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.GradientActivities" />
         <activity android:name=".Activities.QRActivity" />
-        <activity android:name=".Activities.ScanCodeActivity" />
+        <activity android:name=".Activities.ScanCodeActivity"/>
+        <activity android:name=".Activities.ParkingInformationActivity"/>
     </application>
 
 </manifest>

@@ -1,4 +1,5 @@
 package com.example.xpark.Activities;
+import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
@@ -9,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Gravity;
@@ -150,6 +152,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     /**
      * Initialize UI components.
      */
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void UI_init()
     {
         setContentView(R.layout.activity_maps);
@@ -172,7 +175,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         res_button.setOnClickListener(v -> {
             synchronized (markers_on_screen_lock) {
                 if (selectedCarpark != null) {
-                    LocalDateTime date = LocalDateTime.now();
+                    LocalDateTime date = LocalDateTime.now(ZoneId.of("Europe/Istanbul"));
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
                     String time = formatter.format(date);
                     DBparkManager.startParking(selectedCarpark, currentUser, time);
@@ -257,7 +260,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void checkParkingStatus() {
         if(currentUser != null)
             if(!currentUser.getCarparkid().equals(User.NOT_PARKED)){
-                startNextActivity();
+                this.startNextActivity();
             }
     }
 

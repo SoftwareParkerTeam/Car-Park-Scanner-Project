@@ -66,7 +66,7 @@ public class ParkingInformationActivity extends AppCompatActivity {
         if(currentUser.getCarparkid().equals(User.NOT_PARKED))
             return;
 
-        LocalDateTime finishtime = LocalDateTime.now();
+        LocalDateTime finishtime = LocalDateTime.now(ZoneId.of("Europe/Istanbul"));
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         LocalDateTime parkingtime = LocalDateTime.parse(currentUser.getParkingTime(), formatter);
 
