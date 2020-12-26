@@ -238,13 +238,9 @@ public class FirebaseCarparkManager {
      */
     private void registerUserToCarpark(CarPark carpark, User user, String time)
     {
-        String carpark_general_id = carpark.getGeneralid();
-        String[] tokens = carpark_general_id.split("-");
-        String db_ref_district = tokens[0];
-        String db_ref_carpark_id = tokens[1];
-
-        System.out.println("DEBUG : " + db_ref_district + " -- " + db_ref_carpark_id);
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(FirebaseDBConstants.DB_CARPARK_FIELD).child(db_ref_district).child(db_ref_carpark_id);
+        /* first find the reference of the given car park */
+        String parsedAddr = tryToParseAddress(carpark.getCoordinates().latitude,carpark.getCoordinates().longitude);
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(FirebaseDBConstants.DB_CARPARK_FIELD).child(parsedAddr).child(carpark.getId());
 
         ref.runTransaction(new Transaction.Handler() {
             @NonNull

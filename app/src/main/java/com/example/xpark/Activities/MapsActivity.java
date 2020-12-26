@@ -179,6 +179,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     LocalDateTime date = LocalDateTime.now(ZoneId.of("Europe/Istanbul"));
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
                     String time = formatter.format(date);
+                    System.out.println(selectedCarpark.getCoordinates());
                     DBparkManager.startParking(selectedCarpark, currentUser, time);
                 }
                 else
