@@ -175,7 +175,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         res_button.setOnClickListener(v -> {
             synchronized (markers_on_screen_lock) {
                 if (selectedCarpark != null) {
-                    LocalDateTime date = LocalDateTime.(ZoneId.of("Europe/Istanbul"));
+                    LocalDateTime date = LocalDateTime.now(ZoneId.of("Europe/Istanbul"));
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
                     String time = formatter.format(date);
                     DBparkManager.startParking(selectedCarpark, currentUser, time);
