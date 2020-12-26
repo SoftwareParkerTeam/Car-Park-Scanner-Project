@@ -1,5 +1,6 @@
 package com.example.xpark.Activities;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
@@ -40,7 +41,7 @@ import java.util.HashMap;
 import java.time.ZoneId;
 import es.dmoral.toasty.Toasty;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     /* UI Components */
     private Button search_button;

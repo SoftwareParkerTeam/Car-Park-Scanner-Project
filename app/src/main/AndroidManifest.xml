@@ -27,13 +27,14 @@
         <activity android:name=".Activities.SignUpActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.GradientActivities"/>
-
         <activity android:name=".Activities.LoginActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.GradientActivities"/>
+        <activity android:name=".Activities.EntranceActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.GradientActivities"/>
 
-        <activity android:name=".Activities.EntranceActivity"/>
-        <activity android:name=".Activities.MapsActivity" />
+        <activity android:name=".Activities.MapsActivity"/>
         <activity android:name=".Activities.QRActivity" />
         <activity android:name=".Activities.ScanCodeActivity"/>
         <activity android:name=".Activities.ParkingInformationActivity"/>
