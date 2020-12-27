@@ -22,8 +22,7 @@ public class LoginActivity extends AppCompatActivity {
     private TextView password_input;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // kritik
@@ -50,8 +49,7 @@ public class LoginActivity extends AppCompatActivity {
     /**
      * Initialize ui components.
      */
-    private void UI_init()
-    {
+    private void UI_init() {
         setContentView(R.layout.activity_login);
         sign_in_button = findViewById(R.id.sign_in_button);
         sign_up_button = findViewById(R.id.sign_up_button);
@@ -67,15 +65,13 @@ public class LoginActivity extends AppCompatActivity {
         sign_up_button.setOnClickListener(v -> {
             Intent intent = new Intent(this, SignUpActivity.class);
             this.startActivity(intent);
-            this.finish();
         });
     }
 
     /**
      * Initialize DB managers & handle connection issues.
      */
-    private void DB_init()
-    {
+    private void DB_init() {
         /* get database reference */
         ref = FirebaseDatabase.getInstance().getReference();
 
@@ -98,13 +94,11 @@ public class LoginActivity extends AppCompatActivity {
         });
          */
     }
-    protected void onResume()
-    {
+    protected void onResume() {
         super.onResume();
     }
     @Override
-    public void onBackPressed()
-    {
+    public void onBackPressed() {
         /* ignore it */
     }
 }

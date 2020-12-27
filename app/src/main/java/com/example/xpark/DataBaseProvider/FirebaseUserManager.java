@@ -88,9 +88,7 @@ public class FirebaseUserManager {
 
                 /* switch next (login) activity */
                 Log.i("USER CREATE", "USER CREATE SUCCEED");
-                Intent intent = new Intent(activity_ref, LoginActivity.class);
-                activity_ref.startActivity(intent);
-                activity_ref.finish();
+                startNextActivityAfterLogin(created_user.getUid());
             }
             else
             {

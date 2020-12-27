@@ -69,9 +69,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private final Object markers_on_screen_lock = new Object();
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
-
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         /* get logged user */
@@ -155,8 +153,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
      * Initialize UI components.
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private void UI_init()
-    {
+    private void UI_init() {
         setContentView(R.layout.activity_maps);
         search_button = findViewById(R.id.button_search);
         res_button = findViewById(R.id.button_res);
@@ -206,8 +203,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
      * Setups, design stuff of the UI of the markers on the Google Map.
      * Call this in UI_init() method in order to design the marker type.
      */
-    private void UI_init_mapMarkerType()
-    {
+    private void UI_init_mapMarkerType() {
         if(map == null)
             return;
 
@@ -247,14 +243,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
-    private void DB_init()
-    {
+    private void DB_init() {
         this.FBUserManager = new FirebaseUserManager(this);
         this.DBparkManager = new FirebaseCarparkManager(this,markersOnScreen,markers_on_screen_lock);
     }
 
-    private void init_logged_user()
-    {
+    private void init_logged_user() {
         Intent intent = getIntent();
         currentUser = (User) intent.getSerializableExtra("CURRENT_USER");
         System.out.println("USER GETTED : " + currentUser);
@@ -279,8 +273,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
      * Checks the necessary permissions on RUNTIME. If there are missing permission,
      * creates requests for getting permission from user.
      */
-    private void checkPermission()
-    {
+    private void checkPermission() {
         if (!(ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) ==
                 PackageManager.PERMISSION_GRANTED &&
                 ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) ==
@@ -294,8 +287,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    private void animateCameraToCurrentLocation()
-    {
+    private void animateCameraToCurrentLocation() {
         if(map == null)
             return;
 
@@ -317,14 +309,27 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     /* Below is Android stuff.. */
     @Override
-    protected void onSaveInstanceState(Bundle outState) { super.onSaveInstanceState(outState); }
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
+
     @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) { super.onRestoreInstanceState(savedInstanceState); }
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+    }
+
     @Override
-    protected void onPause(){super.onPause();}
-    protected void onResume() { super.onResume(); }
+    protected void onPause() {
+        super.onPause();
+    }
+
     @Override
-    protected void onStop() { super.onStop(); }
+    protected void onResume() {
+        super.onResume();
+    }
+
     @Override
-    public void onBackPressed() {/* Crucial, ignore the back button */}
+    protected void onStop() {
+        super.onStop();
+    }
 }

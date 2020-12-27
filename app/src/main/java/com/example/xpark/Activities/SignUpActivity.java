@@ -23,9 +23,18 @@ public class SignUpActivity extends AppCompatActivity {
     private Button signUp_button;
 
     @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
+
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         signUp_button = findViewById(R.id.button_signup);
 
@@ -45,7 +54,6 @@ public class SignUpActivity extends AppCompatActivity {
 
                 System.out.println("USER CREATING : " + test_user);
                 DBUserManager.createNewUser(test_user);
-                finish();
             }
         });
     }
