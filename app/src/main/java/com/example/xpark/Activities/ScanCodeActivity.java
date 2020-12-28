@@ -20,14 +20,19 @@ public class ScanCodeActivity extends AppCompatActivity implements ZXingScannerV
 
     @Override
     public void handleResult(Result result){
-        QRActivity.res.setText(result.getText());
-        QRActivity.park_id = (result.getText());
+        //ParkingInformationActivity.res.setText(result.getText());
+        ParkingInformationActivity.park_id = (result.getText());
+       /* System.out.println("park qr id");
+        System.out.println(ParkingInformationActivity.park_id);
+        System.out.println("qr result");
+        System.out.println(result.getText());*/
         onBackPressed();
     }
 
     @Override
     protected void onPause(){
         super.onPause();
+        System.out.println(ParkingInformationActivity.park_id);
         Scanner.stopCamera();
     }
 

@@ -13,7 +13,7 @@ import com.example.xpark.R;
 
 import java.io.Serializable;
 
-public class QRActivity extends AppCompatActivity implements Serializable {
+public class QRActivity extends AppCompatActivity{
     private static final String NOT_PARKED = "NOT_PARKED";
     private FirebaseUserManager FBUserManager;
     /* logged in user */
@@ -27,14 +27,17 @@ public class QRActivity extends AppCompatActivity implements Serializable {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_qr);
-
+       // System.out.println("qr a geldim");
+        init_logged_user();
         scanButton = findViewById(R.id.scan_test);
         res = findViewById(R.id.res_test);
         scanButton.setOnClickListener(view -> {
             startActivity(new Intent(getApplicationContext(), ScanCodeActivity.class));
         });
-        init_logged_user();
+
         qrBoolean = controlID();
+        System.out.println(qrBoolean);
+        System.out.println(park_id);
         onBackPressed();
     }
     private boolean controlID(){

@@ -33,6 +33,9 @@ public class ParkingInformationActivity extends AppCompatActivity {
     private Button finishPark_button;
     private TextView textTime;
     private User currentUser;
+    private Button testScan;
+    public static String park_id;
+    private Boolean qrBoolean;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,18 +50,41 @@ public class ParkingInformationActivity extends AppCompatActivity {
     private void UI_init() {
         finishPark_button = findViewById(R.id.button_finish);
         textTime = findViewById(R.id.text_time);
-
+        testScan = findViewById(R.id.testScan);
         textTime.setText(currentUser.getParkingTime());
 
         /* parkı bitir butonu */
         finishPark_button.setOnClickListener(v -> {
-            /*Intent intent = new Intent(this, QRActivity.class);
+           /* Intent intent = new Intent(this, QRActivity.class);
             intent.putExtra("CURRENT_USER",currentUser);
             this.startActivity(intent);
-
+            finish();
             if(QRActivity.qrBoolean)*/
             finishPark();
         });
+        testScan.setOnClickListener( view -> {
+            startActivity(new Intent(getApplicationContext(), ScanCodeActivity.class));
+            this.qrBoolean = controlID();
+           /*System.out.println("qr boolean");
+            System.out.println(this.qrBoolean);
+            System.out.println("current user id");
+            System.out.println(currentUser.getCarparkid());
+            System.out.println("qr id");
+            System.out.println(ParkingInformationActivity.park_id);*/
+            if(qrBoolean)
+                finishPark();
+            else
+                System.out.println("yanlış qr");
+        });
+    }
+
+    private boolean controlID(){
+        if(currentUser.getCarparkid().equals(ParkingInformationActivity.park_id)){
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
     private void init_logged_user() {
