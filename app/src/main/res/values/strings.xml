@@ -4,7 +4,8 @@
     <string name="login_enter">Login</string>
     <string name="sign_up_enter">Sign Up</string>
     <string name="search_inMapAct">Search</string>
-    <string name="res_inMapAct">RES</string>
+    <string name="res_inMapAct">RESERVATION</string>
+    <string name="inf_inMapAct">PARKING INFO</string>
     <string name="qr_activity_entrence">QR Activity</string>
     <string name="scan_test">Scan</string>
     <string name="res_text">Result</string>
@@ -14,4 +15,6 @@
     <string name="sign_up">SIGN UP</string>
     <string name="sign_in">SIGN IN</string>
     <string name="entrance">entrance</string>
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
 </resources>

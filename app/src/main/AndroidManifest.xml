@@ -43,7 +43,7 @@
             android:label=""/>
         <activity android:name=".Activities.MapsActivity"
             android:screenOrientation="portrait"
-            android:label="Find Parks"/>
+            android:theme="@style/Theme.NoActionBar"/>
         <activity android:name=".Activities.QRActivity" />
         <activity android:name=".Activities.ScanCodeActivity"/>
         <activity android:name=".Activities.ParkingInformationActivity"/>

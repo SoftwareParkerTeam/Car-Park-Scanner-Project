@@ -3,11 +3,22 @@
     <style name="Theme.XPark" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="colorPrimary">#3f74a5</item>
         <item name="colorPrimaryDark">#154d7d</item>
+        <item name="colorAccent">#3f74a5</item>
+    </style>
+
+    <style name="Theme.NoActionBar" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">#3f74a5</item>
+        <item name="colorPrimaryDark">#154d7d</item>
+        <item name="colorAccent">#3f74a5</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
     </style>
 
     <style name="Theme.GradientActivity" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="colorPrimary">#3f74a5</item>
         <item name="colorPrimaryDark">#154d7d</item>
+        <item name="colorAccent">#3f74a5</item>
         <item name="android:statusBarColor">#3f74a5</item>
         <item name="android:actionBarStyle">@style/ThemeActionBar</item>
         <item name="android:windowActionBarOverlay">true</item>

@@ -1,13 +1,22 @@
 package com.example.xpark.Activities;
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
+
 import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.location.Location;
@@ -15,6 +24,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -35,6 +45,9 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -44,10 +57,14 @@ import es.dmoral.toasty.Toasty;
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     /* UI Components */
-    private Button search_button;
+    FloatingActionButton search_button;
     private Button res_button;
-    private Button exit_button;
+    private Button inf_button;
     private GoogleMap map;
+    private DrawerLayout mDrawer;
+    private Toolbar toolbar;
+    private NavigationView nvDrawer;
+    private ActionBarDrawerToggle drawerToggle;
 
     /* Managers, Wrappers and etc */
     private FirebaseCarparkManager DBparkManager;
@@ -68,15 +85,21 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     /* Lock for selected car park */
     private final Object markers_on_screen_lock = new Object();
 
+    private void toggleButtons(){
+        res_button = findViewById(R.id.button_res);
+        inf_button = findViewById(R.id.button_inf);
+        if(currentUser == null || currentUser.getCarparkid() == null || currentUser.getCarparkid().equals(currentUser.NOT_PARKED)){
+            res_button.setVisibility(View.VISIBLE);
+            inf_button.setVisibility(View.INVISIBLE);
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         /* get logged user */
         init_logged_user();
-
-        /* kullanıcının park edip etmediğini kontrol et */
-        checkParkingStatus();
 
         if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
             // crucial, don't remove.
@@ -94,6 +117,129 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         /* initialize DB managers */
         DB_init();
+        toggleButtons();
+    }
+
+//    @Override
+//    protected void onStart() {
+//        super.onStart();
+//        init_logged_user();
+//        checkPermission();
+//        toggleButtons();
+//    }
+//
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+//        init_logged_user();
+//        checkPermission();
+//        toggleButtons();
+//    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        drawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        drawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // The action bar home/up action should open or close the drawer.
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                mDrawer.openDrawer(GravityCompat.START);
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private boolean onDrawerItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.nav_third_fragment: {
+                SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+                settings.edit().clear().commit();
+
+                Intent intent = new Intent(this, LoginActivity.class);
+                this.startActivity(intent);
+
+                //close navigation drawer
+                mDrawer.closeDrawer(GravityCompat.START);
+                return true;
+            }
+        }
+        mDrawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+    /**
+     * Initialize UI components.
+     */
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void UI_init() {
+        setContentView(R.layout.activity_maps);
+        search_button = findViewById(R.id.button_search);
+        res_button = findViewById(R.id.button_res);
+        inf_button = findViewById(R.id.button_inf);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        nvDrawer = (NavigationView) findViewById(R.id.nav_view);
+
+        drawerToggle = new ActionBarDrawerToggle(this, mDrawer, toolbar, R.string.drawer_open,  R.string.drawer_close);
+
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        drawerToggle.setDrawerIndicatorEnabled(true);
+        drawerToggle.syncState();
+
+        mDrawer.addDrawerListener(drawerToggle);
+        nvDrawer.setNavigationItemSelectedListener(
+                new NavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                        return onDrawerItemSelected(menuItem);
+                    }
+                }
+        );
+
+        // markes on screen as hashmap
+        markersOnScreen = new HashMap<>();
+
+        /* search icin listener ekle */
+        search_button.setOnClickListener(v -> {
+            if(map != null) {
+                /* search car park, in new thread. */
+                DBparkManager.showNearestCarParks();
+            }
+        });
+
+        /* rezerve butonu icin listener ekle */
+        res_button.setOnClickListener(v -> {
+            synchronized (markers_on_screen_lock) {
+                if (selectedCarpark != null) {
+                    LocalDateTime date = LocalDateTime.now(ZoneId.of("Europe/Istanbul"));
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+                    String time = formatter.format(date);
+                    System.out.println(selectedCarpark.getCoordinates());
+                    DBparkManager.startParking(selectedCarpark, currentUser, time);
+                }
+                else
+                    Toasty.warning(this.getApplicationContext(), ToastMessageConstants.TOAST_MSG_ERROR_INVALID_CPARK_SELECT, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        /* Todo : handle below */
+        SupportMapFragment mapFragment = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);
+        ViewGroup.LayoutParams params = mapFragment.getView().getLayoutParams();
+        mapFragment.getMapAsync(this);
     }
 
     /**
@@ -147,56 +293,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         {
             /* Todo : map cannot be loaded, handle. */
         }
-    }
-
-    /**
-     * Initialize UI components.
-     */
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private void UI_init() {
-        setContentView(R.layout.activity_maps);
-        search_button = findViewById(R.id.button_search);
-        res_button = findViewById(R.id.button_res);
-        exit_button = findViewById(R.id.button_exit);
-
-        // markes on screen as hashmap
-        markersOnScreen = new HashMap<>();
-
-        /* search icin listener ekle */
-        search_button.setOnClickListener(v -> {
-            if(map != null) {
-                /* search car park, in new thread. */
-                DBparkManager.showNearestCarParks();
-            }
-        });
-
-        /* rezerve butonu icin listener ekle */
-        res_button.setOnClickListener(v -> {
-            synchronized (markers_on_screen_lock) {
-                if (selectedCarpark != null) {
-                    LocalDateTime date = LocalDateTime.now(ZoneId.of("Europe/Istanbul"));
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-                    String time = formatter.format(date);
-                    System.out.println(selectedCarpark.getCoordinates());
-                    DBparkManager.startParking(selectedCarpark, currentUser, time);
-                }
-                else
-                    Toasty.warning(this.getApplicationContext(), ToastMessageConstants.TOAST_MSG_ERROR_INVALID_CPARK_SELECT, Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        exit_button.setOnClickListener(v -> {
-            SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-            settings.edit().clear().commit();
-
-            Intent intent = new Intent(this, EntranceDebugActivity.class);
-            this.startActivity(intent);
-        });
-
-        /* Todo : handle below */
-        SupportMapFragment mapFragment = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);
-        ViewGroup.LayoutParams params = mapFragment.getView().getLayoutParams();
-        mapFragment.getMapAsync(this);
     }
 
     /**
@@ -266,7 +362,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         Intent intent = new Intent(this, ParkingInformationActivity.class);
         intent.putExtra("CURRENT_USER",currentUser);
         this.startActivity(intent);
-        finish();
     }
 
     /**
@@ -305,31 +400,5 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     .build();
             map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
         }
-    }
-
-    /* Below is Android stuff.. */
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
     }
 }
