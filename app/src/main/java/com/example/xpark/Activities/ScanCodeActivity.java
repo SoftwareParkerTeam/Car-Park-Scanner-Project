@@ -10,9 +10,7 @@ import com.google.zxing.Result;
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
 public class ScanCodeActivity extends AppCompatActivity implements ZXingScannerView.ResultHandler {
-
     private ZXingScannerView Scanner;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -21,23 +19,21 @@ public class ScanCodeActivity extends AppCompatActivity implements ZXingScannerV
     }
 
     @Override
-    public void handleResult(Result result) {
-
+    public void handleResult(Result result){
         QRActivity.res.setText(result.getText());
+        QRActivity.park_id = (result.getText());
         onBackPressed();
     }
 
     @Override
-    protected void onPause() {
+    protected void onPause(){
         super.onPause();
-
         Scanner.stopCamera();
     }
 
     @Override
-    protected void onResume() {
+    protected void onResume(){
         super.onResume();
-
         Scanner.setResultHandler(this);
         Scanner.startCamera();
     }

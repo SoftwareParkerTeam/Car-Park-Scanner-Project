@@ -52,6 +52,11 @@ public class ParkingInformationActivity extends AppCompatActivity {
 
         /* parkı bitir butonu */
         finishPark_button.setOnClickListener(v -> {
+            /*Intent intent = new Intent(this, QRActivity.class);
+            intent.putExtra("CURRENT_USER",currentUser);
+            this.startActivity(intent);
+
+            if(QRActivity.qrBoolean)*/
             finishPark();
         });
     }
