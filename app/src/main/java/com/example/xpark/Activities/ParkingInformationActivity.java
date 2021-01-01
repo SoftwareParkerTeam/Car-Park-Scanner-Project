@@ -2,11 +2,15 @@ package com.example.xpark.Activities;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,10 +37,16 @@ public class ParkingInformationActivity extends AppCompatActivity {
     private Button finishPark_button;
     private TextView textTime;
     private User currentUser;
-    private Button testScan;
-    public static String park_id;
+    private Button qrScanButton;
     private Boolean qrBoolean;
 
+    public static String park_id = "";
+    public static Boolean isScanned = false;
+
+    /* CAMERA PERMISSION REQUEST CODE */
+    private static final int MY_CAMERA_REQUEST_CODE = 100;
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,46 +55,45 @@ public class ParkingInformationActivity extends AppCompatActivity {
         init_logged_user();
 
         UI_init();
+        checkParking();
     }
 
+    private void checkParking() {
+        if (currentUser != null) {
+            if (currentUser.getCarparkid().equals(ParkingInformationActivity.park_id))
+                finishPark();
+            else if (isScanned)
+                Toasty.warning(this.getApplicationContext(), ToastMessageConstants.TOAST_MSG_ERROR_WRONG_QR, Toast.LENGTH_SHORT).show();
+        } else {
+            throw new ExceptionInInitializerError("The User cannot be getted...");
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private void scanCarParkQR() {
+        /* Eğer uygulamanın kamera izni yoksa bunu sorar */
+        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA)
+                == PackageManager.PERMISSION_DENIED) {
+            requestPermissions(new String[]{Manifest.permission.CAMERA}, MY_CAMERA_REQUEST_CODE);
+        } else {
+            Intent intent = new Intent(getApplicationContext(), ScanCodeActivity.class);
+            intent.putExtra("CURRENT_USER", currentUser);
+            startActivity(intent);
+            finish();
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
     private void UI_init() {
         finishPark_button = findViewById(R.id.button_finish);
         textTime = findViewById(R.id.text_time);
-        testScan = findViewById(R.id.testScan);
+        qrScanButton = findViewById(R.id.QrScanner);
         textTime.setText(currentUser.getParkingTime());
 
         /* parkı bitir butonu */
-        finishPark_button.setOnClickListener(v -> {
-           /* Intent intent = new Intent(this, QRActivity.class);
-            intent.putExtra("CURRENT_USER",currentUser);
-            this.startActivity(intent);
-            finish();
-            if(QRActivity.qrBoolean)*/
-            finishPark();
-        });
-        testScan.setOnClickListener( view -> {
-            startActivity(new Intent(getApplicationContext(), ScanCodeActivity.class));
-            this.qrBoolean = controlID();
-           /*System.out.println("qr boolean");
-            System.out.println(this.qrBoolean);
-            System.out.println("current user id");
-            System.out.println(currentUser.getCarparkid());
-            System.out.println("qr id");
-            System.out.println(ParkingInformationActivity.park_id);*/
-            if(qrBoolean)
-                finishPark();
-            else
-                System.out.println("yanlış qr");
-        });
-    }
-
-    private boolean controlID(){
-        if(currentUser.getCarparkid().equals(ParkingInformationActivity.park_id)){
-            return true;
-        }
-        else {
-            return false;
-        }
+        finishPark_button.setOnClickListener(v -> { finishPark(); });
+        /* parkı tarayarak bitir butonu yukardaki şuanlık direkt parkı bitirir testler için kullanıyoruz */
+        qrScanButton.setOnClickListener(v -> { scanCarParkQR(); });
     }
 
     private void init_logged_user() {
@@ -106,7 +115,6 @@ public class ParkingInformationActivity extends AppCompatActivity {
 
         // Todo : handle balance and etc..
         this.removeUserFromCarpark();
-
     }
 
     private void calculateTime(LocalDateTime d1, LocalDateTime d2){
@@ -117,7 +125,6 @@ public class ParkingInformationActivity extends AppCompatActivity {
 
     private void removeUserFromCarpark()
     {
-
         /* parse user */
         String carParkGnrlId = currentUser.getCarparkid();
 

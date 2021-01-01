@@ -24,30 +24,34 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/map_key" />
 
-        <activity android:name=".Activities.EntranceActivity"
+        <activity
+            android:name=".Activities.EntranceActivity"
+            android:label=""
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.GradientActivity"
-            android:label="">
+            android:theme="@style/Theme.GradientActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Activities.SignUpActivity"
+        <activity
+            android:name=".Activities.SignUpActivity"
+            android:label=""
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.GradientActivity"
-            android:label=""/>
-        <activity android:name=".Activities.LoginActivity"
+            android:theme="@style/Theme.GradientActivity" />
+        <activity
+            android:name=".Activities.LoginActivity"
+            android:label=""
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.GradientActivity"
-            android:label=""/>
-        <activity android:name=".Activities.MapsActivity"
+            android:theme="@style/Theme.GradientActivity" />
+        <activity
+            android:name=".Activities.MapsActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.NoActionBar"/>
-        <activity android:name=".Activities.QRActivity" />
-        <activity android:name=".Activities.ScanCodeActivity"/>
-        <activity android:name=".Activities.ParkingInformationActivity"/>
-        <activity android:name=".Activities.EntranceDebugActivity"/>
+            android:theme="@style/Theme.NoActionBar" />
+        <activity android:name=".Activities.ScanCodeActivity" />
+        <activity android:name=".Activities.ParkingInformationActivity" />
+        <activity android:name=".Activities.EntranceDebugActivity" />
     </application>
 
 </manifest>

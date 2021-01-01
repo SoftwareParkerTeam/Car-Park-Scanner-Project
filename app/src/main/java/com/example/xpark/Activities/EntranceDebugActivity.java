@@ -45,10 +45,5 @@ public class EntranceDebugActivity extends AppCompatActivity {
             Intent intent = new Intent(this, MapsActivity.class);
             this.startActivity(intent);
         });
-
-        qr.setOnClickListener(view -> {
-            Intent intent = new Intent(this, QRActivity.class);
-            this.startActivity(intent);
-        });
     }
 }

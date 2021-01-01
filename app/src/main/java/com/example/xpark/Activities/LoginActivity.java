@@ -7,7 +7,6 @@ import android.widget.TextView;
 
 import com.example.xpark.DataBaseProvider.FirebaseUserManager;
 import com.example.xpark.R;
-import com.example.xpark.Utils.EncodeAdapter;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 

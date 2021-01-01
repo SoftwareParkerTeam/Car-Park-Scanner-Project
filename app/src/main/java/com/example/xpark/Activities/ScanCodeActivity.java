@@ -2,8 +2,10 @@ package com.example.xpark.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 
+import com.example.xpark.Module.User;
 import com.example.xpark.R;
 import com.google.zxing.Result;
 
@@ -11,28 +13,30 @@ import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
 public class ScanCodeActivity extends AppCompatActivity implements ZXingScannerView.ResultHandler {
     private ZXingScannerView Scanner;
+    private User currentUser;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Scanner = new ZXingScannerView(this);
         setContentView(Scanner);
+        ParkingInformationActivity.isScanned = true;
     }
 
     @Override
     public void handleResult(Result result){
-        //ParkingInformationActivity.res.setText(result.getText());
         ParkingInformationActivity.park_id = (result.getText());
-       /* System.out.println("park qr id");
-        System.out.println(ParkingInformationActivity.park_id);
-        System.out.println("qr result");
-        System.out.println(result.getText());*/
+        init_logged_user();
+        Intent intent = new Intent(getApplicationContext(), ParkingInformationActivity.class);
+        intent.putExtra("CURRENT_USER", currentUser);
+        startActivity(intent);
+        finish();
         onBackPressed();
     }
 
     @Override
     protected void onPause(){
         super.onPause();
-        System.out.println(ParkingInformationActivity.park_id);
         Scanner.stopCamera();
     }
 
@@ -41,5 +45,11 @@ public class ScanCodeActivity extends AppCompatActivity implements ZXingScannerV
         super.onResume();
         Scanner.setResultHandler(this);
         Scanner.startCamera();
+    }
+
+    private void init_logged_user() {
+        Intent intent = getIntent();
+        currentUser = (User) intent.getSerializableExtra("CURRENT_USER");
+        System.out.println("USER GETTED : " + currentUser);
     }
 }

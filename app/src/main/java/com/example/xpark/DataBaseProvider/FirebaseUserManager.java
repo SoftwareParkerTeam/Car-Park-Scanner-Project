@@ -10,6 +10,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import com.example.xpark.Activities.LoginActivity;
 import com.example.xpark.Activities.MapsActivity;
+import com.example.xpark.Activities.ParkingInformationActivity;
 import com.example.xpark.Utils.ToastMessageConstants;
 import com.example.xpark.Module.User;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -140,11 +141,18 @@ public class FirebaseUserManager {
                 User getted_user = new User(snapshot);
                 System.out.println("1) user getted : " + getted_user);
 
-                /* create new intent and start new activity */
-                Intent intent = new Intent(activity_ref, MapsActivity.class);
-                intent.putExtra("CURRENT_USER",getted_user);
-                activity_ref.startActivity(intent);
-                activity_ref.finish();
+                if(getted_user.getCarparkid().equals(User.NOT_PARKED)) {
+                    /* create new intent and start new activity */
+                    Intent intent = new Intent(activity_ref, MapsActivity.class);
+                    intent.putExtra("CURRENT_USER",getted_user);
+                    activity_ref.startActivity(intent);
+                    activity_ref.finish();
+                } else {
+                    Intent intent = new Intent(activity_ref, ParkingInformationActivity.class);
+                    intent.putExtra("CURRENT_USER", getted_user);
+                    activity_ref.startActivity(intent);
+                    activity_ref.finish();
+                }
             }
 
             @Override
