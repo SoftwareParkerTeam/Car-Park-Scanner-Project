@@ -88,12 +88,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void toggleButtons(){
         res_button = findViewById(R.id.button_res);
         inf_button = findViewById(R.id.button_inf);
-        if(currentUser == null || currentUser.getCarparkid() == null || currentUser.getCarparkid().equals(currentUser.NOT_PARKED)){
+        if(currentUser == null || currentUser.getCarparkid() == null || currentUser.getCarparkid().equals(User.NOT_PARKED)){
             res_button.setVisibility(View.VISIBLE);
             inf_button.setVisibility(View.INVISIBLE);
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
