@@ -3,7 +3,7 @@ package com.example.xpark.Activities;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-
+import androidx.test.rule.ActivityTestRule;
 import com.example.xpark.DataBaseProvider.FirebaseUserManager;
 import com.example.xpark.R;
 
