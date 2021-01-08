@@ -19,6 +19,12 @@ import com.example.xpark.Module.CarPark;
 import com.example.xpark.Module.User;
 import com.example.xpark.R;
 import com.example.xpark.Utils.ToastMessageConstants;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -32,11 +38,12 @@ import java.util.HashMap;
 import java.time.ZoneId;
 import es.dmoral.toasty.Toasty;
 
-public class ParkingInformationActivity extends AppCompatActivity {
+public class ParkingInformationActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private Button finishPark_button;
     private TextView textTime;
     private User currentUser;
+    private CarPark selectedpark;
     private Button qrScanButton;
     private Boolean qrBoolean;
 
@@ -53,9 +60,27 @@ public class ParkingInformationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_parking_information);
         System.out.println("PARKING INF ACTIVITY");
         init_logged_user();
+        init_selected_carpark();
 
         UI_init();
         checkParking();
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        if(googleMap != null) {
+            if (selectedpark != null) {
+                LatLng coordinates = new LatLng(selectedpark.getLatitude(), selectedpark.getLongitude());
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(coordinates, 16));
+                googleMap.addMarker(new MarkerOptions().position(coordinates).title(selectedpark.getName()));
+            }
+        }
+    }
+
+    private void init_selected_carpark(){
+        Intent intent = getIntent();
+        selectedpark = (CarPark) intent.getSerializableExtra("CARPARK");
+        System.out.println("GETTED CARPARK NAME:" + selectedpark.getName());
     }
 
     private void checkParking() {
@@ -85,6 +110,9 @@ public class ParkingInformationActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void UI_init() {
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map2);
+        mapFragment.getMapAsync(this);
+
         finishPark_button = findViewById(R.id.button_finish);
         textTime = findViewById(R.id.text_time);
         qrScanButton = findViewById(R.id.QrScanner);

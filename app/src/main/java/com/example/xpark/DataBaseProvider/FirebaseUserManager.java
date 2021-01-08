@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import com.example.xpark.Activities.LoginActivity;
 import com.example.xpark.Activities.MapsActivity;
 import com.example.xpark.Activities.ParkingInformationActivity;
+import com.example.xpark.Module.CarPark;
 import com.example.xpark.Utils.ToastMessageConstants;
 import com.example.xpark.Module.User;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -148,10 +149,30 @@ public class FirebaseUserManager {
                     activity_ref.startActivity(intent);
                     activity_ref.finish();
                 } else {
-                    Intent intent = new Intent(activity_ref, ParkingInformationActivity.class);
-                    intent.putExtra("CURRENT_USER", getted_user);
-                    activity_ref.startActivity(intent);
-                    activity_ref.finish();
+                    String carparkid = getted_user.getCarparkid();
+                    String carpark = carparkid.substring(0,carparkid.indexOf("-"));
+                    String id = carparkid.substring(carparkid.indexOf("-")+1, carparkid.length());
+                    DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(FirebaseDBConstants.DB_CARPARK_FIELD).child(carpark).child(id);
+
+                    /* get logged in user for ONCE */
+                    ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            CarPark getted_carpark = new CarPark(snapshot);
+                            System.out.println("1) user carpark : " + getted_carpark);
+
+                            Intent intent = new Intent(activity_ref, ParkingInformationActivity.class);
+                            intent.putExtra("CURRENT_USER", getted_user);
+                            intent.putExtra("CARPARK", getted_carpark);
+                            activity_ref.startActivity(intent);
+                            activity_ref.finish();
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
                 }
             }
 

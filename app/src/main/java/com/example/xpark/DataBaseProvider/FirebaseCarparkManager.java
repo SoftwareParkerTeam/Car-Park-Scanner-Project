@@ -16,6 +16,7 @@ import com.example.xpark.Utils.ToastMessageConstants;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -139,7 +140,7 @@ public class FirebaseCarparkManager {
      */
     private void addCarparkToMap(CarPark newCarPark,String title, String park_info)
     {
-        Marker m = map.addMarker(new MarkerOptions().position(newCarPark.getCoordinates()).title(newCarPark.getName()).snippet(park_info));
+        Marker m = map.addMarker(new MarkerOptions().position(new LatLng(newCarPark.getLatitude(),newCarPark.getLongitude())).title(newCarPark.getName()).snippet(park_info));
         synchronized (markers_on_screen_lock) {
             markersOnScreen.put(m, newCarPark);
         }
@@ -299,6 +300,7 @@ public class FirebaseCarparkManager {
                             Thread.sleep(2000);
                             Intent intent = new Intent(activity, ParkingInformationActivity.class);
                             intent.putExtra("CURRENT_USER",user);
+                            intent.putExtra("CARPARK",carpark);
                             activity.startActivity(intent);
                             activity.finish();
                         }catch (InterruptedException ex)

@@ -229,7 +229,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     LocalDateTime date = LocalDateTime.now(ZoneId.of("Europe/Istanbul"));
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
                     String time = formatter.format(date);
-                    System.out.println(selectedCarpark.getCoordinates());
+                    System.out.println(selectedCarpark.getLatitude()+selectedCarpark.getLongitude());
                     DBparkManager.startParking(selectedCarpark, currentUser, time);
                 }
                 else
@@ -349,20 +349,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         Intent intent = getIntent();
         currentUser = (User) intent.getSerializableExtra("CURRENT_USER");
         System.out.println("USER GETTED : " + currentUser);
-    }
-
-    private void checkParkingStatus() {
-        if(currentUser != null)
-            if(!currentUser.getCarparkid().equals(User.NOT_PARKED)){
-                this.startNextActivity();
-            }
-    }
-
-    /*starts information activity*/
-    private void startNextActivity(){
-        Intent intent = new Intent(this, ParkingInformationActivity.class);
-        intent.putExtra("CURRENT_USER",currentUser);
-        this.startActivity(intent);
     }
 
     /**

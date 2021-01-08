@@ -7,14 +7,16 @@ import com.example.xpark.DataBaseProvider.FirebaseDBConstants;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.DataSnapshot;
 
+import java.io.Serializable;
 import java.util.HashMap;
 
-public class CarPark {
+public class CarPark implements Serializable {
     private String id;
     private String generalid;
     private String name;
     private String phone;
-    private LatLng coordinates;
+    private double longitude;
+    private double latitude;
     private int capacity;
     private int used;
 
@@ -27,9 +29,8 @@ public class CarPark {
      */
     public CarPark(DataSnapshot shot)
     {
-        double longitude = (double)shot.child(FirebaseDBConstants.DB_CARPARK_CHILD_COORDINATES).child(FirebaseDBConstants.DB_CARPARK_CHILD_LONGITUDE).getValue();
-        double latitude = (double)shot.child(FirebaseDBConstants.DB_CARPARK_CHILD_COORDINATES).child(FirebaseDBConstants.DB_CARPARK_CHILD_LATITUDE).getValue();
-        this.coordinates = new LatLng(latitude,longitude);
+        this.longitude = (double)shot.child(FirebaseDBConstants.DB_CARPARK_CHILD_LONGITUDE).getValue();
+        this.latitude = (double)shot.child(FirebaseDBConstants.DB_CARPARK_CHILD_LATITUDE).getValue();
         this.id = (String)shot.child(FirebaseDBConstants.DB_CARPARK_CHILD_ID).getValue();
         this.capacity = ((Long)(shot.child(FirebaseDBConstants.DB_CARPARK_CHILD_CAPACITY).getValue())).intValue();
         this.used = ((Long)(shot.child(FirebaseDBConstants.DB_CARPARK_CHILD_USED).getValue())).intValue();
@@ -44,10 +45,8 @@ public class CarPark {
      */
     public CarPark(HashMap map)
     {
-        HashMap coord_map = (HashMap) map.get(FirebaseDBConstants.DB_CARPARK_CHILD_COORDINATES);
-        double longitude = (double)coord_map.get(FirebaseDBConstants.DB_CARPARK_CHILD_LONGITUDE);
-        double latitude = (double)coord_map.get(FirebaseDBConstants.DB_CARPARK_CHILD_LATITUDE);
-        this.coordinates = new LatLng(latitude,longitude);
+        this.longitude = (double)map.get(FirebaseDBConstants.DB_CARPARK_CHILD_LONGITUDE);
+        this.latitude = (double)map.get(FirebaseDBConstants.DB_CARPARK_CHILD_LATITUDE);
         this.capacity = ((Long)map.get(FirebaseDBConstants.DB_CARPARK_CHILD_CAPACITY)).intValue();
         this.used = ((Long)map.get(FirebaseDBConstants.DB_CARPARK_CHILD_USED)).intValue();
         this.id = (String)map.get(FirebaseDBConstants.DB_CARPARK_CHILD_ID);
@@ -89,15 +88,6 @@ public class CarPark {
     }
 
     /**
-     * Gets the coordinates ot the car park as LatLng type.
-     * @return Coordinates ot the car park as LatLng type.
-     */
-    public LatLng getCoordinates()
-    {
-        return coordinates;
-    }
-
-    /**
      * Gets the number of the free parking are in the car park.
      * @return Number of the free parking are in the car park.
      */
@@ -134,10 +124,8 @@ public class CarPark {
         this.setUsed(this.getUsed() - 1);
     }
 
-
-    public void setCoordinates(LatLng coordinates) {
-        this.coordinates = coordinates;
-    }
+    public double getLongitude(){ return this.longitude;}
+    public double getLatitude(){ return this.latitude;}
 
     @NonNull
     @Override
@@ -150,7 +138,7 @@ public class CarPark {
     @Override
     public int hashCode()
     {
-        String s = " " + coordinates.latitude + coordinates.longitude + generalid;
+        String s = " " + latitude + longitude + generalid;
         return s.hashCode();
     }
 
