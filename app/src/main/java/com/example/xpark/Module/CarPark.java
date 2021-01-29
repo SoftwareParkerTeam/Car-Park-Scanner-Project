@@ -19,6 +19,7 @@ public class CarPark implements Serializable {
     private double latitude;
     private int capacity;
     private int used;
+    private double pricePerMinute;
 
     public CarPark(){
     }
@@ -29,14 +30,22 @@ public class CarPark implements Serializable {
      */
     public CarPark(DataSnapshot shot)
     {
-        this.longitude = (double)shot.child(FirebaseDBConstants.DB_CARPARK_CHILD_LONGITUDE).getValue();
-        this.latitude = (double)shot.child(FirebaseDBConstants.DB_CARPARK_CHILD_LATITUDE).getValue();
+        this.longitude = (double) shot.child(FirebaseDBConstants.DB_CARPARK_CHILD_LONGITUDE).getValue();
+        this.latitude = (double) shot.child(FirebaseDBConstants.DB_CARPARK_CHILD_LATITUDE).getValue();
         this.id = (String)shot.child(FirebaseDBConstants.DB_CARPARK_CHILD_ID).getValue();
         this.capacity = ((Long)(shot.child(FirebaseDBConstants.DB_CARPARK_CHILD_CAPACITY).getValue())).intValue();
         this.used = ((Long)(shot.child(FirebaseDBConstants.DB_CARPARK_CHILD_USED).getValue())).intValue();
         this.name = (String)shot.child(FirebaseDBConstants.DB_CARPARK_CHILD_NAME).getValue();
         this.phone = (String)shot.child(FirebaseDBConstants.DB_CARPARK_CHILD_PHONE).getValue();
         this.generalid = (String)shot.child(FirebaseDBConstants.DB_CARPARK_CHILD_GENERALID).getValue();
+
+        // TODO : Exception yakalanmayacak
+        try {
+            this.pricePerMinute = (double) shot.child(FirebaseDBConstants.DB_CARPARK_CHILD_PRICEPERMINUTE).getValue();
+        } catch (Exception e) {
+            this.pricePerMinute = 0;
+        }
+
     }
 
     /**
@@ -53,6 +62,7 @@ public class CarPark implements Serializable {
         this.phone = (String)map.get(FirebaseDBConstants.DB_CARPARK_CHILD_PHONE);
         this.name =  (String)map.get(FirebaseDBConstants.DB_CARPARK_CHILD_NAME);
         this.generalid = (String)map.get(FirebaseDBConstants.DB_CARPARK_CHILD_GENERALID);
+        this.pricePerMinute = (double)map.get(FirebaseDBConstants.DB_CARPARK_CHILD_PRICEPERMINUTE);
     }
 
     /**
@@ -70,6 +80,9 @@ public class CarPark implements Serializable {
     public String getPhone() {
         return phone;
     }
+
+    public double getPricePerMinute() { return this.pricePerMinute; }
+    public void setPricePerMinute(double price) { this.pricePerMinute = price; }
 
     /**
      *
@@ -147,5 +160,4 @@ public class CarPark implements Serializable {
         CarPark test = (CarPark)obj;
         return test.hashCode() == this.hashCode();
     }
-
 }

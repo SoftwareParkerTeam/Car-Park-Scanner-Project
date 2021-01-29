@@ -70,12 +70,14 @@ public class FirebaseUserManager {
      * Yeni uyelik acar. Acilan yeni uyeligi DB de auth kismina ve Real Time DB kismina ekler.
      * AUTH ve real time DB kismi senkronize edilmistir.
      * @param user DB ye yeni eklenecek user referansi.
+     * @param temp_password auth kısmına hashlenerek eklenecek şifre
      * @note Bu metod calistiktan sonra user referansi uid degerini elde etmis olur.
      */
-    public void createNewUser(User user)
+    public void createNewUser(User user, String temp_password)
     {
         FirebaseAuth auth = FirebaseAuth.getInstance();
-        auth.createUserWithEmailAndPassword(user.getEmail(), user.getPassword()).addOnCompleteListener((OnCompleteListener<AuthResult>) task -> {
+        auth.createUserWithEmailAndPassword(user.getEmail(), temp_password).addOnCompleteListener((OnCompleteListener<AuthResult>) task -> {
+
             if(task.isSuccessful()) {
 
                 /* get logged in user */
@@ -109,7 +111,6 @@ public class FirebaseUserManager {
      */
     public void updateUserProperties(User user, User newuser)
     {
-        user.setPassword(newuser.getPassword());
         user.setCreditbalance(newuser.getCreditbalance());
         user.setPhone(newuser.getPhone());
 
@@ -118,6 +119,15 @@ public class FirebaseUserManager {
 
         /* update in the db */
         ref.setValue(user);
+    }
+
+    /**
+     * TODO Şifre güncelleme update edilecek -Ozan
+     * @param currentUser, mevcut user
+     * @param newPassword, yeni şifresi
+     */
+    public void updatePassword(User currentUser, String newPassword) {
+
     }
 
     public void startNextActivityAfterLogin(String fbuser_uid)

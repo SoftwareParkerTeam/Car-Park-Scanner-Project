@@ -4,6 +4,7 @@ package com.example.xpark.Module;
  * Author : Dilara Karakas.
  */
 
+
 import com.example.xpark.DataBaseProvider.FirebaseDBConstants;
 import com.google.firebase.database.DataSnapshot;
 
@@ -14,8 +15,6 @@ public class User implements Serializable {
 
     /** User's Email */
     private final String eMail;
-    /** User's Password */
-    private String password;
     /** User's Phone  */
     private String phone;
     /** User's Credit Balance */
@@ -26,67 +25,40 @@ public class User implements Serializable {
     private String carparkid;
     /* parking time*/
     private String parkingtime;
-
+    /* banned information */
+    private boolean banned = false;
 
     /**
      * Builds a user object
      */
     public User(){
-        this.password = null;
         this.phone = null;
         this.eMail = null;
         this.credit_balance = 0.0;
         this.carparkid = NOT_PARKED;
         this.parkingtime = NOT_PARKED;
+        this.banned = false;
     }
 
     public User(DataSnapshot shot)
     {
         this.eMail = (String)shot.child(FirebaseDBConstants.DB_USER_CHILD_EMAIL).getValue();
-        this.password = (String)shot.child(FirebaseDBConstants.DB_USER_CHILD_PASSWORD).getValue();
         this.phone = (String)shot.child(FirebaseDBConstants.DB_USER_CHILD_PHONE).getValue();
         this.uid = (String)shot.child(FirebaseDBConstants.DB_USER_CHILD_UID).getValue();
         this.credit_balance = ((Long)(shot.child(FirebaseDBConstants.DB_USER_CHILD_CREDITBALANCE).getValue())).doubleValue();
         this.carparkid = (String)shot.child(FirebaseDBConstants.DB_USER_CHILD_CARPARKID).getValue();
         this.parkingtime = (String) shot.child(FirebaseDBConstants.DB_USER_CHILD_PARKINGTIME).getValue();
+        this.banned = ((Boolean)(shot.child(FirebaseDBConstants.DB_USER_CHILD_ISBANNED).getValue())).booleanValue();
     }
 
-    /**
-     * Builds a user object with given information.
-     * @param password_ User's password
-     * @param phone_ User's phone
-     * @param eMail_ User's email
-     * @param credit_balance_ User's credit balance
-     */
-    public User(String password_, String phone_, String eMail_, double credit_balance_){
-        this.password = password_;
-        this.phone = phone_;
-        this.eMail = eMail_;
-        this.credit_balance = credit_balance_;
+
+    public User(String phone, String email) {
+        this.eMail = email;
+        this.phone = phone;
+        this.credit_balance = 50;
         this.carparkid = NOT_PARKED;
         this.parkingtime = NOT_PARKED;
-    }
-
-    /**
-     * Builds a user object with given information.
-     * @param mail User's mail.
-     * @param password User's password.
-     */
-    public User(String mail, String password){
-        this.password = password;
-        this.eMail = mail;
-        this.phone = null;
-        this.credit_balance = 0.0;
-        this.carparkid = NOT_PARKED;
-        this.parkingtime = NOT_PARKED;
-    }
-
-    /**
-     * Setter password
-     * @param password given User's password
-     */
-    public void setPassword(String password) {
-        this.password = password;
+        this.banned = false;
     }
 
     /**
@@ -128,6 +100,12 @@ public class User implements Serializable {
     public void setParkingTime(String time) { this.parkingtime = time; }
 
     /**
+     * set the banned information of user
+     * @param x will be assign banned information
+     */
+    public void setBanned(boolean x) { this.banned = x; }
+
+    /**
      * Clears the value of parked carpark id.
      */
     public void removeCarparkid()
@@ -146,13 +124,6 @@ public class User implements Serializable {
      */
     public String getUid() {
         return uid;
-    }
-    /**
-     * Getter password
-     * @return string is user's password
-     */
-    public String getPassword() {
-        return password;
     }
 
     /**
@@ -190,18 +161,26 @@ public class User implements Serializable {
     public String getParkingTime() {return parkingtime;}
 
     /**
+     * Banned information
+     * @return true if user banned otherwise false
+     */
+    public boolean getBanned() { return this.banned; }
+
+    /**
      * Overridden toString method to show user's data information
      * @return string user's data information
      */
+
     @Override
     public String toString() {
-        return "User{password="+this.password
-                +",email="+this.eMail
-                +",phone="+this.phone
-                +",uid="+this.uid
-                +",carparkid="+this.carparkid
-                +",parkingtime="+this.parkingtime
-                +",credit="+this.credit_balance+
+        return "User{" +
+                "email="+this.eMail +
+                ",phone="+this.phone +
+                ",uid="+this.uid +
+                ",carparkid="+this.carparkid +
+                ",parkingtime="+this.parkingtime +
+                ",credit="+this.credit_balance +
+                ",banned="+this.banned +
                 "}";
     }
 }

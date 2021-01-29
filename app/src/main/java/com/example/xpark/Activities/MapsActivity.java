@@ -102,6 +102,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         /* get logged user */
         init_logged_user();
 
+        checkBanned();
+
         if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
             // crucial, don't remove.
             // Activity was brought to front and not created,
@@ -121,21 +123,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         toggleButtons();
     }
 
-//    @Override
-//    protected void onStart() {
-//        super.onStart();
-//        init_logged_user();
-//        checkPermission();
-//        toggleButtons();
-//    }
-//
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-//        init_logged_user();
-//        checkPermission();
-//        toggleButtons();
-//    }
+    private void checkBanned() {
+        if (currentUser.getBanned()) {
+            Intent intent = new Intent(this, BannedActivity.class);
+            this.startActivity(intent);
+            finish();
+        }
+    }
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
@@ -388,4 +382,20 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
         }
     }
+
+    //    @Override
+//    protected void onStart() {
+//        super.onStart();
+//        init_logged_user();
+//        checkPermission();
+//        toggleButtons();
+//    }
+//
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+//        init_logged_user();
+//        checkPermission();
+//        toggleButtons();
+//    }
 }

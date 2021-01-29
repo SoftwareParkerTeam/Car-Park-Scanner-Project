@@ -380,6 +380,7 @@ public class FirebaseCarparkManager {
             while(!isAdressParsed(parsedAddr) && i < MAX_TRY)
             {
                 List<Address> addresses = gcd.getFromLocation(latitude, longitude, 1);
+
                 if (addresses != null && addresses.size() > 0) {
                     parsedAddr = parseAddressToDistrict(addresses.get(0).getAddressLine(0));
                     System.out.println(">address parse try : " + parsedAddr);

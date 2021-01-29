@@ -45,14 +45,14 @@ public class SignUpActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 User test_user = new User(
-                        ((TextView) findViewById(R.id.password)).getText().toString(),
                         ((TextView) findViewById(R.id.phone)).getText().toString(),
-                        ((TextView) findViewById(R.id.Email)).getText().toString(),
-                        50
+                        ((TextView) findViewById(R.id.Email)).getText().toString()
                 );
 
+                String temp_password = ((TextView) findViewById(R.id.password)).getText().toString();
+
                 System.out.println("USER CREATING : " + test_user);
-                DBUserManager.createNewUser(test_user);
+                DBUserManager.createNewUser(test_user, temp_password);
             }
         });
     }

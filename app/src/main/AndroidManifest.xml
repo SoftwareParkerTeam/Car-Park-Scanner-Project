@@ -15,6 +15,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.XPark">
+        <activity android:name=".Activities.BannedActivity"></activity>
 
         <uses-library
             android:name="org.apache.http.legacy"
@@ -51,7 +52,6 @@
             android:theme="@style/Theme.NoActionBar" />
         <activity android:name=".Activities.ScanCodeActivity" />
         <activity android:name=".Activities.ParkingInformationActivity" />
-        <activity android:name=".Activities.EntranceDebugActivity" />
     </application>
 
 </manifest>
