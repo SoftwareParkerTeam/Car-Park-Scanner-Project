@@ -26,7 +26,7 @@ public class User implements Serializable {
     /* parking time*/
     private String parkingtime;
     /* banned information */
-    private boolean banned = false;
+    private boolean banned;
 
     /**
      * Builds a user object

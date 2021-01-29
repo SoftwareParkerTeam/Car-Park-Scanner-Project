@@ -145,7 +145,7 @@ public class CarPark implements Serializable {
     /* TODO : change this in a better way */
     public String toString()
     {
-        return "Tel : " + this.getPhone() + "\n" + "Boş Yer : " + this.getFreeArea();
+        return "Tel : " + this.getPhone() + "\n" + "Boş Yer : " + this.getFreeArea() + "\n" + "Fiyat: " + this.getPricePerMinute() + "  (Dakika Başı)";
     }
 
     @Override

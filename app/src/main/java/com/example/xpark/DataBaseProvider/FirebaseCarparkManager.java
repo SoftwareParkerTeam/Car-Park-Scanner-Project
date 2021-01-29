@@ -377,6 +377,8 @@ public class FirebaseCarparkManager {
         String parsedAddr = null;
         try {
             /* if address is not parsed yet, try to find */
+
+            System.out.println("Test: " + gcd);
             while(!isAdressParsed(parsedAddr) && i < MAX_TRY)
             {
                 List<Address> addresses = gcd.getFromLocation(latitude, longitude, 1);
