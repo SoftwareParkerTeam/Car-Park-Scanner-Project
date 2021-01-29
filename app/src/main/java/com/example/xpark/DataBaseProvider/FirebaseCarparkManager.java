@@ -117,6 +117,7 @@ public class FirebaseCarparkManager {
         for (String provider : providers) {
             System.out.println("PROVIDE : " + provider);
             Location l = locationManager.getLastKnownLocation(provider);
+
             if (l == null) {
                 continue;
             }

@@ -27,6 +27,8 @@ public class User implements Serializable {
     private String parkingtime;
     /* banned information */
     private boolean banned;
+    /* dept information */
+    private double debt;
 
     /**
      * Builds a user object
@@ -38,6 +40,7 @@ public class User implements Serializable {
         this.carparkid = NOT_PARKED;
         this.parkingtime = NOT_PARKED;
         this.banned = false;
+        this.debt = 0.0;
     }
 
     public User(DataSnapshot shot)
@@ -49,6 +52,7 @@ public class User implements Serializable {
         this.carparkid = (String)shot.child(FirebaseDBConstants.DB_USER_CHILD_CARPARKID).getValue();
         this.parkingtime = (String) shot.child(FirebaseDBConstants.DB_USER_CHILD_PARKINGTIME).getValue();
         this.banned = ((Boolean)(shot.child(FirebaseDBConstants.DB_USER_CHILD_ISBANNED).getValue())).booleanValue();
+        this.debt = ((Long)(shot.child(FirebaseDBConstants.DB_USER_CHILD_DEBT).getValue())).doubleValue();
     }
 
 
@@ -117,6 +121,9 @@ public class User implements Serializable {
      * Clears the value of parking time.
      */
     public void removeParkingTime() { this.parkingtime = NOT_PARKED; }
+
+    public void setDebt(double x) { this.debt = x; }
+    public double getDebt() { return this.debt; }
 
     /**
      * Gets the UID of user.

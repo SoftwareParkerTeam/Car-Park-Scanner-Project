@@ -248,7 +248,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             try {
                 map.setMyLocationEnabled(true);
                 DBparkManager.setMap(map);
-
                 /* update the camera to current location */
                 animateCameraToCurrentLocation();
             } catch (SecurityException ex) {

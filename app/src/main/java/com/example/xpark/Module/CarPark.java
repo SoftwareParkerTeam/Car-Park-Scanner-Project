@@ -62,7 +62,14 @@ public class CarPark implements Serializable {
         this.phone = (String)map.get(FirebaseDBConstants.DB_CARPARK_CHILD_PHONE);
         this.name =  (String)map.get(FirebaseDBConstants.DB_CARPARK_CHILD_NAME);
         this.generalid = (String)map.get(FirebaseDBConstants.DB_CARPARK_CHILD_GENERALID);
-        this.pricePerMinute = (double)map.get(FirebaseDBConstants.DB_CARPARK_CHILD_PRICEPERMINUTE);
+
+        // TODO : Exception yakalanmayacak
+
+        try {
+            this.pricePerMinute = (double)map.get(FirebaseDBConstants.DB_CARPARK_CHILD_PRICEPERMINUTE);
+        } catch (Exception e) {
+            this.pricePerMinute = 0;
+        }
     }
 
     /**

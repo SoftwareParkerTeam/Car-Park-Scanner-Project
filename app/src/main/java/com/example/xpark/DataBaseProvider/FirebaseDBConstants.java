@@ -20,4 +20,5 @@ public final class FirebaseDBConstants {
     public static final String DB_CARPARK_CHILD_GENERALID = "generalid";
     public static final String DB_USER_CHILD_ISBANNED = "banned";
     public static final String DB_CARPARK_CHILD_PRICEPERMINUTE = "pricePerMinute";
+    public static final String DB_USER_CHILD_DEBT = "debt";
 }
