@@ -9,6 +9,8 @@ import android.location.LocationManager;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
+
 import com.example.xpark.Activities.ParkingInformationActivity;
 import com.example.xpark.Module.CarPark;
 import com.example.xpark.Module.User;
@@ -147,6 +149,7 @@ public class FirebaseCarparkManager {
         }
     }
 
+    @VisibleForTesting
     private void focusMapToMarkers()
     {
         LatLngBounds.Builder builder = new LatLngBounds.Builder();

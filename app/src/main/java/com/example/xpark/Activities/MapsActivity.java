@@ -1,6 +1,7 @@
 package com.example.xpark.Activities;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -85,6 +86,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     /* Lock for selected car park */
     private final Object markers_on_screen_lock = new Object();
 
+    @VisibleForTesting
     private void toggleButtons(){
         res_button = findViewById(R.id.button_res);
         inf_button = findViewById(R.id.button_inf);
@@ -94,6 +96,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
+    @VisibleForTesting
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,6 +126,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         toggleButtons();
     }
 
+    @VisibleForTesting
     private void checkBanned() {
         if (currentUser.getBanned()) {
             Intent intent = new Intent(this, BannedActivity.class);
@@ -131,6 +135,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
+    @VisibleForTesting
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
@@ -138,12 +143,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         drawerToggle.syncState();
     }
 
+    @VisibleForTesting
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         drawerToggle.onConfigurationChanged(newConfig);
     }
 
+    @VisibleForTesting
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // The action bar home/up action should open or close the drawer.
@@ -156,6 +163,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         return super.onOptionsItemSelected(item);
     }
 
+    @VisibleForTesting
     private boolean onDrawerItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.nav_third_fragment: {
@@ -177,6 +185,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     /**
      * Initialize UI components.
      */
+    @VisibleForTesting
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void UI_init() {
         setContentView(R.layout.activity_maps);
@@ -240,6 +249,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     /**
      * Initialize map and necessary map related tools when ready to load.
      */
+    @VisibleForTesting
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
@@ -293,6 +303,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
      * Setups, design stuff of the UI of the markers on the Google Map.
      * Call this in UI_init() method in order to design the marker type.
      */
+    @VisibleForTesting
     private void UI_init_mapMarkerType() {
         if(map == null)
             return;
@@ -333,11 +344,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
+    @VisibleForTesting
     private void DB_init() {
         this.FBUserManager = new FirebaseUserManager(this);
         this.DBparkManager = new FirebaseCarparkManager(this,markersOnScreen,markers_on_screen_lock);
     }
 
+    @VisibleForTesting
     private void init_logged_user() {
         Intent intent = getIntent();
         currentUser = (User) intent.getSerializableExtra("CURRENT_USER");
@@ -348,6 +361,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
      * Checks the necessary permissions on RUNTIME. If there are missing permission,
      * creates requests for getting permission from user.
      */
+    @VisibleForTesting
     private void checkPermission() {
         if (!(ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) ==
                 PackageManager.PERMISSION_GRANTED &&
@@ -362,6 +376,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
+    @VisibleForTesting
     private void animateCameraToCurrentLocation() {
         if(map == null)
             return;
@@ -381,20 +396,4 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
         }
     }
-
-    //    @Override
-//    protected void onStart() {
-//        super.onStart();
-//        init_logged_user();
-//        checkPermission();
-//        toggleButtons();
-//    }
-//
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-//        init_logged_user();
-//        checkPermission();
-//        toggleButtons();
-//    }
 }

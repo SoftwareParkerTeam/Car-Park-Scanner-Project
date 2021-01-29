@@ -6,8 +6,10 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.test.rule.ActivityTestRule;
 
+import com.example.xpark.DataBaseProvider.FirebaseCarparkManager;
 import com.example.xpark.DataBaseProvider.FirebaseUserManager;
 import com.example.xpark.R;
+import com.google.android.gms.maps.GoogleMap;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
@@ -32,7 +34,7 @@ public class MapsActivityTest
     }
 
     @Test
-    public void UI_INIT_TEST(){
+    public void UI_INIT_TEST() {
         FloatingActionButton search_button = myMapsActivity.findViewById(R.id.button_search);
         assertNotNull(search_button);
         Button res_button = myMapsActivity.findViewById(R.id.button_res);
@@ -45,6 +47,18 @@ public class MapsActivityTest
         assertNotNull(mDrawer);
         NavigationView nvDrawer = (NavigationView) myMapsActivity.findViewById(R.id.nav_view);
         assertNotNull(nvDrawer);
+    }
+
+    @Test
+    public void testOnConfigurationChanged() {
+    }
+
+    @Test
+    public void testOnOptionsItemSelected() {
+    }
+
+    @Test
+    public void testOnMapReady() {
     }
 
     @After
