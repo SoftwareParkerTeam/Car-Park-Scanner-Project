@@ -178,6 +178,17 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 return true;
             }
         }
+        switch (item.getItemId()){
+            case R.id.nav_second_fragment: {
+                Intent intent = new Intent(this, BalanceActivity.class);
+                intent.putExtra("CURRENT_USER", currentUser);
+                this.startActivity(intent);
+
+                //close navigation drawer
+                mDrawer.closeDrawer(GravityCompat.START);
+                return true;
+            }
+        }
         mDrawer.closeDrawer(GravityCompat.START);
         return true;
     }

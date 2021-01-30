@@ -63,6 +63,7 @@ public class User implements Serializable {
         this.carparkid = NOT_PARKED;
         this.parkingtime = NOT_PARKED;
         this.banned = false;
+        this.debt = 0.0;
     }
 
     /**
