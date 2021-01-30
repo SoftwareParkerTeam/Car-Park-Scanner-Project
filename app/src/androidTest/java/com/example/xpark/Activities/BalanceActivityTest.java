@@ -50,11 +50,6 @@ public class BalanceActivityTest {
     }
 
     @Test
-    public void testScenario(){
-        myBalancedActivity.getResult();
-    }
-
-    @Test
     public void espressoTest(){
         try{
             onView(withId(R.id.button_next)).perform(scrollTo()).perform(click());

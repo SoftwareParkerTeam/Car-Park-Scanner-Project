@@ -54,11 +54,6 @@ public class MapsActivityTest
     }
 
     @Test
-    public void testScenario(){
-        myMapsActivity.getResult();
-    }
-
-    @Test
     public void espressoTest(){
         try{
             onView(withId(R.id.button_inf)).perform(scrollTo()).perform(click());

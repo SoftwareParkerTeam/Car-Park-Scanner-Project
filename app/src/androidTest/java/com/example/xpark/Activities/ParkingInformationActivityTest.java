@@ -63,48 +63,6 @@ public class ParkingInformationActivityTest {
     }
 
     @Test
-    public void testScenario(){
-        myParkingInformationActivity.getResult();
-    }
-
-
-   /* @Test
-    public void testID_toolbar(){
-        Toolbar toolbar = myParkingInformationActivity.findViewById(R.id.toolbar2);
-        assertNotNull(toolbar);
-    }
-
-    @Test
-    public void testID_drawerL(){
-        DrawerLayout drawerLayout = myParkingInformationActivity.findViewById(R.id.drawer_layout_2);
-        assertNotNull(drawerLayout);
-    }
-
-    @Test
-    public void testID_drawerN(){
-        NavigationView drawerN = myParkingInformationActivity.findViewById(R.id.nav_view2);
-        assertNotNull(drawerN);
-    }
-
-    @Test
-    public void testID_finishPArk_button(){
-        Button finishPArk = myParkingInformationActivity.findViewById(R.id.button_finish);
-        assertNotNull(finishPArk);
-    }
-
-    @Test
-    public void testID_textTime(){
-        TextView texttime = myParkingInformationActivity.findViewById(R.id.text_time);
-        assertNotNull(texttime);
-    }
-
-    @Test
-    public void testID_qrScan_button(){
-        Button qrScanButton = myParkingInformationActivity.findViewById(R.id.QrScanner);
-        assertNotNull(qrScanButton);
-    }*/
-
-    @Test
     public void espressoTest(){
         try{
             Espresso.onView(withId(R.id.text_time)).perform(typeText("text_time"));
