@@ -36,7 +36,6 @@ import static org.junit.Assert.assertNotNull;
 
 public class MapsActivityTest
 {
-
     static Intent intent;
     static {
         User testUser = new User("+905000000000","abc@gmail.com",50.0, "NOT_PARKED","NOT_PARKED",false,0.0);
@@ -53,19 +52,6 @@ public class MapsActivityTest
     @Before
     public void setUp() throws Exception {
         myMapsActivity = activityScenarioRule.getScenario();
-    }
-
-    static class LoggingRule implements TestRule {
-        String s;
-        public LoggingRule( String s ){
-            this.s = s;
-        }
-
-        @Override
-        public Statement apply(Statement base, Description description) {
-            System.out.println( this.s );
-            return base;
-        }
     }
 
     @Test
