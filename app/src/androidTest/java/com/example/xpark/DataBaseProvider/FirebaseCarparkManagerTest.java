@@ -1,5 +1,7 @@
 package com.example.xpark.DataBaseProvider;
 
+import com.google.android.gms.maps.GoogleMap;
+
 import org.junit.Test;
 
 import static org.junit.Assert.*;

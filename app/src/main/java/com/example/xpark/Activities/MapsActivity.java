@@ -130,9 +130,17 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void checkBanned() {
         if (currentUser.getBanned()) {
             Intent intent = new Intent(this, BannedActivity.class);
+            intent.putExtra("CURRENT_USER", currentUser);
             this.startActivity(intent);
             finish();
         }
+    }
+
+    @VisibleForTesting
+    private void init_logged_user() {
+        Intent intent = getIntent();
+        currentUser = (User) intent.getSerializableExtra("CURRENT_USER");
+        System.out.println("USER GETTED : " + currentUser);
     }
 
     @VisibleForTesting
@@ -359,13 +367,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void DB_init() {
         this.FBUserManager = new FirebaseUserManager(this);
         this.DBparkManager = new FirebaseCarparkManager(this,markersOnScreen,markers_on_screen_lock);
-    }
-
-    @VisibleForTesting
-    private void init_logged_user() {
-        Intent intent = getIntent();
-        currentUser = (User) intent.getSerializableExtra("CURRENT_USER");
-        System.out.println("USER GETTED : " + currentUser);
     }
 
     /**
