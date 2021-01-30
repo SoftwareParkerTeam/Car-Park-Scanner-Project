@@ -1,5 +1,7 @@
 package com.example.xpark.Activities;
 
+import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
@@ -7,7 +9,10 @@ import android.widget.TextView;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.test.core.app.ActivityScenario;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.Espresso;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.rule.ActivityTestRule;
 
 import com.craftman.cardform.CardForm;
@@ -31,16 +36,39 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.junit.Assert.*;
 
 public class ParkingInformationActivityTest {
+    static Intent intent;
+    static {
+        CarPark car = new CarPark("1000000","34734_Kadıköy_İstanbul-1000000","Dilara","05000000000",50,10);
+        intent = new Intent(ApplicationProvider.getApplicationContext(), MapsActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("CARPARK",car);
+        intent.putExtras(bundle);
+    }
+
+    static {
+        User testUser = new User("05345212020","abcd4@gmail.com",100.0, "NOT_PARKED","NOT_PARKED",false,0.0);
+        intent = new Intent(ApplicationProvider.getApplicationContext(), MapsActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("CURRENT_USER",testUser);
+        intent.putExtras(bundle);
+    }
+
     @Rule
-    public ActivityTestRule<ParkingInformationActivity> parkingInformationActivityActivityTestRule = new ActivityTestRule<ParkingInformationActivity>(ParkingInformationActivity.class);
-    private ParkingInformationActivity myParkingInformationActivity = null;
+    public ActivityScenarioRule<ParkingInformationActivity> activityScenarioRule = new ActivityScenarioRule<>(intent);
+    public ActivityScenario<ParkingInformationActivity> myParkingInformationActivity = null;
 
     @Before
     public void setUp() throws Exception {
-        myParkingInformationActivity = parkingInformationActivityActivityTestRule.getActivity();
+        myParkingInformationActivity = activityScenarioRule.getScenario();
     }
 
     @Test
+    public void testScenario(){
+        myParkingInformationActivity.getResult();
+    }
+
+
+   /* @Test
     public void testID_toolbar(){
         Toolbar toolbar = myParkingInformationActivity.findViewById(R.id.toolbar2);
         assertNotNull(toolbar);
@@ -74,7 +102,7 @@ public class ParkingInformationActivityTest {
     public void testID_qrScan_button(){
         Button qrScanButton = myParkingInformationActivity.findViewById(R.id.QrScanner);
         assertNotNull(qrScanButton);
-    }
+    }*/
 
     @Test
     public void espressoTest(){

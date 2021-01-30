@@ -21,6 +21,16 @@ public class CarPark implements Serializable {
     private int used;
     private double pricePerMinute;
 
+    public CarPark(String id,String generalid,String name,String phone,int capacity,int used){
+        this.id = id;
+        this.generalid = generalid;
+        this.name = name;
+        this.phone = phone;
+        this.capacity = capacity;
+        this.used = used;
+    }
+
+
     public CarPark(){
     }
 
