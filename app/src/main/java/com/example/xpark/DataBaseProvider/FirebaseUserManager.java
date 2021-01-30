@@ -122,6 +122,17 @@ public class FirebaseUserManager {
     }
 
     /**
+     * Kullanicinin bakiyesini gunceller.
+     * @param user kullanici referansi.
+     * @param balance eklencek bakiye.
+     */
+    public void updateBalance(User user, double balance){
+        user.setCreditbalance(user.getCreditbalance() + balance);
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(DB_USER_FIELD).child(user.getUid());
+        ref.setValue(user);
+    }
+
+    /**
      * TODO Şifre güncelleme update edilecek -Ozan
      * @param currentUser, mevcut user
      * @param newPassword, yeni şifresi

@@ -197,6 +197,7 @@ public class User implements Serializable {
                 ",parkingtime="+this.parkingtime +
                 ",credit="+this.credit_balance +
                 ",banned="+this.banned +
+                ",debt="+this.debt +
                 "}";
     }
 }

@@ -1,20 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Activities.BalanceActivity">
-
+    tools:context=".Activities.BalanceActivity"
+    android:orientation="vertical">
 
     <TextView
-        android:id="@+id/textView3"
-        android:layout_width="125dp"
-        android:layout_height="68dp"
-        android:paddingLeft="50dp"
-        android:paddingTop="50dp"
-        android:paddingEnd="50dp"
-        android:paddingRight="50dp"
-        android:paddingBottom="50dp"
-        android:text="TextView" />
-</RelativeLayout>
+        android:id="@+id/text_balance"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        android:layout_marginTop="70dp"/>
+    <TextView
+        android:id="@+id/text_msg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
+        android:text="yuklenecek degeri yaz" />
+
+    <EditText
+        android:id="@+id/text_amount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="enter amount" />
+
+    <Button
+        android:id="@+id/button_next"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="next" />
+</LinearLayout>
