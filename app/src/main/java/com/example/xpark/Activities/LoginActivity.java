@@ -6,6 +6,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
@@ -30,10 +32,9 @@ public class LoginActivity extends AppCompatActivity {
     private Button sign_in_button;
     private Button sign_up_button;
     private FirebaseUserManager DBUserManager;
-    private TextView email_input;
-    private TextView password_input;
-    private Button forgotPw;
-    private FirebaseAuth fAuth;
+    private EditText email_input;
+    private EditText password_input;
+    private TextView forgotPw;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,48 +63,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onRestoreInstanceState(savedInstanceState);
     }
 
-    private void resetPW_INIT() {
 
-        forgotPw = findViewById(R.id.forgotPw);
-        fAuth = FirebaseAuth.getInstance();
-
-        forgotPw.setOnClickListener( v -> {
-            final EditText resetMail = new EditText(v.getContext());
-            final AlertDialog.Builder resetDialog = new AlertDialog.Builder(v.getContext());
-
-            resetDialog.setTitle("Şifre Yenile");
-            resetDialog.setMessage("Yenileme linki için yenileme linki gönder");
-            resetDialog.setView(resetMail);
-
-            resetDialog.setPositiveButton("Evet", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    String mail = resetMail.getText().toString();
-
-                    fAuth.sendPasswordResetEmail(mail).addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Toasty.success(LoginActivity.this, ToastMessageConstants.TOAST_MSG_VALID_MAIL, Toast.LENGTH_SHORT).show();
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toasty.error(LoginActivity.this, ToastMessageConstants.TOAST_MSG_ERROR_INVALID_MAIL, Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
-            });
-
-            resetDialog.setNegativeButton("Hayır", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-
-                }
-            });
-
-            resetDialog.create().show();
-        });
-    }
 
     /**
      * Initialize ui components.
@@ -115,8 +75,39 @@ public class LoginActivity extends AppCompatActivity {
         sign_up_button = findViewById(R.id.sign_up_button);
         email_input = findViewById(R.id.userName);
         password_input = findViewById(R.id.Password);
+        forgotPw = findViewById(R.id.forgotPw);
 
-        resetPW_INIT();
+        sign_in_button.setEnabled(false);
+        sign_in_button.setClickable(false);
+
+        email_input.addTextChangedListener(new TextWatcher() {
+            public void afterTextChanged(Editable s) {
+                boolean isMailNotEmpty = !email_input.getText().toString().isEmpty();
+                boolean isPasswordNotEmpty = !password_input.getText().toString().isEmpty();
+
+                sign_in_button.setEnabled(isMailNotEmpty && isPasswordNotEmpty);
+                sign_in_button.setClickable(isMailNotEmpty && isPasswordNotEmpty);
+            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+        });
+
+        password_input.addTextChangedListener(new TextWatcher() {
+            public void afterTextChanged(Editable s) {
+                boolean isMailNotEmpty = !email_input.getText().toString().isEmpty();
+                boolean isPasswordNotEmpty = !password_input.getText().toString().isEmpty();
+
+                sign_in_button.setEnabled(isMailNotEmpty && isPasswordNotEmpty);
+                sign_in_button.setClickable(isMailNotEmpty && isPasswordNotEmpty);
+            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+        });
+
+        forgotPw.setOnClickListener(v -> {
+            Intent intent = new Intent(this, ForgotPasswordActivity.class);
+            this.startActivity(intent);
+        });
 
         /* oturum ac listener baslat */
         sign_in_button.setOnClickListener(v -> {

@@ -3,8 +3,11 @@ package com.example.xpark.Activities;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.xpark.DataBaseProvider.FirebaseUserManager;
@@ -19,6 +22,9 @@ public class SignUpActivity extends AppCompatActivity {
     private FirebaseAuth fb;
     private DatabaseReference ref;
     private FirebaseUserManager DBUserManager;
+    private EditText email_field;
+    private EditText phone_field;
+    private EditText password_field;
     private Button signUp_button;
 
     @Override
@@ -55,6 +61,52 @@ public class SignUpActivity extends AppCompatActivity {
                 System.out.println("USER CREATING : " + test_user);
                 DBUserManager.createNewUser(test_user, temp_password);
             }
+        });
+
+        signUp_button.setEnabled(false);
+        signUp_button.setClickable(false);
+
+        email_field = findViewById(R.id.Email);
+        phone_field = findViewById(R.id.phone);
+        password_field = findViewById(R.id.password);
+
+        email_field.addTextChangedListener(new TextWatcher() {
+            public void afterTextChanged(Editable s) {
+                boolean isMailNotEmpty = !email_field.getText().toString().isEmpty();
+                boolean isPhoneNotEmpty = !phone_field.getText().toString().isEmpty();
+                boolean isPasswordNotEmpty = !password_field.getText().toString().isEmpty();
+
+                signUp_button.setEnabled(isMailNotEmpty && isPhoneNotEmpty && isPasswordNotEmpty);
+                signUp_button.setClickable(isMailNotEmpty && isPhoneNotEmpty && isPasswordNotEmpty);
+            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+        });
+
+        phone_field.addTextChangedListener(new TextWatcher() {
+            public void afterTextChanged(Editable s) {
+                boolean isMailNotEmpty = !email_field.getText().toString().isEmpty();
+                boolean isPhoneNotEmpty = !phone_field.getText().toString().isEmpty();
+                boolean isPasswordNotEmpty = !password_field.getText().toString().isEmpty();
+
+                signUp_button.setEnabled(isMailNotEmpty && isPhoneNotEmpty && isPasswordNotEmpty);
+                signUp_button.setClickable(isMailNotEmpty && isPhoneNotEmpty && isPasswordNotEmpty);
+            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+        });
+
+        password_field.addTextChangedListener(new TextWatcher() {
+            public void afterTextChanged(Editable s) {
+                boolean isMailNotEmpty = !email_field.getText().toString().isEmpty();
+                boolean isPhoneNotEmpty = !phone_field.getText().toString().isEmpty();
+                boolean isPasswordNotEmpty = !password_field.getText().toString().isEmpty();
+
+                signUp_button.setEnabled(isMailNotEmpty && isPhoneNotEmpty && isPasswordNotEmpty);
+                signUp_button.setClickable(isMailNotEmpty && isPhoneNotEmpty && isPasswordNotEmpty);
+            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
         });
     }
 }
