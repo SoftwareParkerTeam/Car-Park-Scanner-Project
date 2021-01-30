@@ -55,7 +55,15 @@ public class User implements Serializable {
         this.debt = ((Long)(shot.child(FirebaseDBConstants.DB_USER_CHILD_DEBT).getValue())).doubleValue();
     }
 
-
+    public User(String phone,String email,double credit_balance, String carparkid, String parkingtime, boolean banned, double debt){
+        this.eMail = email;
+        this.phone = phone;
+        this.credit_balance = credit_balance;
+        this.carparkid = carparkid;
+        this.parkingtime = parkingtime;
+        this.banned = banned;
+        this.debt = debt;
+    }
     public User(String phone, String email) {
         this.eMail = email;
         this.phone = phone;

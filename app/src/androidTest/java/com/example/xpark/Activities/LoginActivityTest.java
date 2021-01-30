@@ -35,20 +35,31 @@ public class LoginActivityTest {
     }
 
     @Test
-    public void testID(){
+    public void testID_imageView(){
         ImageView imageView = myLoginActivity.findViewById(R.id.imageView);
         assertNotNull(imageView);
+    }
+
+    @Test
+    public void testID_sign_in(){
         Button sign_in_button = myLoginActivity.findViewById(R.id.sign_in_button);
         assertNotNull(sign_in_button);
+    }
+    @Test
+    public void testID_sign_up(){
         Button sign_up_button = myLoginActivity.findViewById(R.id.sign_up_button);
         assertNotNull(sign_up_button);
+    }
+    @Test
+    public void testID_email(){
         TextView email_input = myLoginActivity.findViewById(R.id.userName);
         assertNotNull(email_input);
+    }
+    @Test
+    public void testID_password(){
         TextView password_input = myLoginActivity.findViewById(R.id.Password);
         assertNotNull(password_input);
     }
-
-
 
     @After
     public void tearDown() throws Exception {

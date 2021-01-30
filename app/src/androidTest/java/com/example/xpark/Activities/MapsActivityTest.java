@@ -49,6 +49,7 @@ public class MapsActivityTest
         assertNotNull(nvDrawer);
     }
 
+
     @Test
     public void testOnConfigurationChanged() {
     }
