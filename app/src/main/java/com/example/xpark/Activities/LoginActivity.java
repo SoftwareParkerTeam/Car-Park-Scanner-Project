@@ -50,7 +50,6 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         /* initialize UI components */
-        resetPW_INIT();
         UI_init();
         DB_init();
 
@@ -65,11 +64,12 @@ public class LoginActivity extends AppCompatActivity {
 
     private void resetPW_INIT() {
 
+        forgotPw = findViewById(R.id.forgotPw);
         fAuth = FirebaseAuth.getInstance();
 
-        forgotPw.setOnClickListener( view -> {
-            final EditText resetMail = new EditText(view.getContext());
-            final AlertDialog.Builder resetDialog = new AlertDialog.Builder(view.getContext());
+        forgotPw.setOnClickListener( v -> {
+            final EditText resetMail = new EditText(v.getContext());
+            final AlertDialog.Builder resetDialog = new AlertDialog.Builder(v.getContext());
 
             resetDialog.setTitle("Şifre Yenile");
             resetDialog.setMessage("Yenileme linki için yenileme linki gönder");
@@ -110,10 +110,13 @@ public class LoginActivity extends AppCompatActivity {
      */
     private void UI_init() {
         setContentView(R.layout.activity_login);
+
         sign_in_button = findViewById(R.id.sign_in_button);
         sign_up_button = findViewById(R.id.sign_up_button);
         email_input = findViewById(R.id.userName);
         password_input = findViewById(R.id.Password);
+
+        resetPW_INIT();
 
         /* oturum ac listener baslat */
         sign_in_button.setOnClickListener(v -> {
