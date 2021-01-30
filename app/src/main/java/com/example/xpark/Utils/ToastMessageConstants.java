@@ -18,4 +18,6 @@ public final class ToastMessageConstants {
     public static final String TOAST_MSG_INFO_RESERVING = "Park yeri rezerv ediliyor...";
     public static final String TOAST_MSG_ERROR_WRONG_QR = "Yanlış QR Kod";
     public static final String TOAST_MSG_ERROR_INVALID_AMOUNT = "Lütfen miktarı yalnızca rakamlarla yazın.";
+    public static final String TOAST_MSG_ERROR_INVALID_MAIL = "Mail Gönderilemedi.";
+    public static final String TOAST_MSG_VALID_MAIL = "Mail Başarıyla Gönderildi.";
 }
