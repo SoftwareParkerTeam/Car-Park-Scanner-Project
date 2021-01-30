@@ -22,6 +22,8 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+
         super.onCreate(savedInstanceState);
 
         // kritik

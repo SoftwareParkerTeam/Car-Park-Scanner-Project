@@ -23,6 +23,8 @@ public class EntranceActivity extends AppCompatActivity {
 
         FBUserManager = new FirebaseUserManager(this);
 
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        
         if(sp.getBoolean("logged",false)){
             String user_uid = sp.getString("user_uid","");
             FBUserManager.startNextActivityAfterLogin(user_uid);
