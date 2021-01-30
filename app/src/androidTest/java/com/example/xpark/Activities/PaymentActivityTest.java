@@ -9,6 +9,7 @@ import com.example.xpark.R;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
+import org.junit.Test;
 
 import static org.junit.Assert.*;
 
@@ -22,7 +23,7 @@ public class PaymentActivityTest {
         myPaymentActivity = paymentActivityActivityTestRule.getActivity();
     }
 
-    @Rule
+    @Test
     public void testID(){
         TextView textValue = myPaymentActivity.findViewById(R.id.payment_amount);
         assertNotNull(textValue);
