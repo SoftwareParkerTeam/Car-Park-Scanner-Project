@@ -4,7 +4,10 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.test.espresso.Espresso;
 import androidx.test.rule.ActivityTestRule;
+
 import com.example.xpark.DataBaseProvider.FirebaseUserManager;
 import com.example.xpark.Module.User;
 import com.example.xpark.R;
@@ -14,6 +17,11 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.scrollTo;
+import static androidx.test.espresso.action.ViewActions.typeText;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.junit.Assert.assertNotNull;
 
 public class SignUpActivityTest {
@@ -26,32 +34,6 @@ public class SignUpActivityTest {
     @Before
     public void setUp() throws Exception {
         signUpActivity = signUpActivityTestRule.getActivity();
-    }
-
-    @Test
-    public void testID_imageView(){
-        ImageView imageView = signUpActivity.findViewById(R.id.imageView3);
-        assertNotNull(imageView);
-    }
-    @Test
-    public void testID_sign_up(){
-        Button sign_up_button = signUpActivity.findViewById(R.id.button_signup);
-        assertNotNull(sign_up_button);
-    }
-    @Test
-    public void testID_phone_input(){
-        TextView phone_input = signUpActivity.findViewById(R.id.phone);
-        assertNotNull(phone_input);
-    }
-    @Test
-    public void testID_email_input(){
-        TextView email_input = signUpActivity.findViewById(R.id.Email);
-        assertNotNull(email_input);
-    }
-    @Test
-    public void testID_password_input(){
-        TextView password_input = signUpActivity.findViewById(R.id.password);
-        assertNotNull(password_input);
     }
 
     public void testUser_phone_one() throws Exception {
@@ -147,6 +129,45 @@ public class SignUpActivityTest {
             testUser2_parkingTime();
             testUser2_phone();
             testUser2_parkID();
+        }
+        catch (Exception e){
+            Log.i("error",e.getMessage());
+        }
+    }
+
+    @Test
+    public void testID_imageView(){
+        ImageView imageView = signUpActivity.findViewById(R.id.imageView3);
+        assertNotNull(imageView);
+    }
+    @Test
+    public void testID_sign_up(){
+        Button sign_up_button = signUpActivity.findViewById(R.id.button_signup);
+        assertNotNull(sign_up_button);
+    }
+    @Test
+    public void testID_phone_input(){
+        TextView phone_input = signUpActivity.findViewById(R.id.phone);
+        assertNotNull(phone_input);
+    }
+    @Test
+    public void testID_email_input(){
+        TextView email_input = signUpActivity.findViewById(R.id.Email);
+        assertNotNull(email_input);
+    }
+    @Test
+    public void testID_password_input(){
+        TextView password_input = signUpActivity.findViewById(R.id.password);
+        assertNotNull(password_input);
+    }
+
+    @Test
+    public void espressoTest(){
+        try{
+            Espresso.onView(withId(R.id.phone)).perform(typeText(testUser.getPhone()));
+            Espresso.onView(withId(R.id.Email)).perform(typeText(testUser.getEmail()));
+            Espresso.onView(withId(R.id.password)).perform(typeText("password"));
+            onView(withId(R.id.sign_up_button)).perform(scrollTo()).perform(click());
         }
         catch (Exception e){
             Log.i("error",e.getMessage());
