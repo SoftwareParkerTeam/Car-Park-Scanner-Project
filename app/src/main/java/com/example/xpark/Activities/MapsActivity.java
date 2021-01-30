@@ -173,32 +173,28 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @VisibleForTesting
     private boolean onDrawerItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.nav_third_fragment: {
-                SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-                settings.edit().clear().commit();
+        if(item.getItemId() == R.id.nav_third_fragment){
+            SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+            settings.edit().clear().commit();
 
-                Intent intent = new Intent(this, LoginActivity.class);
-                this.startActivity(intent);
+            Intent intent = new Intent(this, LoginActivity.class);
+            this.startActivity(intent);
 
-                //close navigation drawer
-                mDrawer.closeDrawer(GravityCompat.START);
-                return true;
-            }
+            //close navigation drawer
+            mDrawer.closeDrawer(GravityCompat.START);
+            return true;
+        } else if(item.getItemId() == R.id.nav_second_fragment){
+            Intent intent = new Intent(this, BalanceActivity.class);
+            intent.putExtra("CURRENT_USER", currentUser);
+            this.startActivity(intent);
+
+            //close navigation drawer
+            mDrawer.closeDrawer(GravityCompat.START);
+            return true;
+        } else {
+            mDrawer.closeDrawer(GravityCompat.START);
+            return true;
         }
-        switch (item.getItemId()){
-            case R.id.nav_second_fragment: {
-                Intent intent = new Intent(this, BalanceActivity.class);
-                intent.putExtra("CURRENT_USER", currentUser);
-                this.startActivity(intent);
-
-                //close navigation drawer
-                mDrawer.closeDrawer(GravityCompat.START);
-                return true;
-            }
-        }
-        mDrawer.closeDrawer(GravityCompat.START);
-        return true;
     }
 
     /**

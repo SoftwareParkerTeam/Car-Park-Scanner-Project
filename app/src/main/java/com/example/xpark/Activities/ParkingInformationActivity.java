@@ -3,14 +3,22 @@ package com.example.xpark.Activities;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,6 +33,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -46,6 +55,10 @@ public class ParkingInformationActivity extends AppCompatActivity implements OnM
     private CarPark selectedpark;
     private Button qrScanButton;
     private Boolean qrBoolean;
+    private DrawerLayout mDrawer;
+    private Toolbar toolbar;
+    private NavigationView nvDrawer;
+    private ActionBarDrawerToggle drawerToggle;
 
     public static String park_id = "";
     public static Boolean isScanned = false;
@@ -108,8 +121,67 @@ public class ParkingInformationActivity extends AppCompatActivity implements OnM
         }
     }
 
+    @VisibleForTesting
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // The action bar home/up action should open or close the drawer.
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                mDrawer.openDrawer(GravityCompat.START);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private boolean onDrawerItemSelected(MenuItem item) {
+        if(item.getItemId() == R.id.nav_third_fragment){
+            SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+            settings.edit().clear().commit();
+
+            Intent intent = new Intent(this, LoginActivity.class);
+            this.startActivity(intent);
+
+            //close navigation drawer
+            mDrawer.closeDrawer(GravityCompat.START);
+            return true;
+        } else if(item.getItemId() == R.id.nav_second_fragment){
+            Intent intent = new Intent(this, BalanceActivity.class);
+            intent.putExtra("CURRENT_USER", currentUser);
+            this.startActivity(intent);
+
+            //close navigation drawer
+            mDrawer.closeDrawer(GravityCompat.START);
+            return true;
+        } else {
+            mDrawer.closeDrawer(GravityCompat.START);
+            return true;
+        }
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void UI_init() {
+        toolbar = (Toolbar) findViewById(R.id.toolbar2);
+        mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout_2);
+        nvDrawer = (NavigationView) findViewById(R.id.nav_view2);
+
+        drawerToggle = new ActionBarDrawerToggle(this, mDrawer, toolbar, R.string.drawer_open,  R.string.drawer_close);
+
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        drawerToggle.setDrawerIndicatorEnabled(true);
+        drawerToggle.syncState();
+
+        mDrawer.addDrawerListener(drawerToggle);
+        nvDrawer.setNavigationItemSelectedListener(
+                new NavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                        return onDrawerItemSelected(menuItem);
+                    }
+                }
+        );
+
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map2);
         mapFragment.getMapAsync(this);
 
