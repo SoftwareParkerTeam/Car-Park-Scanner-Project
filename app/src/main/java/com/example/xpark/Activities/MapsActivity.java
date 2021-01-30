@@ -20,15 +20,20 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,6 +42,7 @@ import com.example.xpark.Module.CarPark;
 import com.example.xpark.DataBaseProvider.FirebaseCarparkManager;
 import com.example.xpark.R;
 import com.example.xpark.Module.User;
+import com.example.xpark.Utils.GeoLocation;
 import com.example.xpark.Utils.ToastMessageConstants;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -49,10 +55,13 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.time.ZoneId;
+import java.util.List;
+
 import es.dmoral.toasty.Toasty;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -85,6 +94,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     /* Lock for selected car park */
     private final Object markers_on_screen_lock = new Object();
+
+    private EditText eText;
+    private Button searchCity;
+    private LatLng lat_lng_forCities;
 
     @VisibleForTesting
     private void toggleButtons(){
@@ -214,6 +227,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         nvDrawer = (NavigationView) findViewById(R.id.nav_view);
+        eText = findViewById(R.id.editText);
+        searchCity = findViewById(R.id.searchCity);
 
         drawerToggle = new ActionBarDrawerToggle(this, mDrawer, toolbar, R.string.drawer_open,  R.string.drawer_close);
 
@@ -259,10 +274,40 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         });
 
+        eText.setVisibility(View.INVISIBLE);
+        searchCity.setVisibility(View.INVISIBLE);
+        searchCity.setOnClickListener(v -> {
+
+            try {
+                String address = eText.getText().toString();
+                GeoLocation.getAdress(address, this, new GeoHandler());
+                //DBparkManager.showNearestCarParks(lat_lng_forCities.latitude, lat_lng_forCities.longitude);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+
         /* Todo : handle below */
         SupportMapFragment mapFragment = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);
         ViewGroup.LayoutParams params = mapFragment.getView().getLayoutParams();
         mapFragment.getMapAsync(this);
+    }
+
+    private class GeoHandler extends Handler
+    {
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            String address;
+            switch (msg.what) {
+                case 1:
+                    Bundle bundle = msg.getData();
+                    address = bundle.getString("address");
+                    break;
+
+                default:
+                    address = null;
+            }
+        }
     }
 
     /**

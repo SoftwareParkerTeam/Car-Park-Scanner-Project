@@ -63,6 +63,27 @@
             android:layout_height="match_parent"
             android:layout_above="@id/button_res"
             android:layout_below="@id/toolbar" />
+
+        <EditText
+            android:id="@+id/editText"
+            android:layout_width="175dp"
+            android:layout_height="39dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="64dp"
+            android:layout_marginTop="78dp"
+            android:ems="10"
+            android:inputType="textPersonName" />
+
+        <Button
+            android:id="@+id/searchCity"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="79dp"
+            android:layout_marginEnd="76dp"
+            android:text="Ara" />
     </RelativeLayout>
 
     <com.google.android.material.navigation.NavigationView

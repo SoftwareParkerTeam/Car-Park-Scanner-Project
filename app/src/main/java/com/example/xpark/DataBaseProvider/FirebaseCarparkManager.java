@@ -101,6 +101,32 @@ public class FirebaseCarparkManager {
         }).start();
     }
 
+    /**
+     * Shows the selected directions car parks in the current location in a different thread.
+     * UI, user space, call this method.
+     */
+    public void showNearestCarParks(double lat, double lng)
+    {
+        new Thread(() -> {
+
+            /* Give info msg */
+            activity.runOnUiThread(() -> Toasty.info(activity.getApplicationContext(), ToastMessageConstants.TOAST_MSG_INFO_CARPARK_SEARCH,Toast.LENGTH_SHORT).show());
+
+            /* try to find district name from current location */
+            String parsedAddr = tryToParseAddress(lat,lng);
+
+            activity.runOnUiThread(() -> {
+                if(parsedAddr != null)
+                    showNearestCarParks(parsedAddr);
+                else
+                {   /* give err msg to screen */
+                    activity.runOnUiThread(() -> Toasty.warning(activity.getApplicationContext(),ToastMessageConstants.TOAST_MSG_ERROR_CARPARK_NOT_FOUND,Toast.LENGTH_SHORT).show());
+                }
+            });
+
+        }).start();
+    }
+
     public void startParking(CarPark carpark, User user, String time)
     {
         // Todo : check balance
@@ -372,7 +398,7 @@ public class FirebaseCarparkManager {
      * @param longitude Longitude of the given address.
      * @return parsed address if successful, null on error.
      */
-    private String tryToParseAddress(double latitude, double longitude)
+    public String tryToParseAddress(double latitude, double longitude)
     {
         Geocoder gcd = new Geocoder(activity.getApplicationContext(), Locale.getDefault());
         final double INCREMENT_AMOUNT = 0.001;
