@@ -153,6 +153,10 @@ public class ParkingInformationActivity extends AppCompatActivity implements OnM
             mDrawer.closeDrawer(GravityCompat.START);
             return true;
         } else {
+            Intent intent = new Intent(this, ProfileActivity.class);
+            intent.putExtra("CURRENT_USER", currentUser);
+            this.startActivity(intent);
+
             mDrawer.closeDrawer(GravityCompat.START);
             return true;
         }

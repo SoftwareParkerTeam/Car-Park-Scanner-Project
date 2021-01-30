@@ -53,6 +53,7 @@
         <activity android:name=".Activities.PaymentActivity" />
         <activity android:name=".Activities.BalanceActivity" />
         <activity android:name=".Activities.BannedActivity" />
+        <activity android:name=".Activities.ProfileActivity" />
     </application>
 
 </manifest>

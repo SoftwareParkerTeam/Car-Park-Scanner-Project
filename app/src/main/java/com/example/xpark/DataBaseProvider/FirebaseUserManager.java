@@ -122,6 +122,17 @@ public class FirebaseUserManager {
     }
 
     /**
+     * Kullanicinin telefon numarasını gunceller.
+     * @param user kullanici referansi.
+     * @param phone güncellenecek telefon numarası.
+     */
+    public void updatePhone(User user, String phone){
+        user.setPhone(phone);
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(DB_USER_FIELD).child(user.getUid());
+        ref.setValue(user);
+    }
+
+    /**
      * Kullanicinin bakiyesini gunceller.
      * @param user kullanici referansi.
      * @param balance eklencek bakiye.

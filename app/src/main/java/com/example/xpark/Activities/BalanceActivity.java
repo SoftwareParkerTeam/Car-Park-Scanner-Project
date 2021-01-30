@@ -47,6 +47,7 @@ public class BalanceActivity extends AppCompatActivity {
                 intent.putExtra("CURRENT_USER",currentUser);
                 intent.putExtra("AMOUNT",amount);
                 startActivity(intent);
+                finish();
             }
             else{
                 Toasty.error(this.getApplicationContext(), ToastMessageConstants.TOAST_MSG_ERROR_INVALID_AMOUNT, Toast.LENGTH_SHORT).show();
