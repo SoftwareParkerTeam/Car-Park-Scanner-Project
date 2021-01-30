@@ -37,19 +37,15 @@ import static org.junit.Assert.*;
 
 public class ParkingInformationActivityTest {
     static Intent intent;
-    static {
-        CarPark car = new CarPark("1000000","34734_Kadıköy_İstanbul-1000000","Dilara","05000000000",50,10);
-        intent = new Intent(ApplicationProvider.getApplicationContext(), MapsActivity.class);
-        Bundle bundle = new Bundle();
-        bundle.putSerializable("CARPARK",car);
-        intent.putExtras(bundle);
-    }
 
     static {
+        CarPark car = new CarPark("1000000","34734_Kadıköy_İstanbul-1000000","Dilara","05000000000",50,10);
+
         User testUser = new User("05345212020","abcd4@gmail.com",100.0, "NOT_PARKED","NOT_PARKED",false,0.0);
-        intent = new Intent(ApplicationProvider.getApplicationContext(), MapsActivity.class);
+        intent = new Intent(ApplicationProvider.getApplicationContext(), ParkingInformationActivity.class);
         Bundle bundle = new Bundle();
         bundle.putSerializable("CURRENT_USER",testUser);
+        bundle.putSerializable("CARPARK",car);
         intent.putExtras(bundle);
     }
 
