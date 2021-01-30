@@ -9,9 +9,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentManager;
 
 import android.Manifest;
 import android.app.Activity;
@@ -43,7 +40,6 @@ import com.example.xpark.Module.CarPark;
 import com.example.xpark.DataBaseProvider.FirebaseCarparkManager;
 import com.example.xpark.R;
 import com.example.xpark.Module.User;
-import com.example.xpark.Utils.GeoLocation;
 import com.example.xpark.Utils.ToastMessageConstants;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -56,7 +52,6 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -98,7 +93,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private EditText eText;
     private Button searchCity;
-    private LatLng lat_lng_forCities;
 
     @VisibleForTesting
     private void toggleButtons(){
@@ -290,14 +284,25 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         });
 
-        eText.setVisibility(View.INVISIBLE);
-        searchCity.setVisibility(View.INVISIBLE);
+        //eText.setVisibility(View.INVISIBLE);
+        //searchCity.setVisibility(View.INVISIBLE);
         searchCity.setOnClickListener(v -> {
 
             try {
-                String address = eText.getText().toString();
-                GeoLocation.getAdress(address, this, new GeoHandler());
-                //DBparkManager.showNearestCarParks(lat_lng_forCities.latitude, lat_lng_forCities.longitude);
+                Geocoder gcdr = new Geocoder(getApplicationContext());
+                List<Address> matches = gcdr.getFromLocationName(eText.getText().toString(), 1);
+                Address bestM = (matches.isEmpty() ? null : matches.get(0));
+
+                if(bestM != null) {
+                    System.out.println("QUX: " + bestM.toString());
+
+                    System.out.println("lat: " + bestM.getLatitude());
+                    System.out.println("lng: " + bestM.getLongitude());
+                } else {
+                    System.out.println("bestM is null...");
+                }
+
+                DBparkManager.showNearestCarParks(bestM.getLatitude(), bestM.getLongitude());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -307,23 +312,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         SupportMapFragment mapFragment = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);
         ViewGroup.LayoutParams params = mapFragment.getView().getLayoutParams();
         mapFragment.getMapAsync(this);
-    }
-
-    private class GeoHandler extends Handler
-    {
-        @Override
-        public void handleMessage(@NonNull Message msg) {
-            String address;
-            switch (msg.what) {
-                case 1:
-                    Bundle bundle = msg.getData();
-                    address = bundle.getString("address");
-                    break;
-
-                default:
-                    address = null;
-            }
-        }
     }
 
     /**
