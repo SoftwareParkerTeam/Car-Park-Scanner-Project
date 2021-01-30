@@ -14,6 +14,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -186,12 +187,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @VisibleForTesting
     private boolean onDrawerItemSelected(MenuItem item) {
+        int LAUNCH_SECOND_ACTIVITY = 1;
         if(item.getItemId() == R.id.nav_third_fragment){
             SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
             settings.edit().clear().commit();
 
             Intent intent = new Intent(this, LoginActivity.class);
             this.startActivity(intent);
+            finish();
 
             //close navigation drawer
             mDrawer.closeDrawer(GravityCompat.START);
@@ -199,7 +202,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         } else if(item.getItemId() == R.id.nav_second_fragment){
             Intent intent = new Intent(this, BalanceActivity.class);
             intent.putExtra("CURRENT_USER", currentUser);
-            this.startActivity(intent);
+            this.startActivityForResult(intent,LAUNCH_SECOND_ACTIVITY);
 
             //close navigation drawer
             mDrawer.closeDrawer(GravityCompat.START);
@@ -207,10 +210,23 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         } else {
             Intent intent = new Intent(this, ProfileActivity.class);
             intent.putExtra("CURRENT_USER", currentUser);
-            this.startActivity(intent);
+            this.startActivityForResult(intent,LAUNCH_SECOND_ACTIVITY);
 
             mDrawer.closeDrawer(GravityCompat.START);
             return true;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+        int LAUNCH_SECOND_ACTIVITY = 1;
+
+        if (requestCode == LAUNCH_SECOND_ACTIVITY) {
+            if(resultCode == Activity.RESULT_OK){
+                currentUser = (User) intent.getSerializableExtra("CURRENT_USER");
+                System.out.println("USER GETTED ONACTIVITYRES : " + currentUser);
+            }
         }
     }
 

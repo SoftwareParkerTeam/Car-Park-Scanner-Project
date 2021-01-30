@@ -2,6 +2,7 @@ package com.example.xpark.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
@@ -25,11 +26,24 @@ public class PaymentActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_payment);
 
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         fbUser = new FirebaseUserManager(this);
 
         init_extras();
         init_ui();
     }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
+    }
+
+    @Override
+    public void onBackPressed() {finish();}
 
     private void init_ui() {
         card = findViewById(R.id.cardForm);
@@ -44,7 +58,7 @@ public class PaymentActivity extends AppCompatActivity {
             System.out.println("PAYMENT DONE");
             Intent intent = new Intent(this, BalanceActivity.class);
             intent.putExtra("CURRENT_USER",currentUser);
-            startActivity(intent);
+            setResult(Activity.RESULT_OK,intent);
             finish();
         });
     }

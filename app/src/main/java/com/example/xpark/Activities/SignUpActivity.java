@@ -4,18 +4,21 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-
+import android.widget.Toast;
 import com.example.xpark.DataBaseProvider.FirebaseUserManager;
 import com.example.xpark.R;
 import com.example.xpark.Module.User;
+import com.example.xpark.Utils.ToastMessageConstants;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import es.dmoral.toasty.Toasty;
 
 public class SignUpActivity extends AppCompatActivity {
 
@@ -50,16 +53,19 @@ public class SignUpActivity extends AppCompatActivity {
         signUp_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String phone = ((TextView) findViewById(R.id.phone)).getText().toString();
+                String email = ((TextView) findViewById(R.id.Email)).getText().toString();
 
-                User test_user = new User(
-                        ((TextView) findViewById(R.id.phone)).getText().toString(),
-                        ((TextView) findViewById(R.id.Email)).getText().toString()
-                );
+                if(TextUtils.isDigitsOnly(phone) && phone.length() == 11){
+                    User test_user = new User(phone,email);
+                    String temp_password = ((TextView) findViewById(R.id.password)).getText().toString();
 
-                String temp_password = ((TextView) findViewById(R.id.password)).getText().toString();
-
-                System.out.println("USER CREATING : " + test_user);
-                DBUserManager.createNewUser(test_user, temp_password);
+                    System.out.println("USER CREATING : " + test_user);
+                    DBUserManager.createNewUser(test_user, temp_password);
+                }
+                else{
+                    Toasty.error(getApplicationContext(), ToastMessageConstants.TOAST_MSG_ERROR_INVALID_CREDTS, Toast.LENGTH_SHORT).show();
+                }
             }
         });
 

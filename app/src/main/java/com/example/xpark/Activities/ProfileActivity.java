@@ -1,7 +1,7 @@
 package com.example.xpark.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
-
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -9,12 +9,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.example.xpark.DataBaseProvider.FirebaseUserManager;
 import com.example.xpark.Module.User;
 import com.example.xpark.R;
 import com.example.xpark.Utils.ToastMessageConstants;
-
 import es.dmoral.toasty.Toasty;
 
 public class ProfileActivity extends AppCompatActivity {
@@ -32,10 +30,31 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         fbUser = new FirebaseUserManager(this);
 
         init_logged_user();
         init_uit();
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        Intent intent = new Intent();
+        intent.putExtra("CURRENT_USER",currentUser);
+        setResult(Activity.RESULT_OK,intent);
+        finish();
+        return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent();
+        intent.putExtra("CURRENT_USER",currentUser);
+        setResult(Activity.RESULT_OK,intent);
+        finish();
     }
 
     private void init_uit(){
@@ -59,7 +78,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         bUpdate.setOnClickListener(v ->{
             String newPhone = textEditPhone.getText().toString();
-            if(TextUtils.isDigitsOnly(newPhone)){
+            if(TextUtils.isDigitsOnly(newPhone) && newPhone.length() == 11){
                 fbUser.updatePhone(currentUser,newPhone);
                 this.recreate();
             }

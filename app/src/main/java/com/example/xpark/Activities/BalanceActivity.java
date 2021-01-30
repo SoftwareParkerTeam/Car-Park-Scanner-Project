@@ -2,13 +2,13 @@ package com.example.xpark.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.example.xpark.Module.User;
 import com.example.xpark.R;
 import com.example.xpark.Utils.ToastMessageConstants;
@@ -26,8 +26,45 @@ public class BalanceActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_balance);
 
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         init_logged_user();
         init_ui();
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        Intent intent = new Intent();
+        intent.putExtra("CURRENT_USER",currentUser);
+        setResult(Activity.RESULT_OK,intent);
+        finish();
+        return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent();
+        intent.putExtra("CURRENT_USER",currentUser);
+        setResult(Activity.RESULT_OK,intent);
+        finish();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+        int LAUNCH_SECOND_ACTIVITY = 1;
+
+        if (requestCode == LAUNCH_SECOND_ACTIVITY) {
+            if(resultCode == Activity.RESULT_OK){
+                currentUser = (User) intent.getSerializableExtra("CURRENT_USER");
+                System.out.println("USER GETTED ONACTIVITYRES : " + currentUser);
+            }
+        }
+
+        String msg = "Your remaining balance: " + currentUser.getCreditbalance() + "₺";
+        textBalance.setText(msg);
     }
 
     private void init_ui(){
@@ -42,12 +79,12 @@ public class BalanceActivity extends AppCompatActivity {
             String strAmount = textAmount.getText().toString();
 
             if(TextUtils.isDigitsOnly(strAmount)){
+                int LAUNCH_SECOND_ACTIVITY = 1;
                 double amount = Double.parseDouble(strAmount);
                 Intent intent = new Intent(this, PaymentActivity.class);
                 intent.putExtra("CURRENT_USER",currentUser);
                 intent.putExtra("AMOUNT",amount);
-                startActivity(intent);
-                finish();
+                this.startActivityForResult(intent,LAUNCH_SECOND_ACTIVITY);
             }
             else{
                 Toasty.error(this.getApplicationContext(), ToastMessageConstants.TOAST_MSG_ERROR_INVALID_AMOUNT, Toast.LENGTH_SHORT).show();
