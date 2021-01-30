@@ -17,4 +17,5 @@ public final class ToastMessageConstants {
     public static final String TOAST_MSG_ERROR_INVALID_CPARK_SELECT = "Lütfen bir otopark seçin.";
     public static final String TOAST_MSG_INFO_RESERVING = "Park yeri rezerv ediliyor...";
     public static final String TOAST_MSG_ERROR_WRONG_QR = "Yanlış QR Kod";
+    public static final String TOAST_MSG_ERROR_INVALID_AMOUNT = "Lütfen miktarı yalnızca rakamlarla yazın.";
 }
