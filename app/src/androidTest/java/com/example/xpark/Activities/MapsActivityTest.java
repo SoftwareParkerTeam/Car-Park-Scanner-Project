@@ -1,15 +1,20 @@
 package com.example.xpark.Activities;
 
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 
 import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.test.core.app.ActivityScenario;
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.rule.ActivityTestRule;
 
-import com.example.xpark.DataBaseProvider.FirebaseCarparkManager;
 import com.example.xpark.DataBaseProvider.FirebaseUserManager;
+import com.example.xpark.Module.User;
 import com.example.xpark.R;
-import com.google.android.gms.maps.GoogleMap;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
@@ -17,49 +22,65 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
+import org.junit.runner.Description;
+import org.junit.runners.model.Statement;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.scrollTo;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.junit.Assert.assertNotNull;
 
 public class MapsActivityTest
 {
-    @Rule
-    public ActivityTestRule<MapsActivity> loginActivityActivityTestRule = new ActivityTestRule<>(MapsActivity.class);
 
-    private MapsActivity myMapsActivity = null;
+    static Intent intent;
+    static {
+        User testUser = new User("+905000000000","abc@gmail.com",50.0, "NOT_PARKED","NOT_PARKED",false,0.0);
+        intent = new Intent(ApplicationProvider.getApplicationContext(), MapsActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("CURRENT_USER",testUser);
+        intent.putExtras(bundle);
+    }
+    @Rule
+    public ActivityScenario<MapsActivity> myMapsActivity = null;
     private FirebaseUserManager DBUserManager;
+    public ActivityScenarioRule<MapsActivity> activityScenarioRule = new ActivityScenarioRule<>(intent);
 
     @Before
     public void setUp() throws Exception {
-        myMapsActivity = loginActivityActivityTestRule.getActivity();
+        myMapsActivity = activityScenarioRule.getScenario();
+    }
+
+    static class LoggingRule implements TestRule {
+        String s;
+        public LoggingRule( String s ){
+            this.s = s;
+        }
+
+        @Override
+        public Statement apply(Statement base, Description description) {
+            System.out.println( this.s );
+            return base;
+        }
     }
 
     @Test
-    public void UI_INIT_TEST() {
-        FloatingActionButton search_button = myMapsActivity.findViewById(R.id.button_search);
-        assertNotNull(search_button);
-        Button res_button = myMapsActivity.findViewById(R.id.button_res);
-        assertNotNull(res_button);
-        Button inf_button = myMapsActivity.findViewById(R.id.button_inf);
-        assertNotNull(inf_button);
-        Toolbar toolbar = (Toolbar) myMapsActivity.findViewById(R.id.toolbar);
-        assertNotNull(toolbar);
-        DrawerLayout mDrawer = (DrawerLayout) myMapsActivity.findViewById(R.id.drawer_layout);
-        assertNotNull(mDrawer);
-        NavigationView nvDrawer = (NavigationView) myMapsActivity.findViewById(R.id.nav_view);
-        assertNotNull(nvDrawer);
-    }
-
-
-    @Test
-    public void testOnConfigurationChanged() {
-    }
-
-    @Test
-    public void testOnOptionsItemSelected() {
-    }
-
-    @Test
-    public void testOnMapReady() {
+    public void espressoTest(){
+        try{
+            onView(withId(R.id.button_inf)).perform(scrollTo()).perform(click());
+            onView(withId(R.id.button_res)).perform(scrollTo()).perform(click());
+            onView(withId(R.id.button_search)).perform(scrollTo()).perform(click());
+            onView(withId(R.id.button_inf)).check(matches(isDisplayed()));
+            onView(withId(R.id.button_res)).check(matches(isDisplayed()));
+            onView(withId(R.id.button_search)).check(matches(isDisplayed()));
+        }
+        catch (Exception e){
+            Log.i("error",e.getMessage());
+        }
     }
 
     @After
