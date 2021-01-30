@@ -4,9 +4,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.example.xpark.DataBaseProvider.FirebaseUserManager;
@@ -19,9 +22,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     private User currentUser;
     private TextView textEmail;
-    private TextView textPhone;
-    private TextView textEditPhone;
-    private Button bPhone;
+    private EditText textEditPhone;
     private Button bUpdate;
     private FirebaseUserManager fbUser;
 
@@ -30,7 +31,7 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setTitle("Profil");
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -59,22 +60,11 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void init_uit(){
         textEmail = findViewById(R.id.text_email);
-        textPhone = findViewById(R.id.text_phone);
         textEditPhone = findViewById(R.id.text_edit_phone);
-        bPhone = findViewById(R.id.button_phone);
         bUpdate = findViewById(R.id.button_update);
 
-        bUpdate.setVisibility(View.INVISIBLE);
-        textEditPhone.setVisibility(View.INVISIBLE);
-
         textEmail.setText("Email: " + currentUser.getEmail());
-        textPhone.setText("Telefon: " + currentUser.getPhone());
-
-        bPhone.setOnClickListener(v ->{
-            textPhone.setVisibility(View.INVISIBLE);
-            textEditPhone.setVisibility(View.VISIBLE);
-            bUpdate.setVisibility(View.VISIBLE);
-        });
+        textEditPhone.setText(currentUser.getPhone());
 
         bUpdate.setOnClickListener(v ->{
             String newPhone = textEditPhone.getText().toString();
@@ -87,6 +77,19 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
+        bUpdate.setEnabled(false);
+        bUpdate.setClickable(false);
+
+        textEditPhone.addTextChangedListener(new TextWatcher() {
+            public void afterTextChanged(Editable s) {
+                boolean isPhoneChanged = !textEditPhone.getText().toString().equals(currentUser.getPhone());
+
+                bUpdate.setEnabled(isPhoneChanged);
+                bUpdate.setClickable(isPhoneChanged);
+            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+        });
     }
 
     private void init_logged_user() {

@@ -5,8 +5,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.example.xpark.Module.User;
@@ -18,7 +21,7 @@ public class BalanceActivity extends AppCompatActivity {
 
     private User currentUser;
     private Button nextButton;
-    private TextView textAmount;
+    private EditText textAmount;
     private TextView textBalance;
 
     @Override
@@ -26,7 +29,7 @@ public class BalanceActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_balance);
 
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setTitle("Bakiye");
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -63,7 +66,7 @@ public class BalanceActivity extends AppCompatActivity {
             }
         }
 
-        String msg = "Your remaining balance: " + currentUser.getCreditbalance() + "₺";
+        String msg = "KALAN BAKİYE: " + currentUser.getCreditbalance() + "₺";
         textBalance.setText(msg);
     }
 
@@ -72,8 +75,22 @@ public class BalanceActivity extends AppCompatActivity {
         textAmount = findViewById(R.id.text_amount);
         textBalance = findViewById(R.id.text_balance);
 
-        String msg = "Your remaining balance: " + currentUser.getCreditbalance() + "₺";
+        String msg = "KALAN BAKİYE: " + currentUser.getCreditbalance() + "₺";
         textBalance.setText(msg);
+
+        nextButton.setEnabled(false);
+        nextButton.setClickable(false);
+
+        textAmount.addTextChangedListener(new TextWatcher() {
+            public void afterTextChanged(Editable s) {
+                boolean isAmountNotEmpty = !textAmount.getText().toString().isEmpty();
+
+                nextButton.setEnabled(isAmountNotEmpty);
+                nextButton.setClickable(isAmountNotEmpty);
+            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+        });
 
         nextButton.setOnClickListener(v -> {
             String strAmount = textAmount.getText().toString();
