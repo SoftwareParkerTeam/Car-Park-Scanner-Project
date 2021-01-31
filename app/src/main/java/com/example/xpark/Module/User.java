@@ -48,11 +48,11 @@ public class User implements Serializable {
         this.eMail = (String)shot.child(FirebaseDBConstants.DB_USER_CHILD_EMAIL).getValue();
         this.phone = (String)shot.child(FirebaseDBConstants.DB_USER_CHILD_PHONE).getValue();
         this.uid = (String)shot.child(FirebaseDBConstants.DB_USER_CHILD_UID).getValue();
-        this.credit_balance = ((Long)(shot.child(FirebaseDBConstants.DB_USER_CHILD_CREDITBALANCE).getValue())).doubleValue();
+        this.credit_balance = shot.child(FirebaseDBConstants.DB_USER_CHILD_CREDITBALANCE).getValue(Double.class);
         this.carparkid = (String)shot.child(FirebaseDBConstants.DB_USER_CHILD_CARPARKID).getValue();
         this.parkingtime = (String) shot.child(FirebaseDBConstants.DB_USER_CHILD_PARKINGTIME).getValue();
         this.banned = ((Boolean)(shot.child(FirebaseDBConstants.DB_USER_CHILD_ISBANNED).getValue())).booleanValue();
-        this.debt = ((Double)(shot.child(FirebaseDBConstants.DB_USER_CHILD_DEBT).getValue())).doubleValue();
+        this.debt = shot.child(FirebaseDBConstants.DB_USER_CHILD_DEBT).getValue(Double.class);
     }
 
     public User(String phone,String email,double credit_balance, String carparkid, String parkingtime, boolean banned, double debt){
