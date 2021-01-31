@@ -65,7 +65,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     /* UI Components */
     FloatingActionButton search_button;
     private Button res_button;
-    private Button inf_button;
     private GoogleMap map;
     private DrawerLayout mDrawer;
     private Toolbar toolbar;
@@ -95,16 +94,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private Button searchCity;
 
     @VisibleForTesting
-    private void toggleButtons(){
-        res_button = findViewById(R.id.button_res);
-        inf_button = findViewById(R.id.button_inf);
-        if(currentUser == null || currentUser.getCarparkid() == null || currentUser.getCarparkid().equals(User.NOT_PARKED)){
-            res_button.setVisibility(View.VISIBLE);
-            inf_button.setVisibility(View.INVISIBLE);
-        }
-    }
-
-    @VisibleForTesting
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,7 +120,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         /* initialize DB managers */
         DB_init();
-        toggleButtons();
     }
 
     @VisibleForTesting
@@ -233,7 +221,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         setContentView(R.layout.activity_maps);
         search_button = findViewById(R.id.button_search);
         res_button = findViewById(R.id.button_res);
-        inf_button = findViewById(R.id.button_inf);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         nvDrawer = (NavigationView) findViewById(R.id.nav_view);

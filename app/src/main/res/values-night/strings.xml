@@ -1,20 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">XPark</string>
-    <string name="map_enter">MAP</string>
-    <string name="login_enter">Login</string>
-    <string name="sign_up_enter">Sign Up</string>
-    <string name="search_inMapAct">Search</string>
-    <string name="res_inMapAct">RESERVATION</string>
-    <string name="inf_inMapAct">PARKING INFO</string>
-    <string name="qr_activity_entrence">QR Activity</string>
-    <string name="scan_test">Scan</string>
-    <string name="res_text">Result</string>
-    <string name="email">EMAIL</string>
-    <string name="password">PASSWORD</string>
-    <string name="phone">PHONE</string>
-    <string name="sign_up">SIGN UP</string>
-    <string name="sign_in">SIGN IN</string>
+    <string name="res_inMapAct">REZERVASYON</string>
+    <string name="email">E-POSTA</string>
+    <string name="password">ŞİFRE</string>
+    <string name="phone">TELEFON</string>
+    <string name="sign_up">ÜYE OL</string>
+    <string name="sign_in">GİRİŞ</string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
+    <string name="forgot_pw">Şifremi Unuttum</string>
 </resources>

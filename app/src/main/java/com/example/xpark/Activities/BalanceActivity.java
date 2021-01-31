@@ -29,7 +29,7 @@ public class BalanceActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_balance);
 
-        getSupportActionBar().setTitle("Bakiye");
+        getSupportActionBar().setTitle("Bakiye Yükle");
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -66,7 +66,7 @@ public class BalanceActivity extends AppCompatActivity {
             }
         }
 
-        String msg = "KALAN BAKİYE: " + currentUser.getCreditbalance() + "₺";
+        String msg = "BAKİYE: " + currentUser.getCreditbalance() + "₺";
         textBalance.setText(msg);
     }
 
@@ -75,7 +75,7 @@ public class BalanceActivity extends AppCompatActivity {
         textAmount = findViewById(R.id.text_amount);
         textBalance = findViewById(R.id.text_balance);
 
-        String msg = "KALAN BAKİYE: " + currentUser.getCreditbalance() + "₺";
+        String msg = "BAKİYE: " + currentUser.getCreditbalance() + "₺";
         textBalance.setText(msg);
 
         nextButton.setEnabled(false);

@@ -56,10 +56,8 @@ public class MapsActivityTest
     @Test
     public void espressoTest(){
         try{
-            onView(withId(R.id.button_inf)).perform(scrollTo()).perform(click());
             onView(withId(R.id.button_res)).perform(scrollTo()).perform(click());
             onView(withId(R.id.button_search)).perform(scrollTo()).perform(click());
-            onView(withId(R.id.button_inf)).check(matches(isDisplayed()));
             onView(withId(R.id.button_res)).check(matches(isDisplayed()));
             onView(withId(R.id.button_search)).check(matches(isDisplayed()));
         }

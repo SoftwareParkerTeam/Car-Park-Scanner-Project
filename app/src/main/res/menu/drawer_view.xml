@@ -6,14 +6,14 @@
         <item
             android:id="@+id/nav_first_fragment"
             android:icon="@drawable/ic_outline_account_circle_24"
-            android:title="Profile" />
+            android:title="Profil" />
         <item
             android:id="@+id/nav_second_fragment"
             android:icon="@drawable/ic_outline_account_balance_wallet_24"
-            android:title="Balance" />
+            android:title="Bakiye" />
         <item
             android:id="@+id/nav_third_fragment"
             android:icon="@drawable/ic_baseline_exit_to_app_24"
-            android:title="Logout" />
+            android:title="Çıkış" />
     </group>
 </menu>

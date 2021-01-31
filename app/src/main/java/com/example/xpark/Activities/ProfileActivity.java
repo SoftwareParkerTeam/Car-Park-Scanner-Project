@@ -63,7 +63,7 @@ public class ProfileActivity extends AppCompatActivity {
         textEditPhone = findViewById(R.id.text_edit_phone);
         bUpdate = findViewById(R.id.button_update);
 
-        textEmail.setText("Email: " + currentUser.getEmail());
+        textEmail.setText("E-POSTA: " + currentUser.getEmail());
         textEditPhone.setText(currentUser.getPhone());
 
         bUpdate.setOnClickListener(v ->{
