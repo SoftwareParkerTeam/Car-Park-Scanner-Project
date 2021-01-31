@@ -29,6 +29,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:background="?attr/colorPrimary"
+            android:elevation="24dp"
             android:fitsSystemWindows="true"
             android:minHeight="?attr/actionBarSize"
             app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
@@ -43,7 +44,45 @@
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="64dp"
-            android:src="@drawable/ic_baseline_search_24" />
+            android:src="@drawable/ic_baseline_location_on_24" />
+
+        <RelativeLayout
+            android:id="@+id/search_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/toolbar"
+            android:background="@drawable/button_background"
+            android:elevation="12dp"
+            android:paddingLeft="12dp"
+            android:paddingTop="4dp"
+            android:paddingRight="12dp"
+            android:paddingBottom="4dp">
+
+            <EditText
+                android:id="@+id/editText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_toLeftOf="@id/searchCity"
+                android:background="@android:color/transparent"
+                android:backgroundTint="#99ffffff"
+                android:ems="10"
+                android:foregroundTint="#ffffff"
+                android:hint="Ara"
+                android:inputType="textPersonName"
+                android:textColor="#ffffff"
+                android:textColorHint="#99ffffff" />
+
+            <ImageButton
+                android:id="@+id/searchCity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerInParent="true"
+                android:layout_margin="12dp"
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_baseline_search_24" />
+        </RelativeLayout>
 
         <fragment
             android:id="@+id/map"
@@ -51,30 +90,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_above="@id/button_res"
-            android:layout_below="@id/toolbar" />
-
-        <EditText
-            android:id="@+id/editText"
-            android:layout_width="175dp"
-            android:layout_height="39dp"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginStart="64dp"
-            android:layout_marginTop="78dp"
-            android:ems="10"
-            android:inputType="textPersonName" />
-
-        <Button
-            android:id="@+id/searchCity"
-            android:background="@drawable/button_background"
-            android:textColor="#FFFFFF"
-            android:layout_width="wrap_content"
-            android:layout_height="36dp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginTop="79dp"
-            android:layout_marginEnd="76dp"
-            android:text="Ara" />
+            android:layout_below="@id/search_bar" />
     </RelativeLayout>
 
     <com.google.android.material.navigation.NavigationView

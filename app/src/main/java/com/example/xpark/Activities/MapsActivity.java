@@ -32,6 +32,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -91,7 +92,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private final Object markers_on_screen_lock = new Object();
 
     private EditText eText;
-    private Button searchCity;
+    private ImageButton searchCity;
 
     @VisibleForTesting
     @RequiresApi(api = Build.VERSION_CODES.O)
