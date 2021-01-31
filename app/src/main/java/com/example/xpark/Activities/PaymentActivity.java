@@ -54,11 +54,27 @@ public class PaymentActivity extends AppCompatActivity {
         textValue.setText(amount.toString());
 
         buttonPay.setOnClickListener(v ->{
-            fbUser.updateBalance(currentUser,amount);
-            System.out.println("PAYMENT DONE");
-            Intent intent = new Intent(this, BalanceActivity.class);
-            intent.putExtra("CURRENT_USER",currentUser);
-            setResult(Activity.RESULT_OK,intent);
+            Intent intent;
+            if(currentUser.getBanned()){
+                double debt = currentUser.getDebt();
+                if(debt <= amount){
+                    fbUser.updateDebt(currentUser,0.0,false);
+                    fbUser.updateBalance(currentUser, amount - debt);
+                }
+                else
+                    fbUser.updateDebt(currentUser, debt - amount, true);
+                System.out.println("BANNED PAYMENT DONE");
+                intent = new Intent(this, MapsActivity.class);
+                intent.putExtra("CURRENT_USER",currentUser);
+                this.startActivity(intent);
+            }
+            else{
+                fbUser.updateBalance(currentUser,currentUser.getCreditbalance() + amount);
+                System.out.println("PAYMENT DONE");
+                intent = new Intent(this, BalanceActivity.class);
+                intent.putExtra("CURRENT_USER",currentUser);
+                setResult(Activity.RESULT_OK,intent);
+            }
             finish();
         });
     }

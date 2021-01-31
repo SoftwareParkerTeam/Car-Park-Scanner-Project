@@ -133,12 +133,25 @@ public class FirebaseUserManager {
     }
 
     /**
+     * Kullanicinin borcunu gunceller.
+     * @param user kullanici referansi.
+     * @param debt güncel borc.
+     * @param banned banlı olup olmadığı bilgisi.
+     */
+    public void updateDebt(User user, double debt, boolean banned){
+        user.setDebt(debt);
+        user.setBanned(banned);
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(DB_USER_FIELD).child(user.getUid());
+        ref.setValue(user);
+    }
+
+    /**
      * Kullanicinin bakiyesini gunceller.
      * @param user kullanici referansi.
-     * @param balance eklencek bakiye.
+     * @param balance güncel bakiye.
      */
     public void updateBalance(User user, double balance){
-        user.setCreditbalance(user.getCreditbalance() + balance);
+        user.setCreditbalance(balance);
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(DB_USER_FIELD).child(user.getUid());
         ref.setValue(user);
     }
