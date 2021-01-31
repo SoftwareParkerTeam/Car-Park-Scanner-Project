@@ -56,7 +56,6 @@ public class ProfileActivityTest {
     public void espressoTest_Text(){
         try{
             Espresso.onView(withId(R.id.text_email)).perform(typeText("text_email"));
-            Espresso.onView(withId(R.id.text_phone)).perform(typeText("text_phone"));
             Espresso.onView(withId(R.id.text_edit_phone)).perform(typeText("text_edit_phone"));
         }
         catch (Exception e){
@@ -67,9 +66,7 @@ public class ProfileActivityTest {
     @Test
     public void espressoTest_Button(){
         try{
-            onView(withId(R.id.button_phone)).perform(scrollTo()).perform(click());
             onView(withId(R.id.button_update)).perform(scrollTo()).perform(click());
-            onView(withId(R.id.button_phone)).check(matches(isDisplayed()));
             onView(withId(R.id.button_update)).check(matches(isDisplayed()));
         }
         catch (Exception e){
