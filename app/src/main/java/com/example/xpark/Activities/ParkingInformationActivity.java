@@ -24,6 +24,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.example.xpark.DataBaseProvider.FirebaseDBConstants;
+import com.example.xpark.DataBaseProvider.FirebaseUserManager;
 import com.example.xpark.Module.CarPark;
 import com.example.xpark.Module.User;
 import com.example.xpark.R;
@@ -60,6 +61,7 @@ public class ParkingInformationActivity extends AppCompatActivity implements OnM
     private Toolbar toolbar;
     private NavigationView nvDrawer;
     private ActionBarDrawerToggle drawerToggle;
+    private FirebaseUserManager fbUser;
 
     public static String park_id = "";
     public static Boolean isScanned = false;
@@ -73,6 +75,8 @@ public class ParkingInformationActivity extends AppCompatActivity implements OnM
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_parking_information);
         System.out.println("PARKING INF ACTIVITY");
+
+        fbUser = new FirebaseUserManager(this);
         init_logged_user();
         init_selected_carpark();
 
@@ -231,16 +235,32 @@ public class ParkingInformationActivity extends AppCompatActivity implements OnM
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         LocalDateTime parkingtime = LocalDateTime.parse(currentUser.getParkingTime(), formatter);
 
-        calculateTime(finishtime, parkingtime);
+        long diff = calculateTime(finishtime, parkingtime);
+        payment(diff);
 
         // Todo : handle balance and etc..
         this.removeUserFromCarpark();
     }
 
-    private void calculateTime(LocalDateTime d1, LocalDateTime d2){
+    private void payment(long diff){
+        double amount = diff * selectedpark.getPricePerMinute();
+        double userBalance = currentUser.getCreditbalance();
+
+        if(userBalance >= amount){
+            double remainingBalance = userBalance - amount;
+            fbUser.updateBalance(currentUser,remainingBalance);
+        }
+        else {
+            double debt = amount - userBalance;
+            fbUser.updateDebt(currentUser,debt,true);
+        }
+    }
+
+    private long calculateTime(LocalDateTime d1, LocalDateTime d2){
         long diff = ChronoUnit.MINUTES.between(d2, d1);
 
         System.out.println("CALCULATED TIME(minute): " + diff);
+        return diff;
     }
 
     private void removeUserFromCarpark()

@@ -3,6 +3,7 @@ package com.example.xpark.Activities;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -28,17 +29,21 @@ public class BannedActivity extends AppCompatActivity {
         debt.setVisibility(View.INVISIBLE);
 
         toPayment.setOnClickListener(view -> {
-            Intent intent = new Intent(getApplicationContext(), PaymentActivity.class);
-            startActivity(intent);
+            Intent intent = new Intent(getApplicationContext(), BalanceActivity.class);
+            intent.putExtra("CURRENT_USER", currentUser);
+            this.startActivity(intent);
             finish();
         });
 
         init_logged_user();
 
-        String DEBT = currentUser.getDebt() + " TL";
+        String DEBT = currentUser.getDebt() + " ₺";
         debt.setText(DEBT);
         debt.setVisibility(View.VISIBLE);
     }
+
+    @Override
+    public void onBackPressed() {}
 
     @VisibleForTesting
     private void init_logged_user() {
