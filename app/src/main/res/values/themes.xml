@@ -4,6 +4,7 @@
         <item name="colorPrimary">#3f74a5</item>
         <item name="colorPrimaryDark">#154d7d</item>
         <item name="colorAccent">#3f74a5</item>
+        <item name="android:windowNoTitle">true</item>
     </style>
 
     <style name="Theme.NoActionBar" parent="Theme.AppCompat.Light.DarkActionBar">
@@ -21,8 +22,8 @@
         <item name="colorAccent">#3f74a5</item>
         <item name="android:statusBarColor">#3f74a5</item>
         <item name="android:actionBarStyle">@style/ThemeActionBar</item>
-        <item name="android:windowActionBarOverlay">true</item>
-
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
         <item name="actionBarStyle">@style/ThemeActionBar</item>
         <item name="windowActionBarOverlay">true</item>
     </style>

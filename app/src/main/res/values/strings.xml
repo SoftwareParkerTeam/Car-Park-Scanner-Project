@@ -5,8 +5,14 @@
     <string name="password">ŞİFRE</string>
     <string name="phone">TELEFON</string>
     <string name="sign_up">ÜYE OL</string>
-    <string name="sign_in">GİRİŞ</string>
+    <string name="sign_in">BAĞLAN</string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
     <string name="forgot_pw">Şifremi Unuttum</string>
+    <string name="baglanti_durumu_bilgi_text">Bağlantı Durumu :</string>
+    <string name="baglanti_durumu_text">Bağlı Değil</string>
+    <string name="fire_button_text">Fire</string>
+    <string name="gas_button_text">GAZ</string>
+    <string name="gear_d_text">D</string>
+    <string name="gear_r_text">R</string>
 </resources>
