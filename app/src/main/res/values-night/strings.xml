@@ -6,7 +6,7 @@
     <string name="password">ŞİFRE</string>
     <string name="phone">TELEFON</string>
     <string name="sign_up">ÜYE OL</string>
-    <string name="sign_in">GİRİŞ</string>
+    <string name="connect_button_text">GİRİŞ</string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
     <string name="forgot_pw">Şifremi Unuttum</string>
