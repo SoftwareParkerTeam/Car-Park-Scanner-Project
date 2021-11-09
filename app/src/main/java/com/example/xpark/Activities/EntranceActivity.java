@@ -2,6 +2,7 @@ package com.example.xpark.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
@@ -11,19 +12,21 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.SeekBar;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.xpark.R;
-
-import static android.content.Context.SENSOR_SERVICE;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -35,8 +38,10 @@ public class EntranceActivity extends AppCompatActivity implements SensorEventLi
 
     private SeekBar throttleSeekBar;
     private Button buttonConnect;
+    private Button buttonFireTrigger;
     private TextView wheelAngleTextView;
     private TextView btBaglantiDurumuTextView;
+    private Switch gearPositionSwitch;
 
     private TextView rakipAracDeviceNameTextView; // rakip arac bluetooth cihaz ismi.
     private TextView baglanilanAracDeviceNameTextView; // baglanilan aracin bluetooth cihaz ismi.
@@ -65,10 +70,16 @@ public class EntranceActivity extends AppCompatActivity implements SensorEventLi
     private boolean btBaglantiDurumu = false;
 
     // Gonderilecek RC komut paketi.
-    private byte RC_komut_steeringAngle;
-    private byte RC_komut_gearPosition;
-    private byte RC_komut_fireTrigger;
-    private byte RC_komut_throttlePos;
+    private int RC_komut_steeringAngle = 0;
+    private int RC_komut_throttlePos = 0;
+    private int RC_komut_gearPosition = 0;
+    private int RC_komut_fireTrigger = 0;
+
+    private Thread rcCommandSenderThread;
+    private static final int RC_KOMUT_GONDERIM_BEKLEME_SURESI = 10; // 10 milisecond.
+
+    private static final byte RC_COMMAND_PACKET_HEADER_1 = 0x33;
+    private static final byte RC_COMMAND_PACKET_HEADER_2 = 0x44;
 
     private boolean isDeviceFlat = false;
 
@@ -103,6 +114,8 @@ public class EntranceActivity extends AppCompatActivity implements SensorEventLi
         /* --------------------------------------------------------------------------------------- */
         // Bluetooth islemleri.
         this.init_bluetooth();
+
+        this.startRcCommandSender();
     }
 
     protected void onResume() {
@@ -120,7 +133,6 @@ public class EntranceActivity extends AppCompatActivity implements SensorEventLi
 
     public void onSensorChanged(SensorEvent event)
     {
-
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER)
             mGravity = event.values;
         if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD)
@@ -156,8 +168,10 @@ public class EntranceActivity extends AppCompatActivity implements SensorEventLi
                     rotation_mapped = 90;
                 if(rotation_mapped < - 90 && rotation_mapped > -180)
                     rotation_mapped = -90;
+                rotation_mapped *= -1;
 
-                this.RC_komut_steeringAngle = (byte)(rotation_mapped + 90);
+                // Gonderilecek komut guncellenir.
+                this.RC_komut_steeringAngle = (rotation_mapped + 90);
 
                 this.wheelAngleTextView.setText(rotation_mapped + "");
                 int abs_roll = (int)Math.abs(roll_mapped);
@@ -193,6 +207,10 @@ public class EntranceActivity extends AppCompatActivity implements SensorEventLi
         this.btBaglantiDurumuTextView.setTextColor(Color.RED);
         /* CONNECT BUTTON */
 
+        /* FIRE BUTTON */
+        this.buttonFireTrigger = (Button)findViewById(R.id.fire_button);
+        /* FIRE BUTTON */
+
         /* wheel angle text view */
         this.wheelAngleTextView = (TextView)findViewById(R.id.wheelAngleText);
         /* wheel angle text view */
@@ -201,6 +219,10 @@ public class EntranceActivity extends AppCompatActivity implements SensorEventLi
         this.bluetoothDevicesSpinner = (Spinner) findViewById(R.id.bluuetooth_device_select_spinner);
         /* Bluetooth Aygit Spinner */
 
+        /* Gear Position Switch */
+        this.gearPositionSwitch = (Switch)findViewById(R.id.gear_switch);
+        /* Gear Position Switch */
+
         this.baglanilanAracDeviceNameTextView = (TextView)findViewById(R.id.kullanici_skor_bilgi_textView);
         this.kullaniciSkorTextView = (TextView)findViewById(R.id.kullanici_skor_textView);
 
@@ -208,6 +230,7 @@ public class EntranceActivity extends AppCompatActivity implements SensorEventLi
         this.rakipSkorTextView = (TextView)findViewById(R.id.rakip_skor_textView);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void init_listeners()
     {
         this.throttleSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -217,6 +240,9 @@ public class EntranceActivity extends AppCompatActivity implements SensorEventLi
                 System.out.println("Gaz komut bitti");
                 seekBar.setProgress(0);
                 seekBar.getThumb().mutate().setAlpha(OPACITY_NO_TOUCH);
+
+                // Gonderilecek komut guncellenir.
+                EntranceActivity.this.RC_komut_throttlePos = 0;
             }
 
             @Override
@@ -228,8 +254,11 @@ public class EntranceActivity extends AppCompatActivity implements SensorEventLi
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress,
                                           boolean fromUser) {
-
-                // Yeni deger araca gonderilecek.
+                // RC komut guncellenir.
+                if(progress>=0 && progress<= 255 && !EntranceActivity.this.isDeviceFlat)
+                {
+                    EntranceActivity.this.RC_komut_throttlePos = progress;
+                }
             }
         });
 
@@ -266,6 +295,29 @@ public class EntranceActivity extends AppCompatActivity implements SensorEventLi
             catch (Exception ex)
             {
                 Toast.makeText(EntranceActivity.this, "Hata : " + ex.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+
+        this.buttonFireTrigger.setOnTouchListener((v, event) -> {
+            if(event.getAction() == MotionEvent.ACTION_DOWN)
+            {
+                EntranceActivity.this.RC_komut_fireTrigger = 1;
+            }
+            else if (event.getAction() == MotionEvent.ACTION_UP)
+            {
+                EntranceActivity.this.RC_komut_fireTrigger = 0;
+            }
+            return true;
+        });
+
+        this.gearPositionSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if(isChecked)
+            {
+                EntranceActivity.this.RC_komut_gearPosition = 1;
+            }
+            else
+            {
+                EntranceActivity.this.RC_komut_gearPosition = 0;
             }
         });
     }
@@ -332,6 +384,104 @@ public class EntranceActivity extends AppCompatActivity implements SensorEventLi
         catch (Exception ex)
         {
             Toast.makeText(EntranceActivity.this, "Hata : " + ex.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private long CRC32(int[] data, long n, long poly, long xor)
+    {
+        long g = 1L << n | poly;
+        long crc = 0xFFFFFFFF;
+        for(int b : data)
+        {
+            crc ^= (long) b << (n - 8);
+            for (int i = 0; i < 8; i++)
+            {
+                crc <<=1 ;
+                if(4294967296L == (crc & (1L << n)))
+                {
+                    crc ^= g;
+                }
+            }
+        }
+
+        return crc ^ xor;
+    }
+
+    private void startRcCommandSender()
+    {
+        this.rcCommandSenderThread = new Thread(() ->
+        {
+            while(true)
+            {
+                try
+                {
+                    if(btBaglantiDurumu && !this.isDeviceFlat)
+                    {
+                        sendRCcommandPacket();
+                    }
+
+                    Thread.sleep(RC_KOMUT_GONDERIM_BEKLEME_SURESI);
+
+                }catch (Exception ex)
+                {
+                    System.out.println("RC komut gonderme hata : " + ex.getMessage());
+                }
+            }
+        });
+        this.rcCommandSenderThread.start();
+    }
+
+    private byte[] rcDataToByteArray()
+    {
+        byte[] byte_array = new byte[4];
+        byte_array[0] = (byte)this.RC_komut_steeringAngle;
+        byte_array[1] = (byte)this.RC_komut_throttlePos;
+        byte_array[2] = (byte)this.RC_komut_gearPosition;
+        byte_array[3] = (byte)this.RC_komut_fireTrigger;
+        return byte_array;
+    }
+
+    private int[] rcDataToIntArray()
+    {
+        int[] byte_array = new int[4];
+        byte_array[0] = this.RC_komut_steeringAngle;
+        byte_array[1] = this.RC_komut_throttlePos;
+        byte_array[2] = this.RC_komut_gearPosition;
+        byte_array[3] = this.RC_komut_fireTrigger;
+        return byte_array;
+    }
+
+    private void sendRCcommandPacket()
+    {
+        try
+        {
+            byte[] gonderilecek_paket       = new byte[10];
+            byte[] RC_komut_paketi_bytes    = rcDataToByteArray();
+            int[]  RC_komut_paketi_int      = rcDataToIntArray();
+
+            long crc_32 = CRC32(RC_komut_paketi_int, 32, 0x04C11DB7, 0);
+
+            /* Gonderilecek veri hazirlanir */
+            gonderilecek_paket[0] = RC_COMMAND_PACKET_HEADER_1;
+            gonderilecek_paket[1] = RC_COMMAND_PACKET_HEADER_2;
+            gonderilecek_paket[2] = RC_komut_paketi_bytes[0];
+            gonderilecek_paket[3] = RC_komut_paketi_bytes[1];
+            gonderilecek_paket[4] = RC_komut_paketi_bytes[2];
+            gonderilecek_paket[5] = RC_komut_paketi_bytes[3];
+
+            // CRC hesabi eklenir.
+            gonderilecek_paket[6] = (byte) ((crc_32 >> 24) & 0xFF);
+            gonderilecek_paket[7] = (byte) ((crc_32 >> 16) & 0xFF);
+            gonderilecek_paket[8] = (byte) ((crc_32 >> 8) & 0xFF);
+            gonderilecek_paket[9] = (byte) ((crc_32) & 0xFF);
+            /* Gonderilecek veri hazirlanir */
+
+            // Veri gonderilir.
+            btOutputStream.write(gonderilecek_paket,0,10);
+        }
+        catch (Exception ex)
+        {
+            System.out.println(ex.getMessage());
         }
     }
 }
